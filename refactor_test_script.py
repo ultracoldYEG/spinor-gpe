@@ -73,15 +73,18 @@ res0.plot_eng()
 res0.plot_pops()
 res0.make_movie()
 
+# --------- 4. SETUP --------------
 
-# --------- 4. RUN (Real) ---------
+
+
+# --------- 5. RUN (Real) ---------
 sp.N_STEPS = 2000
 sp.dt = 1/5000
 sp.is_sampling = True
 
 res1 = sp.real()
 
-# --------- 5. ANALYZE ------------
+# --------- 6. ANALYZE ------------
 res1.plot_spins()
 res1.plot_total()
 res1.plot_eng()
