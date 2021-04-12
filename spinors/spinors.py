@@ -141,4 +141,48 @@ class TensorPropagator(object):
 
     
     
-# Need a separate module with just tensor helper functions.
+#  ----------------- tensor_tools MODULE ---------------
+# Would it be a good idea to allow all these functions to accept both arrays 
+# and tensors? Maybe, for completeness it's a good idea.
+        
+def fft_1d():
+    '''takes a list of tensors or np arrays; checks type.'''
+    pass
+
+def fft_2d():
+    '''takes a list of tensors or np arrays; checks type.'''
+    pass
+
+def fft_shift():
+    pass
+
+def to_numpy():
+    pass
+
+def to_tensor():
+    pass
+
+def t_mult(a, b):
+    '''Assert that a and b are tensors.'''
+    pass
+
+def norm_sq():
+    '''takes a list of tensors or np arrays; checks type.'''
+    pass
+
+def t_cosh():
+    pass
+
+def t_sinh():
+    pass
+
+def grad():
+    '''takes a list of tensors or np arrays; checks type.'''
+    pass
+
+def grad__sq():
+    '''takes a list of tensors or np arrays; checks type.'''
+    pass
+
+def conj():
+    pass
