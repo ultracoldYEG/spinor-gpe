@@ -186,3 +186,12 @@ def grad__sq():
 
 def conj():
     pass
+
+
+# ----- DOCUMENTATION -----
+#  - `sphinx`
+#  - `sphinx.ext.autodoc`
+#  - `sphinx.ext.napoleon` --> for using NumPy documentation style;
+#    alternatively, use `numpydoc`
+#  - ReadTheDocs, for hosting the documentation once it's good
+    
