@@ -47,8 +47,8 @@ GAMMA = 1.0
 ETA = 40.0
 
 sp.ATOM_NUM = 1e4
-sp.w = {'wx' : W, 'wy' : GAMMA*W, 'wz' : ETA*W}
-sp.g = {'00' : 1.0, '11' : 0.995, '01' : 0.995}
+sp.W = {'x' : W, 'y' : GAMMA*W, 'z' : ETA*W}
+sp.G = {'00' : 1.0, '11' : 0.995, '01' : 0.995}
 sp.is_coupling = False
 
 sp.coupling_setup(lam=790.1)
