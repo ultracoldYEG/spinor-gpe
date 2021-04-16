@@ -7,7 +7,7 @@ Created on Wed Apr  7 11:25:01 2021
 
 import numpy as np
 #from matplotlib import pyplot as plt
-import spinors
+import spinor_gpe.pspinor.pspinor as spin
 
 ### BASIC STRUCTURE OF A SIMULATION:
 
@@ -32,24 +32,57 @@ import spinors
 # Test Case #1: Simple imaginary time propagation to the ground state
 
 # --------- 1. SETUP --------------
-sp = spinors.Spinors()
+
 '''All of the wavefunctions and simulation parameters (e.g. psi, psik,
 TF parameters, trap frequencies, Raman parameters, directory paths) will
 be contained in a Spinors object, with class methods for propagation
 (real & imaginary).
 '''
 
-sp.TRIAL = '001'
+DATA_PATH = '..data/ground_state/Trial_000'
+# The directory might look like:
+#     psuedospinors
+#     ├── spinors
+#     |    ├── __init__.py
+#     |    ├── spinors.py
+#     |    ├── constants.py
+#     |    ├── tensor_tools.py
+#     |    ├── tensor_propagator.py
+#     |    └── prop_result.py
+#     ├── data
+#     |    ├── {project_name1}
+#     |    |    ├── {Trial_000}
+#     |    |    |   ├── code
+#     |    |    |   |   └── this_script.py
+#     |    |    |   ├── trial_data
+#     |    |    |   |   ├── sampled_wavefunctions.npy
+#     |    |    |   |   └── initial_wavefunction.npy
+#     |    |    |   ├── description.txt
+#     |    |    |   ├── assorted_images.png
+#     |    |    |   └── assorted_videos.mp4
+#     |    |    ├── {Trial_001}
+#     |    |    |   └── ...
+#     |    |    ├── {Trial_002}
+#     |    |    |   └── ...
+#     |    |    └── ...
+#     |    ├── {project_name2}
+#     |    |    ├── {Trial_000}
+#     |    |    ├── {Trial_001}
+#     |    |    ├── {Trial_002}
+#     |    |    └── ...
+#     |    ├── ...
 
 FREQ = 50
 W = 2*np.pi*FREQ
 GAMMA = 1.0
 ETA = 40.0
 
-sp.ATOM_NUM = 1e4
-sp.W = {'x' : W, 'y' : GAMMA*W, 'z' : ETA*W}
-sp.G = {'00' : 1.0, '11' : 0.995, '01' : 0.995}
-sp.is_coupling = False
+ATOM_NUM = 1e4
+omeg = {'x': W, 'y': GAMMA*W, 'z': ETA*W}
+g_sc = {'uu': 1.0, 'dd': 0.995, 'ud': 0.995}
+pop_frac = (0.5, 0.5)
+sp = spin.PSpinor(atom_num=ATOM_NUM, omeg=omeg, g_sc=g_sc,
+                  is_coupling=False, pop_frac=pop_frac)
 
 sp.coupling_setup(lam=790.1)
 sp.omega_grad()
