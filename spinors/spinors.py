@@ -18,7 +18,7 @@ import constants as const
 
 
 class Spinors:
-    '''A GPU-compatible simulator of the pseudospin-1/2 GPE.
+    """A GPU-compatible simulator of the pseudospin-1/2 GPE.
 
     Contains the functionality to run a real- or imaginary-time propataion of
     the pseudospin-1/2 Gross-Pitaevskii equation. Contains methods to generate
@@ -26,12 +26,14 @@ class Spinors:
     grids for the momentum-(in)dependent coupling between spin components,
     corresponding to an (RF) Raman coupling interaction.
 
-    '''
+    """
 
     def __init__(self,
                  atom_num=1e4, pop_frac=(0.5, 0.5), omeg=None, g_sc=None,
-                 is_coupling=False):
-        '''Instantiates a Spinor object and generates the parameters and
+                 is_coupling=False, grid_points=(256, 256)):
+        """Instantiate a Spinor object.
+
+        Generates the parameters and
         basic energy grids required for propagation.
 
         Parameters
@@ -49,7 +51,7 @@ class Spinors:
         is_coupling : :obj:`bool`, optional
             Momentum-(in)dependent coupling between spin components.
 
-        '''
+        """
         self.atom_num = atom_num
 
         assert sum(pop_frac) == 1.0, "Total population must equal 1"
@@ -75,93 +77,95 @@ class Spinors:
             self.g_sc = g_sc
 
         self.is_coupling = is_coupling  #: Presence of spin coupling
+
         self.compute_thomas_fermi()
+        self.compute_spatial_grids(grid_points)
         self.compute_energy_grids()
-        self.compute_spatial_grids()
 
         self.prop = None
         self.n_steps = None
 
     def compute_thomas_fermi(self):
-        '''Computes parameters and scales for the Thomas-Fermi solution.'''
-
-        gamma = self.omeg['y'] / self.omeg['x']
-        eta = self.omeg['z'] / self.omeg['x']
+        """Compute parameters and scales for the Thomas-Fermi solution."""
+        self.gamma = self.omeg['y'] / self.omeg['x']
+        self.eta = self.omeg['z'] / self.omeg['x']
         #: float: Harmonic oscillator length scale [m].
         self.a_x = np.sqrt(const.hbar / (const.Rb87['m'] * self.omeg['x']))
 
         #: Dimensionless scattering length, [a_x]
         self.a_sc = const.Rb87['a_sc'] / self.a_x
-        #: BEC chemical potential for an asymmetric harmonic trap, [hbar * w_x]
-        self.chem_pot = ((16 * self.atom_num * self.a_sc
-                          * np.sqrt(eta * gamma**2 / (2 * np.pi)))**(1/2)) / 2
+        #: Chemical potential for an asymmetric harmonic BEC, [hbar * omeg_x]
+        self.chem_pot = ((4 * self.atom_num * self.a_sc * self.gamma
+                          * np.sqrt(self.eta / (2 * np.pi)))**(1/2))
         self.rad_tf = np.sqrt(2 * self.chem_pot)  #: Thomas-Fermi radius [a_x]
 
+        self.e_scale = 1  #: Energy scale [hbar . omeg_x]
+        self.r_scale = 1  #: Length scale [a_x]
+        self.time_scale = 1 / self.omeg['x']
+
     def compute_spatial_grids(self):
-        '''Computes the real and momentum space grids.'''
+        """Compute the real and momentum space grids."""
 
     def compute_energy_grids(self):
-        '''Computes basic potential and kinetic energy grids.'''
+        """Compute basic potential and kinetic energy grids."""
 
     def imaginary(self):
-        '''Performs imaginary-time propagation.'''
+        """Perform imaginary-time propagation."""
         self.prop = TensorPropagator(self)
         return PropResult()
 
     def real(self):
-        '''Performs real-time propagation.'''
+        """Perform real-time propagation."""
         return PropResult()
 
     def coupling_setup(self, **kwargs):
-        '''Calculates parameters for the momentum-(in)dependent coupling.'''
+        """Calculate parameters for the momentum-(in)dependent coupling."""
         # pass wavelength, relative scaling of k_L, momentum-(in)depenedent
 
     def omega_grad(self):
-        '''Generates linear gradient of the interspin coupling strength.'''
+        """Generate linear gradient of the interspin coupling strength."""
 
     def omega_uniform(self):
-        '''Generates a uniform interspin coupling strength.'''
+        """Generate a uniform interspin coupling strength."""
 
     def detuning_grad(self):
-        '''Generates a linear gradient of the coupling detuning.'''
+        """Generate a linear gradient of the coupling detuning."""
 
     def detuning_uniform(self):
-        '''Generates a uniform coupling detuning.'''
+        """Generate a uniform coupling detuning."""
 
 
 class PropResult:
-    '''Results of propagation, along with plotting and analysis tools.'''
+    """Results of propagation, along with plotting and analysis tools."""
 
     def __init__(self):
         pass
 
     def plot_spins(self):
-        '''Plots the real- and momentum-space densities of the spinor
+        """Plot the real- and momentum-space densities of the spinor
         wavefunction, along with the phase of real=space wavefunction.
-        '''
+        """
 
     def plot_total(self):
-        '''Plots the total real-space density and phase of the wavefunction.'''
+        """Plot the total real-space density and phase of the wavefunction."""
 
     def plot_eng(self):
-        '''Plots the sampled energy expectation values.'''
+        """Plot the sampled energy expectation values."""
 
     def plot_pops(self):
-        '''Plots the spin populations as a function of propagation time.'''
+        """Plot the spin populations as a function of propagation time."""
 
     def analyze_vortex(self):
-        '''Computes the total vorticity in each spin component'''
+        """Compute the total vorticity in each spin component."""
 
     def make_movie(self):
-        '''Generates a movie of the sampled wavefunctions' densities and
-        phases.
-        '''
+        """Generate a movie of the wavefunctions' densities and phases."""
 
 
 class TensorPropagator:
-    '''Propagator of the GPE using tensor; computed on either the CPU or
+    """Propagator of the GPE using tensor; computed on either the CPU or
     the GPU.
-    '''
+    """
 
     # Object that sucks in the needed energy grids and parameters for
     # propagation, converts them to tensors, & performs the propagation.
@@ -201,41 +205,41 @@ class TensorPropagator:
         print(spin.n_steps)
 
     def evolution_op(self):
-        '''Computes the time-evolution operator for a given energy term.'''
+        """Compute the time-evolution operator for a given energy term."""
 
     def coupling_op(self):
-        '''Computes the time-evolution operator for the coupling term.'''
+        """Compute the time-evolution operator for the coupling term."""
 
     def single_step(self):
-        '''A single step forward in real or imaginary time.'''
+        """Single step forward in real or imaginary time."""
 
     def full_step(self):
-        ''' Divides the full propagation step into three single steps using
+        """ Divide the full propagation step into three single steps using
         the magic gamma for accuracy.
-        '''
+        """
         self.single_step()
         self.single_step()
         self.single_step()
 
     def propagation(self, n_steps):
-        '''Contains the actual propagation for-loop.'''
+        """Contains the actual propagation for-loop."""
         for _i in range(n_steps):
             self.full_step()
 
     def energy_exp(self):
-        '''Computes the energy expectation value.'''
+        """Compute the energy expectation value."""
 
     def normalize(self):
-        '''Normalizes the wavefunction to the expected atom number.'''
+        """Normalize the wavefunction to the expected atom number."""
 
     def density(self):
-        '''Computes the density of the given wavefunction.'''
+        """Compute the density of the given wavefunction."""
 
     def inner_prod(self):
-        '''Computes the inner product of two wavefunctions.'''
+        """Compute the inner product of two wavefunctions."""
 
     def expect_val(self):
-        '''Computes the expectation value of the supplied spatial operator.'''
+        """Compute the expectation value of the supplied spatial operator."""
 
 
 #  ----------------- tensor_tools MODULE ---------------
@@ -243,56 +247,56 @@ class TensorPropagator:
 # and tensors? Maybe, for completeness it's a good idea.
 
 def fft_1d():
-    '''takes a list of tensors or np arrays; checks type.'''
+    """Take a list of tensors or np arrays; checks type."""
 
 
 def fft_2d():
-    '''takes a list of tensors or np arrays; checks type.'''
+    """Take a list of tensors or np arrays; checks type."""
 
 
 def fftshift():
-    '''Shifts the zero-frequency component to the center of the spectrum.'''
+    """Shift the zero-frequency component to the center of the spectrum."""
 
 
 def ifftshift():
-    '''The inverse of `fftshift`.'''
+    """Inverse of `fftshift`."""
 
 
 def to_numpy():
-    '''Converts from tensors to numpy arrays.'''
+    """Convert from tensors to numpy arrays."""
 
 
 def to_tensor():
-    '''Converts from numpy arrays to tensors.'''
+    """Convert from numpy arrays to tensors."""
 
 
 def t_mult(first, second):
-    '''Assert that a and b are tensors.'''
+    """Assert that a and b are tensors."""
     return first * second
 
 
 def norm_sq():
-    '''takes a list of tensors or np arrays; checks type.'''
+    """Take a list of tensors or np arrays; checks type."""
 
 
 def t_cosh():
-    '''Hyperbolic cosine of a complex tensor.'''
+    """Hyperbolic cosine of a complex tensor."""
 
 
 def t_sinh():
-    '''Hyperbolic sine of a complex tensor.'''
+    """Hyperbolic sine of a complex tensor."""
 
 
 def grad():
-    '''takes a list of tensors or np arrays; checks type.'''
+    """Take a list of tensors or np arrays; checks type."""
 
 
 def grad__sq():
-    '''takes a list of tensors or np arrays; checks type.'''
+    """Take a list of tensors or np arrays; checks type."""
 
 
 def conj():
-    '''Complex conjugate of a complex tensor.'''
+    """Complex conjugate of a complex tensor."""
 
 
 # ----- DOCUMENTATION -----
