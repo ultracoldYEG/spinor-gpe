@@ -41,14 +41,14 @@ be contained in a Spinors object, with class methods for propagation
 
 DATA_PATH = '..data/ground_state/Trial_000'
 # The directory might look like:
-#     psuedospinors
-#     ├── spinors
+#     spinor_gpe
+#     ├── pspinors
 #     |    ├── __init__.py
-#     |    ├── spinors.py
-#     |    ├── constants.py
+#     |    ├── pspinor.py
 #     |    ├── tensor_tools.py
 #     |    ├── tensor_propagator.py
 #     |    └── prop_result.py
+#     ├── constants.py
 #     ├── data
 #     |    ├── {project_name1}
 #     |    |    ├── {Trial_000}

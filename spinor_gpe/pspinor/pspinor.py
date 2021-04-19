@@ -12,6 +12,9 @@ Created on Wed Apr  7 12:38:56 2021
 #  - tensor_tools
 #  - constants
 
+import os
+import shutil
+
 import numpy as np
 # from matplotlib import pyplot as plt
 from spinor_gpe import constants as const
@@ -30,7 +33,7 @@ class PSpinor:
     """
 
     # pylint: disable=too-many-instance-attributes
-    def __init__(self,
+    def __init__(self, path, overwrite=False,
                  atom_num=1e4, pop_frac=(0.5, 0.5), phase_factor=1, omeg=None,
                  g_sc=None, is_coupling=False, mesh_points=(256, 256),
                  r_sizes=(16, 16)):
@@ -41,7 +44,16 @@ class PSpinor:
 
         Parameters
         ----------
-        atom_num : int, optional
+        path : :obj:`str`
+            The path to the subdirectory /data/`path` where the data and
+            propagation results will be saved. This path may take the form
+            "project_name/trial_name".
+        overwrite : :obj:`bool`, optional
+            By default, the simulation will halt and raise an error if it
+            attempts to overwrite a directory `path` already containing data.
+            `overwrite` gives the user the option to overwrite the data with
+            every new instance.
+        atom_num : :obj:`int`, optional
             Total atom number.
         pop_frac : :obj:`array_like` of :obj:`float`, optional
             Starting population fraction in each spin component.
@@ -64,6 +76,8 @@ class PSpinor:
 
         """
         # pylint: disable=too-many-arguments
+        self.setup_data_path(path, overwrite)
+
         self.atom_num = atom_num
 
         assert sum(pop_frac) == 1.0, """Total population must equal 1"""
@@ -73,6 +87,8 @@ class PSpinor:
             omeg0 = 2*np.pi*50
             #: dict: Angular trapping frequencies
             self.omeg = {'x': omeg0, 'y': omeg0, 'z': 40 * omeg0}
+            # ??? Maybe make self.omeg (& g_sc) object @properties with methods
+            # for dynamic updating.
         else:
             omeg_names = {'x', 'y', 'z'}
             assert omeg_names == omeg.keys(), f"""Keys for `omeg` must have
@@ -94,13 +110,43 @@ class PSpinor:
         self.compute_spatial_grids(mesh_points, r_sizes)
         self.compute_energy_grids()
         self.compute_tf_psi(phase_factor)
+        self.setup_data_path(path, overwrite)
 
         self.prop = None
         self.n_steps = None
-        # TODO: Implement file directory management for the simulation.
+
+    def setup_data_path(self, path, overwrite):
+        """Create new data directory to store simulation data & results.
+
+        Parameters
+        ----------
+        path : :obj:`str`
+            The name of the directory /data/`path`/ to save the simulation
+            data and results
+        overwrite : :obj:`bool`
+            Gives the option to overwrite existing data sub-directories
+
+        """
+        #: Path to the directory containing all the simulation data & results
+        self.data_path = '/data/' + path + '/'
+        #: Path to the subdirectory containing the raw trial data
+        self.trial_data_path = self.data_path + 'trial_data/'
+        #: Path to the subdirectory containing the trial code.
+        self.code_data_path = self.data_path + 'code/'
+        if os.path.isdir(self.data_path):
+            if not overwrite:
+                raise FileExistsError(f"""The directory {self.data_path}
+                                 already exists. To overwrite this directory,
+                                 supply the parameter `overwrite=True`.""")
+
+            shutil.rmtree(self.data_path)  # Deletes the data directory
+        # Create the directories and sub-directories
+        os.mkdir(self.data_path)
+        os.mkdir(self.code_data_path)
+        os.mkdir(self.trial_data_path)
 
     def compute_tf_psi(self, phase_factor):
-        """Compute the intial pseudospinor wavefunction psi.
+        """Compute the intial pseudospinor wavefunction `psi` and FFT `psik`.
 
         `psi` is a list of 2D numpy arrays.
 
@@ -115,8 +161,11 @@ class PSpinor:
                     in zip(self.pop_frac, g_bare)]
         self.psi[1] *= phase_factor
 
-        self.psi, dens = norm(self.psi, self.dv_r, self.atom_num)
-        self.psik = fft_2d(self.psi)
+        self.psi, _ = norm(self.psi, self.dv_r, self.atom_num)
+        self.psik = fft_2d(self.psi, self.delta_r)
+
+        # Saves the real- and k-space versions of the Thomas-Fermi wavefunction
+        np.savez(self.trial_data_path + 'tf-wf', psi=self.psi, psik=self.psik)
 
     def compute_tf_params(self):
         """Compute parameters and scales for the Thomas-Fermi solution."""
@@ -230,7 +279,6 @@ class PSpinor:
         """
         atom_num = np.sum(np.abs(psi[0])**2 + np.abs(psi[1])**2) * self.dv_r
         return atom_num
-
 
     def imaginary(self):
         """Perform imaginary-time propagation."""
@@ -403,14 +451,16 @@ def fft_2d(psi, delta_r):
         The k-space FFT of the input wavefunction.
 
     """
-    norm = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
+    normalization = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
     if isinstance(psi[0], np.ndarray):
-        psik = [np.fft.fftn(p) * norm for p in psi]
+        psik = [np.fft.fftn(p) * normalization for p in psi]
         psik = [np.fft.fftshift(pk) for pk in psik]
 
     elif isinstance(psi[0], torch.tensor):
-        psik = [torch.fft.fft(p, 2) * norm for p in psi]
-        psik = [torch.fft.fftshift(pk) for pk in psik]
+        psik = [torch.fft.fft(p, 2) * normalization for p in psi]
+        # TODO: Test functions in the newest versions of PyTorch
+        # TODO: Test new torch.fft.fftshift functions
+        psik = [torch.fft.fftshift(pk, dim=(0, 1)) for pk in psik]
 
     return psik
 
@@ -431,14 +481,14 @@ def ifft_2d(psik, delta_r):
         The real-space FFT of the input wavefunction.
 
     """
-    norm = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
+    normalization = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
     if isinstance(psik[0], np.ndarray):
         psik = [np.fft.ifftshift(pk) for pk in psik]
-        psi = [np.fft.ifftn(p) / norm for p in psik]
+        psi = [np.fft.ifftn(p) / normalization for p in psik]
 
     elif isinstance(psik[0], torch.tensor):
-        psik = [ifftshift(pk) for pk in psik]
-        psi = [torch.ifft(p, 2) / norm for p in psik]
+        psik = [torch.fft.ifftshift(pk, dim=(0, 1)) for pk in psik]
+        psi = [torch.ifft(p, 2) / normalization for p in psik]
 
     return psi
 
@@ -466,12 +516,12 @@ def fftshift(psi_comp, axis=None):
             mesh points {shape} should be powers of 2."""
     if axis is None:
         axis = (0, 1)
-    psi_shifted = torch.fft.fftshift
+    psi_shifted = torch.fft.fftshift(psi_comp, dim=axis)
+    return psi_shifted
 
 
-def ifftshift(psi_comp, axis=None):
+def ifftshift():
     """Inverse of `fftshift`."""
-    pass
 
 
 def to_numpy():
