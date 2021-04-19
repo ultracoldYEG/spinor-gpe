@@ -110,7 +110,6 @@ class PSpinor:
         self.compute_spatial_grids(mesh_points, r_sizes)
         self.compute_energy_grids()
         self.compute_tf_psi(phase_factor)
-        self.setup_data_path(path, overwrite)
 
         self.prop = None
         self.n_steps = None
@@ -121,29 +120,31 @@ class PSpinor:
         Parameters
         ----------
         path : :obj:`str`
-            The name of the directory /data/`path`/ to save the simulation
+            The name of the directory /data/`path`/ to save the simulation.
+            These data are stored in the same directory as the source code.
             data and results
         overwrite : :obj:`bool`
             Gives the option to overwrite existing data sub-directories
 
         """
         #: Path to the directory containing all the simulation data & results
-        self.data_path = '/data/' + path + '/'
+        self.data_path = './data/' + path + '/'
         #: Path to the subdirectory containing the raw trial data
         self.trial_data_path = self.data_path + 'trial_data/'
         #: Path to the subdirectory containing the trial code.
         self.code_data_path = self.data_path + 'code/'
         if os.path.isdir(self.data_path):
             if not overwrite:
-                raise FileExistsError(f"""The directory {self.data_path}
-                                 already exists. To overwrite this directory,
-                                 supply the parameter `overwrite=True`.""")
+                raise FileExistsError(
+                    f"The directory {self.data_path} already exists. \
+                    To overwrite this directory, supply the parameter \
+                    `overwrite=True`.")
 
             shutil.rmtree(self.data_path)  # Deletes the data directory
         # Create the directories and sub-directories
-        os.mkdir(self.data_path)
-        os.mkdir(self.code_data_path)
-        os.mkdir(self.trial_data_path)
+        os.makedirs(self.data_path)
+        os.makedirs(self.code_data_path)
+        os.makedirs(self.trial_data_path)
 
     def compute_tf_psi(self, phase_factor):
         """Compute the intial pseudospinor wavefunction `psi` and FFT `psik`.
@@ -374,7 +375,7 @@ class TensorPropagator:
         #  - device (cpu vs. gpu)
         #  - volume elements
 
-        print(spin.n_steps)
+        pass
 
     def evolution_op(self):
         """Compute the time-evolution operator for a given energy term."""
@@ -524,13 +525,27 @@ def ifftshift():
     """Inverse of `fftshift`."""
 
 
-def to_numpy():
+def to_numpy(input_tens):
     """Convert from tensors to numpy arrays."""
 
 
-def to_tensor():
-    """Convert from numpy arrays to tensors."""
-
+def to_tensor(input_arr, dev='cpu', dtype=64):
+    """Convert from numpy arrays to tensors.
+    
+    
+    
+    Parameters
+    ----------
+    input_arr : Numpy :obj:`array`
+    
+    """
+    if dtype is 64:
+        dtype = torch.float64
+    elif dtype is 32:
+        dtype = torch.float32
+    if 'complex' in str(input_arr.dtype):
+        output_tens = torch.stack(())
+    
 
 def t_mult(first, second):
     """Assert that a and b are tensors."""

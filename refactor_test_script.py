@@ -6,7 +6,7 @@ Created on Wed Apr  7 11:25:01 2021
 """
 
 import numpy as np
-#from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 import spinor_gpe.pspinor.pspinor as spin
 
 ### BASIC STRUCTURE OF A SIMULATION:
@@ -81,9 +81,13 @@ ATOM_NUM = 1e2
 omeg = {'x': W, 'y': GAMMA*W, 'z': ETA*W}
 g_sc = {'uu': 1.0, 'dd': 1.0, 'ud': 1.04}
 pop_frac = (0.5, 0.5)
-ps = spin.PSpinor(DATA_PATH, atom_num=ATOM_NUM, omeg=omeg, g_sc=g_sc,
-                  phase_factor=-1, is_coupling=False, pop_frac=pop_frac,
-                  r_sizes=(8, 8))
+ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
+                  g_sc=g_sc, phase_factor=-1, is_coupling=False,
+                  pop_frac=pop_frac, r_sizes=(8, 8))
+
+plt.figure()
+plt.imshow(spin.density(spin.fft_1d(ps.psi, ps.delta_r))[0])
+plt.show()
 
 ps.coupling_setup(lam=790.1)
 ps.omega_grad()
