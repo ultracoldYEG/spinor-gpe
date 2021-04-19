@@ -15,6 +15,7 @@ Created on Wed Apr  7 12:38:56 2021
 import numpy as np
 # from matplotlib import pyplot as plt
 from spinor_gpe import constants as const
+import torch
 
 
 class PSpinor:
@@ -60,6 +61,7 @@ class PSpinor:
         r_sizes : :obj:`iterable` of :obj:`int`, optional
             The half size of the real space grid along the x- and y-axes,
             respectively, in units of [a_x].
+
         """
         # pylint: disable=too-many-arguments
         self.atom_num = atom_num
@@ -101,11 +103,20 @@ class PSpinor:
         """Compute the intial pseudospinor wavefunction psi.
 
         `psi` is a list of 2D numpy arrays.
+
         """
         assert abs(phase_factor) == 1.0, """Relative phase factor must have
             unit magnitude."""
         g_bare = [self.g_sc['uu'], self.g_sc['dd']]
-        # self.psi = [np.sqrt(self.atom_num * pop / ) for pop, g in zip(self.pop_frac, self.g_sc)]
+        profile = np.real(np.sqrt(self.atom_num * (self.chem_pot
+                                                   - self.pot_eng + 0.j)))
+        #: Initial Thomas-Fermi wavefunction for the two spin components
+        self.psi = [profile * np.real(np.sqrt(pop / g + 0.j)) for pop, g
+                    in zip(self.pop_frac, g_bare)]
+        self.psi[1] *= phase_factor
+
+        self.psi, dens = norm(self.psi, self.dv_r, self.atom_num)
+        self.psik = fft_2d(self.psi)
 
     def compute_tf_params(self):
         """Compute parameters and scales for the Thomas-Fermi solution."""
@@ -137,6 +148,7 @@ class PSpinor:
         r_sizes : :obj:`list` of :obj:`int`, optional
             The half size of the grid along the real x- and y-axes,
             respectively,in units of [a_x].
+
         """
         assert all(point % 2 == 0 for point in mesh_points), f"""Number of
             mesh points {mesh_points} should be powers of 2"""
@@ -179,6 +191,7 @@ class PSpinor:
             The number of points in the mesh
         axis : :obj:`int`, optional
             The axis along which to generate: 0 -> 'x'; 1 -> 'y'
+
         """
         return np.linspace(-sizes[axis], sizes[axis], num=points[axis],
                            endpoint=False)
@@ -194,11 +207,30 @@ class PSpinor:
         Assumes that the BEC has a simple free-particle kinetic energy
         dispersion. If using a momentum-dependent spin coupling, this grid
         will be modified later.
+
         """
         #: Potential energy grid [hbar*omeg_x]
         self.pot_eng = (self.x_mesh**2 + (self.y_trap * self.y_mesh)**2) / 2
         #: Kinetic energy grid [hbar*omeg_x]
         self.kin_eng = (self.kx_mesh**2 + self.ky_mesh**2) / 2
+
+    def _calc_atoms(self, psi):
+        """Given a list of wavefunctions, calculates the total atom number.
+
+        May need to consider the difference between numpy and tensor versions.
+
+        Parameters
+        ----------
+        psi : :obj:`list` of numpy arrays
+            The pseudospinor wavefunction.
+
+        Returns
+        -------
+        atom_num : :obj:`float`
+        """
+        atom_num = np.sum(np.abs(psi[0])**2 + np.abs(psi[1])**2) * self.dv_r
+        return atom_num
+
 
     def imaginary(self):
         """Perform imaginary-time propagation."""
@@ -338,20 +370,108 @@ class TensorPropagator:
 # Would it be a good idea to allow all these functions to accept both arrays
 # and tensors? Maybe, for completeness it's a good idea.
 
-def fft_1d():
+# TODO: After setting up a PyTorch environment, test these FFT functions.
+def fft_1d(psi, delta_r, axis=0):
     """Take a list of tensors or np arrays; checks type."""
+    if isinstance(psi[0], np.ndarray):
+        pass
+    elif isinstance(psi[0], torch.tensor):
+        pass
 
 
-def fft_2d():
+def ifft_1d(psik, delta_r, axis=0):
     """Take a list of tensors or np arrays; checks type."""
+    if isinstance(psik[0], np.ndarray):
+        pass
+    elif isinstance(psik[0], torch.tensor):
+        pass
 
 
-def fftshift():
-    """Shift the zero-frequency component to the center of the spectrum."""
+def fft_2d(psi, delta_r):
+    """Compute the forward 2D FFT of `psi`.
+
+    Parameters
+    ----------
+    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+        The input wavefunction.
+    delta_r : Numpy :obj:`array`
+        A two-element list of the x- and y-mesh spacings, respectively.
+
+    Returns
+    -------
+    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+        The k-space FFT of the input wavefunction.
+
+    """
+    norm = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
+    if isinstance(psi[0], np.ndarray):
+        psik = [np.fft.fftn(p) * norm for p in psi]
+        psik = [np.fft.fftshift(pk) for pk in psik]
+
+    elif isinstance(psi[0], torch.tensor):
+        psik = [torch.fft.fft(p, 2) * norm for p in psi]
+        psik = [torch.fft.fftshift(pk) for pk in psik]
+
+    return psik
 
 
-def ifftshift():
+def ifft_2d(psik, delta_r):
+    """Compute the inverse 2D FFT of `psik`.
+
+    Parameters
+    ----------
+    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+        The input wavefunction.
+    delta_r : Numpy :obj:`array`
+        A two-element list of the x- and y-mesh spacings, respectively.
+
+    Returns
+    -------
+    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+        The real-space FFT of the input wavefunction.
+
+    """
+    norm = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
+    if isinstance(psik[0], np.ndarray):
+        psik = [np.fft.ifftshift(pk) for pk in psik]
+        psi = [np.fft.ifftn(p) / norm for p in psik]
+
+    elif isinstance(psik[0], torch.tensor):
+        psik = [ifftshift(pk) for pk in psik]
+        psi = [torch.ifft(p, 2) / norm for p in psik]
+
+    return psi
+
+
+def fftshift(psi_comp, axis=None):
+    """Shift the zero-frequency component to the center of the spectrum.
+
+    This function provides
+
+    Parameters
+    ----------
+    psi_comp : PyTorch :obj:`tensor`
+        The input wavefunction.
+    axis : :obj:`int`, optional. Default is `None`.
+        The axis along which to shift the wavefunction component. If axis is
+        None, then the wavefunction is shifted along both axes.
+
+    Returns
+    -------
+    psi_shifted : PyTorch :obj:`tensor`
+        The shifted wavefunction.
+    """
+    shape = psi_comp.shape
+    assert all(s % 2 == 0 for s in shape), f"""Number of
+            mesh points {shape} should be powers of 2."""
+    if axis is None:
+        axis = (0, 1)
+    psi_shifted = torch.fft.fftshift
+
+
+def ifftshift(psi_comp, axis=None):
     """Inverse of `fftshift`."""
+    pass
 
 
 def to_numpy():
@@ -367,8 +487,24 @@ def t_mult(first, second):
     return first * second
 
 
-def norm_sq():
-    """Take a list of tensors or np arrays; checks type."""
+def norm_sq(psi_comp):
+    """Compute the density (norm-squared) of a single wavefunction component.
+
+    Parameters
+    ----------
+    psi_comp : Numpy :obj:`array` or PyTorch :obj:`tensor`
+        A single wavefunction component
+    Returns
+    -------
+    psi_sq : Numpy :obj:`array` or PyTorch :obj:`tensor`
+        The norm-square of the wavefunction
+
+    """
+    if isinstance(psi_comp, np.ndarray):
+        psi_sq = np.abs(psi_comp)**2
+    elif isinstance(psi_comp, torch.tensor):
+        psi_sq = psi_comp[:, :, 0]**2 + psi_comp[:, :, 1]**2
+    return psi_sq
 
 
 def t_cosh():
@@ -390,6 +526,77 @@ def grad__sq():
 def conj():
     """Complex conjugate of a complex tensor."""
 
+
+def norm(psi, dv, atom_num, pop_frac=None):
+    """
+    Normalize spinor wavefunction to the expected atom numbers and populations.
+
+    This function normalizes to the total expected atom number `atom_num`,
+    and to the expected population fractions `pop_frac`. Normalization is
+    essential in processes where the total atom number is not conserved,
+    (e.g. imaginary time propagation).
+
+    Parameters
+    ----------
+    psi : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`tensors`.
+        The wavefunction to normalize.
+    dv : :obj:`float`
+        Volume element for either real- or k-space.
+    atom_num : :obj:`int`
+        The total expected atom number.
+    pop_frac : array-like, optional
+        The expected population fractions in each spin component.
+
+    Returns
+    -------
+    psi_norm : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`tensors`.
+
+    """
+    dens = density(psi)
+    if isinstance(dens[0], np.ndarray):
+        if pop_frac is None:
+            norm_factor = np.sum(dens[0] + dens[1]) * dv / atom_num
+            psi_norm = [p / np.sqrt(norm_factor) for p in psi]
+            dens_norm = [d / norm_factor for d in dens]
+        else:
+            # TODO: Implement population fraction normalization.
+            raise NotImplementedError("""Normalizing to the expected population
+                                      fractions is not yet implemented for
+                                      Numpy arrays.""")
+    elif isinstance(dens[0], torch.tensor):
+        if pop_frac is None:
+            norm_factor = torch.sum(dens[0] + dens[1]) * dv / atom_num
+            psi_norm = [p / np.sqrt(norm_factor.item()) for p in psi]
+            dens_norm = [d / norm_factor.item() for d in dens]
+        else:
+            raise NotImplementedError("""Normalizing to the expected population
+                                      fractions is not implemented for
+                                      PyTorch tensors.""")
+
+    return psi_norm, dens_norm
+
+
+def density(psi):
+    """
+    Compute the density of a spinor wavefunction.
+
+    Parameters
+    ----------
+    psi : :obj:`list` of 2D Numpy :obj:`arrays` or PyTorch :obj:`tensors`
+        The input spinor wavefunction.
+
+    Returns
+    -------
+    dens : :obj:`list` of 2D Numpy :obj:`arrays` or PyTorch :obj:`tensors`
+        The density of each component's wavefunction
+
+    """
+    # pylint: disable=unidiomatic-typecheck
+    assert type(psi[0]) is type(psi[1]), """Components of `psi` must be
+        of the same data type."""
+
+    dens = [norm_sq(p) for p in psi]
+    return dens
 
 # ----- DOCUMENTATION -----
 #  - `sphinx`

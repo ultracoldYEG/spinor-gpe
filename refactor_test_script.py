@@ -77,12 +77,12 @@ W = 2*np.pi*FREQ
 GAMMA = 1.0
 ETA = 40.0
 
-ATOM_NUM = 1e4
+ATOM_NUM = 1e2
 omeg = {'x': W, 'y': GAMMA*W, 'z': ETA*W}
-g_sc = {'uu': 1.0, 'dd': 0.995, 'ud': 0.995}
+g_sc = {'uu': 1.0, 'dd': 1.0, 'ud': 1.04}
 pop_frac = (0.5, 0.5)
-sp = spin.PSpinor(atom_num=ATOM_NUM, omeg=omeg, g_sc=g_sc,
-                  is_coupling=False, pop_frac=pop_frac)
+sp = spin.PSpinor(atom_num=ATOM_NUM, omeg=omeg, g_sc=g_sc, phase_factor=-1,
+                  is_coupling=False, pop_frac=pop_frac, r_sizes=(8, 8))
 
 sp.coupling_setup(lam=790.1)
 sp.omega_grad()
