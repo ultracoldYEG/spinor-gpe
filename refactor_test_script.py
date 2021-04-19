@@ -39,7 +39,7 @@ be contained in a Spinors object, with class methods for propagation
 (real & imaginary).
 '''
 
-DATA_PATH = '..data/ground_state/Trial_000'
+DATA_PATH = 'ground_state/Trial_000'
 # The directory might look like:
 #     spinor_gpe
 #     ├── pspinors
@@ -81,19 +81,20 @@ ATOM_NUM = 1e2
 omeg = {'x': W, 'y': GAMMA*W, 'z': ETA*W}
 g_sc = {'uu': 1.0, 'dd': 1.0, 'ud': 1.04}
 pop_frac = (0.5, 0.5)
-sp = spin.PSpinor(atom_num=ATOM_NUM, omeg=omeg, g_sc=g_sc, phase_factor=-1,
-                  is_coupling=False, pop_frac=pop_frac, r_sizes=(8, 8))
+ps = spin.PSpinor(DATA_PATH, atom_num=ATOM_NUM, omeg=omeg, g_sc=g_sc,
+                  phase_factor=-1, is_coupling=False, pop_frac=pop_frac,
+                  r_sizes=(8, 8))
 
-sp.coupling_setup(lam=790.1)
-sp.omega_grad()
+ps.coupling_setup(lam=790.1)
+ps.omega_grad()
 
 # --------- 2. RUN (Imaginary) ----
-sp.N_STEPS = 1000
-sp.dt = 1/50
-sp.is_sampling = True
-sp.device = 'cuda:0'
+ps.N_STEPS = 1000
+ps.dt = 1/50
+ps.is_sampling = True
+ps.device = 'cuda:0'
 
-res0 = sp.imaginary()
+res0 = ps.imaginary()
 ''' `res0` is an object containing the final wavefunctions, the energy exp.
 values, populations, average positions, and a directory path to sampled
 wavefunctions. It also has class methods for plotting and analysis.
@@ -111,11 +112,11 @@ res0.make_movie()
 
 
 # --------- 5. RUN (Real) ---------
-sp.N_STEPS = 2000
-sp.dt = 1/5000
-sp.is_sampling = True
+ps.N_STEPS = 2000
+ps.dt = 1/5000
+ps.is_sampling = True
 
-res1 = sp.real()
+res1 = ps.real()
 
 # --------- 6. ANALYZE ------------
 res1.plot_spins()
