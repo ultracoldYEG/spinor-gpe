@@ -8,8 +8,9 @@ Created on Wed Apr  7 11:25:01 2021
 import numpy as np
 from matplotlib import pyplot as plt
 import spinor_gpe.pspinor.pspinor as spin
+import torch
 
-### BASIC STRUCTURE OF A SIMULATION:
+# BASIC STRUCTURE OF A SIMULATION:
 
 # --------- 1. SETUP --------------
 # [ ] Instantiate some sort of spinor object
@@ -26,18 +27,15 @@ import spinor_gpe.pspinor.pspinor as spin
 # [ ] Post analysis from sampled wavefunctions (e.g. energy exp., populations, max density)
 # --------- 4. REPEAT -------------
 
-
-
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------
 # Test Case #1: Simple imaginary time propagation to the ground state
 
 # --------- 1. SETUP --------------
 
-'''All of the wavefunctions and simulation parameters (e.g. psi, psik,
-TF parameters, trap frequencies, Raman parameters, directory paths) will
-be contained in a Spinors object, with class methods for propagation
-(real & imaginary).
-'''
+# All of the wavefunctions and simulation parameters (e.g. psi, psik,
+# TF parameters, trap frequencies, Raman parameters, directory paths) will
+# be contained in a PSpinors object, with class methods for propagation
+# (real & imaginary).
 
 DATA_PATH = 'ground_state/Trial_000'
 # The directory might look like:
@@ -89,8 +87,13 @@ plt.figure()
 plt.imshow(spin.density(spin.fft_2d(ps.psi, ps.delta_r))[0])
 plt.show()
 
-ps.coupling_setup(lam=790.1)
-ps.omega_grad()
+ps.coupling_setup(wavel=790.1)
+ps.coupling_grad()
+
+psi = ps.psi
+psik = spin.fft_2d(psi, ps.delta_r)
+psi_prime = spin.ifft_2d(psik, ps.delta_r)
+print((np.abs(psi[0])**2 - np.abs(psi_prime[0])**2).max())
 
 # --------- 2. RUN (Imaginary) ----
 ps.N_STEPS = 1000
@@ -99,10 +102,9 @@ ps.is_sampling = True
 ps.device = 'cuda:0'
 
 res0 = ps.imaginary()
-''' `res0` is an object containing the final wavefunctions, the energy exp.
-values, populations, average positions, and a directory path to sampled
-wavefunctions. It also has class methods for plotting and analysis.
-'''
+# `res0` is an object containing the final wavefunctions, the energy exp.
+# values, populations, average positions, and a directory path to sampled
+# wavefunctions. It also has class methods for plotting and analysis.
 
 # --------- 3. ANALYZE ------------
 res0.plot_spins()

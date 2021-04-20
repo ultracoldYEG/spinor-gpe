@@ -482,24 +482,70 @@ class TensorPropagator:
 # Would it be a good idea to allow all these functions to accept both arrays
 # and tensors? Maybe, for completeness it's a good idea.
 
-# TODO: After setting up a PyTorch environment, test these FFT functions.
-def fft_1d(psi, delta_r, axis=0):
-    """Take a list of tensors or np arrays; checks type."""
+def fft_1d(psi, delta_r, axis=0) -> list:
+    """Compute the forward 1D FFT of `psi` along a single axis.
+
+    Parameters
+    ----------
+    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+        The input wavefunction.
+    delta_r : Numpy :obj:`array`
+        A two-element list of the x- and y-mesh spacings, respectively.
+    axis : :obj:`int`, optional
+        The axis along which to transform; note that 0 -> y-axis, and
+        1 -> x-axis.
+
+    Returns
+    -------
+    psik_axis : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+        The FFT of psi along `axis`.
+
+    """
+    normalization = delta_r[axis] / np.sqrt(2 * np.pi)
     if isinstance(psi[0], np.ndarray):
-        pass
+        psik_axis = [np.fft.fftn(p, axes=[axis]) * normalization for p in psi]
+        psik_axis = [np.fft.fftshift(pk, axis=axis) for pk in psik_axis]
     elif isinstance(psi[0], torch.tensor):
-        pass
+        psik_axis = [torch.fft.fftn(p, axes=[axis]) * normalization
+                     for p in psi]
+        psik_axis = [torch.fft.fftshift(pk, dim=axis) for pk in psik_axis]
+
+    return psik_axis
 
 
-def ifft_1d(psik, delta_r, axis=0):
-    """Take a list of tensors or np arrays; checks type."""
+def ifft_1d(psik, delta_r, axis=0) -> list:
+    """Compute the inverse 1D FFT of `psi` along a single axis.
+
+    Parameters
+    ----------
+    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+        The input wavefunction.
+    delta_r : Numpy :obj:`array`
+        A two-element list of the x- and y-mesh spacings, respectively.
+    axis : :obj:`int`, optional
+        The axis along which to transform; note that 0 -> y-axis, and
+        1 -> x-axis.
+
+    Returns
+    -------
+    psi_axis : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+        The FFT of psi along `axis`.
+
+    """
+    normalization = delta_r[axis] / np.sqrt(2 * np.pi)
     if isinstance(psik[0], np.ndarray):
-        pass
+        psi_axis = [np.fft.fftn(pk, axes=[axis]) * normalization
+                    for pk in psik]
+        psi_axis = [np.fft.fftshift(p, axis=axis) for p in psi_axis]
     elif isinstance(psik[0], torch.tensor):
-        pass
+        psi_axis = [torch.fft.fftn(pk, axes=[axis]) * normalization
+                    for pk in psik]
+        psi_axis = [torch.fft.fftshift(p, dim=axis) for p in psi_axis]
+
+    return psi_axis
 
 
-def fft_2d(psi, delta_r):
+def fft_2d(psi, delta_r) -> list:
     """Compute the forward 2D FFT of `psi`.
 
     Parameters
@@ -521,15 +567,13 @@ def fft_2d(psi, delta_r):
         psik = [np.fft.fftshift(pk) for pk in psik]
 
     elif isinstance(psi[0], torch.tensor):
-        psik = [torch.fft.fft(p, 2) * normalization for p in psi]
-        # TODO: Test functions in the newest versions of PyTorch
-        # TODO: Test new torch.fft.fftshift functions
-        psik = [torch.fft.fftshift(pk, dim=(0, 1)) for pk in psik]
+        psik = [torch.fft.fft(p) * normalization for p in psi]
+        psik = [torch.fft.fftshift(pk) for pk in psik]
 
     return psik
 
 
-def ifft_2d(psik, delta_r):
+def ifft_2d(psik, delta_r) -> list:
     """Compute the inverse 2D FFT of `psik`.
 
     Parameters
@@ -551,8 +595,8 @@ def ifft_2d(psik, delta_r):
         psi = [np.fft.ifftn(p) / normalization for p in psik]
 
     elif isinstance(psik[0], torch.tensor):
-        psik = [torch.fft.ifftshift(pk, dim=(0, 1)) for pk in psik]
-        psi = [torch.ifft(p, 2) / normalization for p in psik]
+        psik = [torch.fft.ifftshift(pk) for pk in psik]
+        psi = [torch.ifft(p) / normalization for p in psik]
 
     return psi
 
@@ -578,8 +622,6 @@ def fftshift(psi_comp, axis=None):
     shape = psi_comp.shape
     assert all(s % 2 == 0 for s in shape), f"""Number of
             mesh points {shape} should be powers of 2."""
-    if axis is None:
-        axis = (0, 1)
     psi_shifted = torch.fft.fftshift(psi_comp, dim=axis)
     return psi_shifted
 
