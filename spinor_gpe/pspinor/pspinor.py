@@ -16,9 +16,10 @@ import os
 import shutil
 
 import numpy as np
+import torch
 # from matplotlib import pyplot as plt
 from spinor_gpe import constants as const
-import torch
+
 
 
 class PSpinor:
@@ -480,14 +481,14 @@ class TensorPropagator:
 
 #  ----------------- tensor_tools MODULE ---------------
 # Would it be a good idea to allow all these functions to accept both arrays
-# and tensors? Maybe, for completeness it's a good idea.
+# and tensors? Maybe, for completeness it's a good idea.\
 
 def fft_1d(psi, delta_r, axis=0) -> list:
     """Compute the forward 1D FFT of `psi` along a single axis.
 
     Parameters
     ----------
-    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
     delta_r : Numpy :obj:`array`
         A two-element list of the x- and y-mesh spacings, respectively.
@@ -497,15 +498,17 @@ def fft_1d(psi, delta_r, axis=0) -> list:
 
     Returns
     -------
-    psik_axis : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psik_axis : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The FFT of psi along `axis`.
 
     """
+    delta_r = np.flip(delta_r)  # (x, y) to (y, x) to match axes convention.
     normalization = delta_r[axis] / np.sqrt(2 * np.pi)
+
     if isinstance(psi[0], np.ndarray):
         psik_axis = [np.fft.fftn(p, axes=[axis]) * normalization for p in psi]
-        psik_axis = [np.fft.fftshift(pk, axis=axis) for pk in psik_axis]
-    elif isinstance(psi[0], torch.tensor):
+        psik_axis = [np.fft.fftshift(pk, axes=axis) for pk in psik_axis]
+    elif isinstance(psi[0], torch.Tensor):
         psik_axis = [torch.fft.fftn(p, axes=[axis]) * normalization
                      for p in psi]
         psik_axis = [torch.fft.fftshift(pk, dim=axis) for pk in psik_axis]
@@ -518,7 +521,7 @@ def ifft_1d(psik, delta_r, axis=0) -> list:
 
     Parameters
     ----------
-    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
     delta_r : Numpy :obj:`array`
         A two-element list of the x- and y-mesh spacings, respectively.
@@ -528,19 +531,21 @@ def ifft_1d(psik, delta_r, axis=0) -> list:
 
     Returns
     -------
-    psi_axis : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psi_axis : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The FFT of psi along `axis`.
 
     """
+    delta_r = np.flip(delta_r)  # (x, y) to (y, x) to match axes convention.
     normalization = delta_r[axis] / np.sqrt(2 * np.pi)
+
     if isinstance(psik[0], np.ndarray):
-        psi_axis = [np.fft.fftn(pk, axes=[axis]) * normalization
-                    for pk in psik]
-        psi_axis = [np.fft.fftshift(p, axis=axis) for p in psi_axis]
-    elif isinstance(psik[0], torch.tensor):
-        psi_axis = [torch.fft.fftn(pk, axes=[axis]) * normalization
-                    for pk in psik]
-        psi_axis = [torch.fft.fftshift(p, dim=axis) for p in psi_axis]
+        psi_axis = [np.fft.ifftshift(pk, axes=axis) for pk in psik]
+        psi_axis = [np.fft.ifftn(p, axes=[axis]) * normalization
+                    for p in psi_axis]
+    elif isinstance(psik[0], torch.Tensor):
+        psi_axis = [torch.fft.ifftshift(pk, dim=axis) for pk in psik]
+        psi_axis = [torch.fft.fftn(p, axes=[axis]) * normalization
+                    for p in psi_axis]
 
     return psi_axis
 
@@ -550,24 +555,25 @@ def fft_2d(psi, delta_r) -> list:
 
     Parameters
     ----------
-    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
     delta_r : Numpy :obj:`array`
         A two-element list of the x- and y-mesh spacings, respectively.
 
     Returns
     -------
-    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The k-space FFT of the input wavefunction.
 
     """
     normalization = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
+
     if isinstance(psi[0], np.ndarray):
         psik = [np.fft.fftn(p) * normalization for p in psi]
         psik = [np.fft.fftshift(pk) for pk in psik]
 
-    elif isinstance(psi[0], torch.tensor):
-        psik = [torch.fft.fft(p) * normalization for p in psi]
+    elif isinstance(psi[0], torch.Tensor):
+        psik = [torch.fft.fftn(p) * normalization for p in psi]
         psik = [torch.fft.fftshift(pk) for pk in psik]
 
     return psik
@@ -578,76 +584,167 @@ def ifft_2d(psik, delta_r) -> list:
 
     Parameters
     ----------
-    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
     delta_r : Numpy :obj:`array`
         A two-element list of the x- and y-mesh spacings, respectively.
 
     Returns
     -------
-    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The real-space FFT of the input wavefunction.
 
     """
     normalization = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
+
     if isinstance(psik[0], np.ndarray):
         psik = [np.fft.ifftshift(pk) for pk in psik]
         psi = [np.fft.ifftn(p) / normalization for p in psik]
 
-    elif isinstance(psik[0], torch.tensor):
+    elif isinstance(psik[0], torch.Tensor):
         psik = [torch.fft.ifftshift(pk) for pk in psik]
-        psi = [torch.ifft(p) / normalization for p in psik]
+        psi = [torch.fft.ifftn(p) / normalization for p in psik]
 
     return psi
 
 
-def fftshift(psi_comp, axis=None):
-    """Shift the zero-frequency component to the center of the spectrum.
+# def fftshift(psi_comp, axis=None):
+#     """Shift the zero-frequency component to the center of the spectrum.
 
-    This function provides
+#     This function provides
 
-    Parameters
-    ----------
-    psi_comp : PyTorch :obj:`tensor`
-        The input wavefunction.
-    axis : :obj:`int`, optional. Default is `None`.
-        The axis along which to shift the wavefunction component. If axis is
-        None, then the wavefunction is shifted along both axes.
+#     Parameters
+#     ----------
+#     psi_comp : PyTorch :obj:`Tensor`
+#         The input wavefunction.
+#     axis : :obj:`int`, optional. Default is `None`.
+#         The axis along which to shift the wavefunction component. If axis is
+#         None, then the wavefunction is shifted along both axes.
 
-    Returns
-    -------
-    psi_shifted : PyTorch :obj:`tensor`
-        The shifted wavefunction.
-    """
-    shape = psi_comp.shape
-    assert all(s % 2 == 0 for s in shape), f"""Number of
-            mesh points {shape} should be powers of 2."""
-    psi_shifted = torch.fft.fftshift(psi_comp, dim=axis)
-    return psi_shifted
+#     Returns
+#     -------
+#     psi_shifted : PyTorch :obj:`Tensor`
+#         The shifted wavefunction.
+#     """
+#     shape = psi_comp.shape
+#     assert all(s % 2 == 0 for s in shape), f"""Number of
+#             mesh points {shape} should be powers of 2."""
+#     psi_shifted = torch.fft.fftshift(psi_comp, dim=axis)
+#     return psi_shifted
 
 
-def ifftshift():
-    """Inverse of `fftshift`."""
+# def ifftshift(psi_comp):
+#     """Inverse of `fftshift`."""
+#     shape = psi_comp.shape
+#     assert all(s % 2 == 0 for s in shape), f"""Number of
+#             mesh points {shape} should be powers of 2."""
 
 
 def to_numpy(input_tens):
-    """Convert from tensors to numpy arrays."""
+    """Convert from PyTorch Tensor to Nunmpy arrays.
 
-
-def to_tensor(input_arr, dev='cpu', dtype=64):
-    """Convert from numpy arrays to tensors.
+    Accepts a single PyTorch Tensor, or a :obj:`list` of PyTorch Tensor,
+    as in the wavefunction objects.
 
     Parameters
     ----------
-    input_arr : Numpy :obj:`array`
+    input_tens : PyTorch :obj:`Tensor`, or :obj:`list` of PyTorch :obj:`Tensor`
+        Input tensor, or list of tensor, to be converted to :obj:`array`,
+        on CPU memory.
+
+    Returns
+    -------
+    output_arr : Numpy :obj:`array` or :obj:`list` of Numpy :obj:`array`
+        Output array stored on CPU memory.
+    """
+    if isinstance(input_tens, list):
+        output_tens = [inp.cpu() for inp in input_tens]
+
+    elif isinstance(input_tens, torch.Tensor):
+        output_tens = input_tens.cpu().numpy()
+
+    return output_tens
+
+
+def to_tensor(input_arr, dev='cpu', dtype=64):
+    """Convert from Numpy arrays to Tensors.
+
+    Accepts a single Numpy array, or a :obj:`list` of Numpy arrays, as in the
+    wavefunction objects.
+
+    Parameters
+    ----------
+    input_arr : Numpy :obj:`array`,  or :obj:`list` of Numpy :obj:`array`
+        Input array, or list of arrays, to be converted to a :obj:`Tensor`,
+        on either CPU or GPU memory.
+    dev : :obj:`str`, optional
+        The name of the input device, e.g. {'cpu', 'cuda', 'cuda:0'}
+    dtype : :obj:`int`, optional
+        Designator for the torch dtype -
+        32  : :obj:`float32`;
+        64  : :obj:`float64`;
+        128 : :obj:`complex128`
+
+    Returns
+    -------
+    output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
+        Output tensor of `dtype` stored on `dev` memory.
+    """
+    all_dtypes = {32: torch.float32, 64: torch.float64, 128: torch.complex128}
+    if isinstance(input_arr, list):
+        output_tens = [torch.as_tensor(inp, dtype=all_dtypes[dtype],
+                                       device=dev) for inp in input_arr]
+
+    elif isinstance(input_arr, np.ndarray):
+        output_tens = torch.as_tensor(input_arr, dtype=all_dtypes[dtype],
+                                      device=dev)
+
+    return output_tens
+
+
+def to_cpu(input_tens):
+    """Transfers `input_tens` from gpu to cpu memory.
+
+    Parameters
+    ----------
+    input_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
+        Input tensor stored on GPU memory.
+
+    Returns
+    -------
+    output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
+        Output tensor stored on CPU memory.
+    """
+    if isinstance(input_tens, list):
+        output_tens = [inp.cpu() for inp in input_tens]
+
+    elif isinstance(input_tens, torch.Tensor):
+        output_tens = input_tens.cpu()
+
+    return output_tens
+
+
+def to_gpu(input_tens, dev='cuda'):
+    """Transfers `input_tens` from gpu to cpu memory.
+
+    Parameters
+    ----------
+    input_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
+        Input tensor stored on GPU memory.
+
+    Returns
+    -------
+    output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
 
     """
-    if dtype == 64:
-        dtype = torch.float64
-    elif dtype == 32:
-        dtype = torch.float32
-    if 'complex' in str(input_arr.dtype):
-        output_tens = torch.stack(())
+    if isinstance(input_tens, list):
+        assert isinstance(input_tens[0], torch.Tensor), f"Cannot move a \
+            non-Tensor object of dtype `{type(input_tens[0])}` to GPU memory."
+        output_tens = [inp.to(dev) for inp in input_tens]
+
+    elif isinstance(input_tens.to(dev), torch.Tensor):
+        output_tens = input_tens
+
     return output_tens
 
 
@@ -661,18 +758,20 @@ def norm_sq(psi_comp):
 
     Parameters
     ----------
-    psi_comp : Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psi_comp : Numpy :obj:`array` or PyTorch :obj:`Tensor`
         A single wavefunction component
     Returns
     -------
-    psi_sq : Numpy :obj:`array` or PyTorch :obj:`tensor`
+    psi_sq : Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The norm-square of the wavefunction
 
     """
     if isinstance(psi_comp, np.ndarray):
         psi_sq = np.abs(psi_comp)**2
-    elif isinstance(psi_comp, torch.tensor):
+
+    elif isinstance(psi_comp, torch.Tensor):
         psi_sq = psi_comp[:, :, 0]**2 + psi_comp[:, :, 1]**2
+
     return psi_sq
 
 
@@ -696,7 +795,7 @@ def conj():
     """Complex conjugate of a complex tensor."""
 
 
-def norm(psi, dv, atom_num, pop_frac=None):
+def norm(psi, vol_elem, atom_num, pop_frac=None):
     """
     Normalize spinor wavefunction to the expected atom numbers and populations.
 
@@ -707,9 +806,9 @@ def norm(psi, dv, atom_num, pop_frac=None):
 
     Parameters
     ----------
-    psi : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`tensors`.
+    psi : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`Tensors`.
         The wavefunction to normalize.
-    dv : :obj:`float`
+    vol_elem : :obj:`float`
         Volume element for either real- or k-space.
     atom_num : :obj:`int`
         The total expected atom number.
@@ -718,13 +817,13 @@ def norm(psi, dv, atom_num, pop_frac=None):
 
     Returns
     -------
-    psi_norm : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`tensors`.
+    psi_norm : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`Tensors`.
 
     """
     dens = density(psi)
     if isinstance(dens[0], np.ndarray):
         if pop_frac is None:
-            norm_factor = np.sum(dens[0] + dens[1]) * dv / atom_num
+            norm_factor = np.sum(dens[0] + dens[1]) * vol_elem / atom_num
             psi_norm = [p / np.sqrt(norm_factor) for p in psi]
             dens_norm = [d / norm_factor for d in dens]
         else:
@@ -732,9 +831,10 @@ def norm(psi, dv, atom_num, pop_frac=None):
             raise NotImplementedError("""Normalizing to the expected population
                                       fractions is not yet implemented for
                                       Numpy arrays.""")
-    elif isinstance(dens[0], torch.tensor):
+
+    elif isinstance(dens[0], torch.Tensor):
         if pop_frac is None:
-            norm_factor = torch.sum(dens[0] + dens[1]) * dv / atom_num
+            norm_factor = torch.sum(dens[0] + dens[1]) * vol_elem / atom_num
             psi_norm = [p / np.sqrt(norm_factor.item()) for p in psi]
             dens_norm = [d / norm_factor.item() for d in dens]
         else:
@@ -751,17 +851,17 @@ def density(psi):
 
     Parameters
     ----------
-    psi : :obj:`list` of 2D Numpy :obj:`arrays` or PyTorch :obj:`tensors`
+    psi : :obj:`list` of 2D Numpy :obj:`arrays` or PyTorch :obj:`Tensors`
         The input spinor wavefunction.
 
     Returns
     -------
-    dens : :obj:`list` of 2D Numpy :obj:`arrays` or PyTorch :obj:`tensors`
+    dens : :obj:`list` of 2D Numpy :obj:`arrays` or PyTorch :obj:`Tensors`
         The density of each component's wavefunction
 
     """
     # pylint: disable=unidiomatic-typecheck
-    assert type(psi[0]) is type(psi[1]), """Components of `psi` must be
+    assert type(psi[0]) == type(psi[1]), """Components of `psi` must be
         of the same data type."""
 
     dens = [norm_sq(p) for p in psi]
