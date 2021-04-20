@@ -110,6 +110,7 @@ class PSpinor:
         self.compute_spatial_grids(mesh_points, r_sizes)
         self.compute_energy_grids()
         self.compute_tf_psi(phase_factor)
+        self.no_coupling_setup()
 
         self.prop = None
         self.n_steps = None
@@ -291,14 +292,80 @@ class PSpinor:
         self.prop = TensorPropagator(self)
         return PropResult()
 
-    def coupling_setup(self, **kwargs):
-        """Calculate parameters for the momentum-(in)dependent coupling."""
-        # pass wavelength, relative scaling of k_L, momentum-(in)depenedency
+    def no_coupling_setup(self):
+        """Calculate the kinetic & potential energy grids for no coupling."""
+        self.is_coupling = False
+        self.kin_eng_spin = [self.kin_eng] * 2
+        self.pot_eng_spin = [self.pot_eng] * 2
+        # pylint: disable=invalid-name
+        self.kL_recoil = None
+        self.EL_recoil = None
+        self.mom_shift = None
 
-    def omega_grad(self):
+    def coupling_setup(self, wavel=790.1e-9, scale=1, mom_shift=False):
+        """Calculate parameters for the momentum-(in)dependent coupling.
+
+        Parameters
+        ----------
+        wavel : :obj:`float`
+            Wavelength of Raman coupling (in [m])
+        scale : :obj:`float`
+            Relative scale of recoil momentum
+        mom_shift : :obj:`bool`
+            Option for a momentum-(in)dependent coupling.
+        """
+        # pass wavelength, relative scaling of k_L, momentum-(in)depenedency
+        # pylint: disable=attribute-defined-outside-init
+        #: Designator attribute for the presence of coupling
+        self.is_coupling = True
+        #: Recoil momentum of the coupling interaction [a_x].
+        # pylint: disable=invalid-name
+        self.kL_recoil = scale * (np.sqrt(2) * np.pi / wavel * self.a_x)
+        #: Recoil energy of the coupling interaction [hbar*omeg_x]
+        # pylint: disable=invalid-name
+        self.EL_recoil = self.kL_recoil**2 / 2
+        #: Momentum shift option
+        self.mom_shift = mom_shift
+        if self.mom_shift:
+            shift = self.kx_mesh * self.kL_recoil
+        else:
+            shift = 0
+
+        self.kin_eng_spin = [self.kin_eng + shift, self.kin_eng - shift]
+        self.kin_eng_spin = [k - np.min(k) for k in self.kin_eng_spin]
+
+    @property
+    def coupling(self):
+        """Get the `coupling` attribute."""
+        return self._coupling
+
+    @coupling.setter
+    def coupling(self, array):
+        """Set the `coupling` attribute."""
+        if not self.is_coupling:
+            raise Exception(f"The `is_coupling` option is {self.is_coupling}. \
+                            Initialize coupling with `coupling_setup()`.")
+        self._coupling = array
+
+    @property
+    def detuning(self):
+        """Get the `detuning` attribute."""
+        return self._detuning
+
+    @detuning.setter
+    def detuning(self, array):
+        """Set the `detuning` attribute."""
+        if not self.is_coupling:
+            raise Exception(f"The `is_coupling` option is {self.is_coupling}. \
+                            Initialize coupling with `coupling_setup()`.")
+        self._detuning = array
+        self.pot_eng_spin = [self.pot_eng + self._detuning / 2,
+                             self.pot_eng - self._detuning / 2]
+
+    def coupling_grad(self):
         """Generate linear gradient of the interspin coupling strength."""
 
-    def omega_uniform(self):
+    def coupling_uniform(self):
         """Generate a uniform interspin coupling strength."""
 
     def detuning_grad(self):
@@ -315,9 +382,7 @@ class PropResult:
         pass
 
     def plot_spins(self):
-        """Plot the real- and momentum-space densities of the spinor
-        wavefunction, along with the phase of real=space wavefunction.
-        """
+        """Plot the densities (real & k) and phases of spin components."""
 
     def plot_total(self):
         """Plot the total real-space density and phase of the wavefunction."""
@@ -336,9 +401,7 @@ class PropResult:
 
 
 class TensorPropagator:
-    """Propagator of the GPE using tensor; computed on either the CPU or
-    the GPU.
-    """
+    """CPU- or GPU-compatible propagator of the GPE, with tensors."""
 
     # Object that sucks in the needed energy grids and parameters for
     # propagation, converts them to tensors, & performs the propagation.
@@ -531,21 +594,20 @@ def to_numpy(input_tens):
 
 def to_tensor(input_arr, dev='cpu', dtype=64):
     """Convert from numpy arrays to tensors.
-    
-    
-    
+
     Parameters
     ----------
     input_arr : Numpy :obj:`array`
-    
+
     """
-    if dtype is 64:
+    if dtype == 64:
         dtype = torch.float64
-    elif dtype is 32:
+    elif dtype == 32:
         dtype = torch.float32
     if 'complex' in str(input_arr.dtype):
         output_tens = torch.stack(())
-    
+    return output_tens
+
 
 def t_mult(first, second):
     """Assert that a and b are tensors."""

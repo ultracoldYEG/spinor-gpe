@@ -86,7 +86,7 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   pop_frac=pop_frac, r_sizes=(8, 8))
 
 plt.figure()
-plt.imshow(spin.density(spin.fft_1d(ps.psi, ps.delta_r))[0])
+plt.imshow(spin.density(spin.fft_2d(ps.psi, ps.delta_r))[0])
 plt.show()
 
 ps.coupling_setup(lam=790.1)
