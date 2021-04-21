@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Apr  7 11:25:01 2021
+"""General test script for GPE propagation on GPU."""
+# pylint: disable=wrong-import-position
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
 
-@author: benjamin
-"""
+import numpy as np  # noqa: E402
+# import torch  # noqa: E402
+from matplotlib import pyplot as plt  # noqa: E402
 
-import numpy as np
-import torch
-from matplotlib import pyplot as plt
-
-import spinor_gpe.pspinor.pspinor as spin
+from pspinor import pspinor as spin  # noqa: E402
+from pspinor import tensor_tools as ttools  # noqa: E402
 
 
 # BASIC STRUCTURE OF A SIMULATION:
@@ -23,10 +23,12 @@ import spinor_gpe.pspinor.pspinor as spin
 # [ ] Additional functions (e.g. seed vortices, shift momentum)
 # [ ] Specify sampling, time step duration (needs a default)
 # --------- 2. RUN ----------------
-# [ ] Propagate (imaginary or real time; should be independent of spinor vs. scalar)
+# [ ] Propagate (imaginary or real time; should be independent of spinor vs.
+#     scalar)
 # --------- 3. ANALYZE ------------
 # [ ] Post analysis from final wavefunction (plots, vortex)
-# [ ] Post analysis from sampled wavefunctions (e.g. energy exp., populations, max density)
+# [ ] Post analysis from sampled wavefunctions (e.g. energy exp., populations,
+#                                               max density)
 # --------- 4. REPEAT -------------
 
 # -------------------------------------------------------------------
@@ -86,15 +88,15 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   pop_frac=pop_frac, r_sizes=(8, 8))
 
 plt.figure()
-plt.imshow(spin.density(spin.fft_2d(ps.psi, ps.delta_r))[0])
+plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.delta_r))[0])
 plt.show()
 
 ps.coupling_setup(wavel=790.1)
 ps.coupling_grad()
 
 psi = ps.psi
-psik = spin.fft_2d(psi, ps.delta_r)
-psi_prime = spin.ifft_2d(psik, ps.delta_r)
+psik = ttools.fft_2d(psi, ps.delta_r)
+psi_prime = ttools.ifft_2d(psik, ps.delta_r)
 print((np.abs(psi[0])**2 - np.abs(psi_prime[0])**2).max())
 
 # --------- 2. RUN (Imaginary) ----
@@ -116,7 +118,6 @@ res0.plot_pops()
 res0.make_movie()
 
 # --------- 4. SETUP --------------
-
 
 
 # --------- 5. RUN (Real) ---------

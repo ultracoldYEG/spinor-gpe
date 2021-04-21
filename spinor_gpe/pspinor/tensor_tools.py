@@ -385,7 +385,7 @@ def density(psi):
     """
     # pylint: disable=unidiomatic-typecheck
     assert type(psi[0]) == type(psi[1]), """Components of `psi` must be
-        of the same data type."""
+        of the same data type."""  # noqa: E721
 
     dens = [norm_sq(p) for p in psi]
     return dens

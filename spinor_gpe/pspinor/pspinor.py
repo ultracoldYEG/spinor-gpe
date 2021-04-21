@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Apr  7 12:38:56 2021
-
-@author: benjamin
-"""
+"""Base class for pseudospinor GPE propagation."""
 
 # Classes & Modules:
 #  - Spinors
@@ -21,7 +16,6 @@ import numpy as np
 
 import constants as const
 from pspinor import tensor_tools as ttools
-
 
 
 class PSpinor:
@@ -453,7 +447,9 @@ class TensorPropagator:
         """Single step forward in real or imaginary time."""
 
     def full_step(self):
-        """ Divide the full propagation step into three single steps using
+        """Full step forward in real or imaginary time.
+
+        Divide the full propagation step into three single steps using
         the magic gamma for accuracy.
         """
         self.single_step()

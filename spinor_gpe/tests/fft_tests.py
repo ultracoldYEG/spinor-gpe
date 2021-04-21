@@ -4,19 +4,16 @@ The working directory for this script needs to be in the project root
 directory, i.e. /spinor-gpe/.
 
 """
-# import os, sys, inspect
-# currentdir = os.path.dirname(os.path.abspath(
-#     inspect.getfile(inspect.currentframe())))
-# parentdir = os.path.dirname(currentdir)
-# sys.path.insert(0, parentdir)
 # pylint: disable=wrong-import-position
-import os, sys
+import os
+import sys
 sys.path.insert(0, os.path.abspath('..'))
-import numpy as np
-from matplotlib import pyplot as plt
 
-from pspinor import pspinor as spin
-from pspinor import tensor_tools as ttools
+import numpy as np  # noqa: E402
+from matplotlib import pyplot as plt  # noqa: E402
+
+from pspinor import pspinor as spin  # noqa: E402
+from pspinor import tensor_tools as ttools  # noqa: E402
 # import torch
 
 DATA_PATH = 'ground_state/Trial_000'
@@ -65,7 +62,6 @@ res0.plot_pops()
 res0.make_movie()
 
 # --------- 4. SETUP --------------
-
 
 
 # --------- 5. RUN (Real) ---------
