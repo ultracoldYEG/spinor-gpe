@@ -55,15 +55,32 @@ res0 = ps.imaginary()
 # values, populations, average positions, and a directory path to sampled
 # wavefunctions. It also has class methods for plotting and analysis.
 
-psik_shifted = ps.shift_momentum(ps.psik)
+psik_shifted = ps.shift_momentum(ps.psik, frac=(0.5, 0.5))
 plt.figure()
-plt.imshow(ttools.density(psik_shifted[0]), aspect=2)
+plt.imshow(ttools.density(psik_shifted[0]))
 plt.show()
 
 psi_shifted = ttools.ifft_2d(psik_shifted, ps.delta_r)
 plt.figure()
-plt.imshow(ttools.density(psi_shifted[0]), aspect=2)
+plt.imshow(ttools.density(psi_shifted[0]))
 plt.show()
 
-ps.plot_rdens(psi_shifted, spin=None, scale=ps.rad_tf)
-ps.plot_kdens(psik_shifted, spin=None, scale=ps.kL_recoil)
+ps.plot_rdens(psi_shifted, spin=0, scale=ps.rad_tf)
+ps.plot_rphase(psi_shifted, spin=0, scale=ps.rad_tf)
+ps.plot_kdens(psik_shifted, spin=0, scale=ps.kL_recoil)
+
+# %%
+def fft_test(f=1, size=1024):
+    x = np.linspace(-5, 5, size)
+    diff_x = np.diff(x)[0]
+    y = np.sin(2 * np.pi * f * x)
+    freq = np.fft.fftfreq(size, diff_x)
+    fft = np.fft.fft(y, norm='ortho')
+    # fft = np.fft.fftshift(fft)
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5, 10))
+    ax1.plot(x, y)
+    ax2.plot(freq, fft)
+    plt.show()
+
+# fft_test(6, 2048)

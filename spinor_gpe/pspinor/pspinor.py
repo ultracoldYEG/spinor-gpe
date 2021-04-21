@@ -390,11 +390,16 @@ class PSpinor:
     def detuning_uniform(self):
         """Generate a uniform coupling detuning."""
 
-    def plot_rdens(self, psi=None, spin=None, cmap='viridis', scale=1):
+    def plot_rdens(self, psi=None, spin=None, cmap='viridis', scale=1.):
         """Plot the real-space density of the wavefunction.
 
-        Based on the value passed to `spin`, this function will plot either
-        the up (0), down (1), or both (None) spin components.
+        Plots either the up (`spin=0`), down (`spin=1`), or both (`spin=None`)
+        spin components. If no `psi` is supplied, then it uses the
+        object attribute `self.psi`.
+
+        See Also
+        --------
+        plotting_tools.plot_dens : Density plots.
 
         """
         if psi is None:
@@ -403,11 +408,16 @@ class PSpinor:
         extent = np.ravel(np.vstack((-self.r_sizes, self.r_sizes)).T) / scale
         ptools.plot_dens(psi, spin, cmap, scale, extent=extent)
 
-    def plot_kdens(self, psik=None, spin=None, cmap='viridis', scale=1):
-        """Plot the real-space density of the wavefunction.
+    def plot_kdens(self, psik=None, spin=None, cmap='viridis', scale=1.):
+        """Plot the k-space density of the wavefunction.
 
-        Based on the value passed to `spin`, this function will plot either
-        the up (0), down (1), or both (None) spin components.
+        Plots either the up (`spin=0`), down (`spin=1`), or both (`spin=None`)
+        spin components. If no `psik` is supplied, then it uses the
+        object attribute `self.psik`.
+
+        See Also
+        --------
+        plotting_tools.plot_dens : Density plots.
 
         """
         if psik is None:
@@ -416,31 +426,24 @@ class PSpinor:
         extent = np.ravel(np.vstack((-self.k_sizes, self.k_sizes)).T) / scale
         ptools.plot_dens(psik, spin, cmap, scale, extent)
 
-    def plot_dens(self, psi=None, spin=None, cmap='viridis', scale=1,
-                  extent=None):
-        """Plot the real or k-space density of the wavefunction.
+    def plot_rphase(self, psi=None, spin=None, cmap='twilight_shifted',
+                    scale=1.):
+        """Plot the real-space phase of the wavefunction.
 
-        Based on the value passed to `spin`, this function will plot either
-        the up (0), down (1), or both (None) spin components.
+        Plots either the up (`spin=0`), down (`spin=1`), or both (`spin=None`)
+        spin components. If no `psi` is supplied, then it uses the
+        object attribute `self.psi`.
+
+        See Also
+        --------
+        plotting_tools.plot_phase : Phase plots.
 
         """
-        if spin is None:
-            n_plots = 2
-        else:
-            assert spin in (0, 1), f"The `spin` parameter should be 0 or 1, \
-                not {spin}."
-            n_plots = 1
-            psi = [psi[spin]]
+        if psi is None:
+            psi = self.psi
 
-        dens = ttools.density(psi)
-
-        fig, axs = plt.subplots(1, n_plots, sharex=True, sharey=True)
-        if not isinstance(axs, np.ndarray):  # Makes single axs an array
-            axs = np.array([axs])
-
-        for i, d in enumerate(dens):
-            axs[i].imshow(d, cmap=cmap, extent=extent)
-        plt.show()
+        extent = np.ravel(np.vstack((-self.r_sizes, self.r_sizes)).T) / scale
+        ptools.plot_phase(psi, spin, cmap, scale, extent)
 
 
 class PropResult:

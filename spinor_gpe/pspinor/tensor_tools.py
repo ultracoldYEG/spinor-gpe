@@ -282,11 +282,12 @@ def norm_sq(psi_comp):
     Parameters
     ----------
     psi_comp : Numpy :obj:`array` or PyTorch :obj:`Tensor`
-        A single wavefunction component
+        A single wavefunction component.
+
     Returns
     -------
     psi_sq : Numpy :obj:`array` or PyTorch :obj:`Tensor`
-        The norm-square of the wavefunction
+        The norm-square of the wavefunction.
 
     """
     if isinstance(psi_comp, np.ndarray):
@@ -296,6 +297,28 @@ def norm_sq(psi_comp):
         psi_sq = psi_comp[:, :, 0]**2 + psi_comp[:, :, 1]**2
 
     return psi_sq
+
+
+def angle(psi_comp):
+    """Compute the phase (angle) of a single complex wavefunction component.
+
+    Parameters
+    ----------
+    psi_comp : Numpy :obj:`array` or PyTorch :obj:`Tensor`
+        A single wavefunction component.
+
+    Returns
+    -------
+    angle : Numpy :obj:`array` or PyTorch :obj:`Tensor`
+        The phase (angle) of the component's wavefunction.
+
+    """
+    if isinstance(psi_comp, np.ndarray):
+        angle = np.angle(psi_comp)
+    elif isinstance(psi_comp, torch.Tensor):
+        angle = torch.angle(psi_comp)
+
+    return angle
 
 
 def t_cosh():
@@ -374,13 +397,13 @@ def density(psi):
 
     Parameters
     ----------
-    psi : :obj:`list` of 2D Numpy :obj:`arrays` or PyTorch :obj:`Tensors`
+    psi : :obj:`list` of 2D Numpy :obj:`array` or PyTorch :obj:`Tensor`
         The input spinor wavefunction.
 
     Returns
     -------
-    dens : :obj:`list` of 2D Numpy :obj:`arrays` or PyTorch :obj:`Tensors`
-        The density of each component's wavefunction
+    dens : Numpy :obj:`array`, PyTorch :obj:`Tensor`, or :obj:`list` thereof
+        The density of each component's wavefunction.
 
     """
     if isinstance(psi, list):
@@ -388,3 +411,24 @@ def density(psi):
     else:
         dens = norm_sq(psi)
     return dens
+
+
+def phase(psi):
+    """Compute the phase of a real-space spinor wavefunction.
+
+    Parameters
+    ----------
+    psi : :obj:`list` of 2D Numpy :obj:`array` or PyTorch :obj:`Tensor`
+        The input spinor wavefunction.
+
+    Returns
+    -------
+    phase : Numpy :obj:`array`, PyTorch :obj:`Tensor`, or :obj:`list` thereof
+        The phase of each component's wavefunction.
+    """
+    if isinstance(psi, list):
+        phase = [angle(p) for p in psi]
+    else:
+        phase = angle(psi)
+
+    return phase
