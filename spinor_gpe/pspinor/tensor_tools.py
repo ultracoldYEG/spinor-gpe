@@ -383,9 +383,8 @@ def density(psi):
         The density of each component's wavefunction
 
     """
-    # pylint: disable=unidiomatic-typecheck
-    assert type(psi[0]) == type(psi[1]), """Components of `psi` must be
-        of the same data type."""  # noqa: E721
-
-    dens = [norm_sq(p) for p in psi]
+    if isinstance(psi, list):
+        dens = [norm_sq(p) for p in psi]
+    else:
+        dens = norm_sq(psi)
     return dens

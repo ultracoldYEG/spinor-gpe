@@ -29,13 +29,14 @@ g_sc = {'uu': 1.0, 'dd': 1.0, 'ud': 1.04}
 pop_frac = (0.5, 0.5)
 ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=-1, is_coupling=False,
-                  pop_frac=pop_frac, r_sizes=(8, 8))
+                  pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(256, 128))
 
 plt.figure()
-plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.delta_r))[0])
+# plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.delta_r))[0])
+plt.imshow(ttools.density(ps.psik)[0])
 plt.show()
 
-ps.coupling_setup(wavel=790.1)
+ps.coupling_setup(wavel=790.1e-9)
 ps.coupling_grad()
 
 psi = ps.psi
@@ -54,26 +55,15 @@ res0 = ps.imaginary()
 # values, populations, average positions, and a directory path to sampled
 # wavefunctions. It also has class methods for plotting and analysis.
 
-# --------- 3. ANALYZE ------------
-res0.plot_spins()
-res0.plot_total()
-res0.plot_eng()
-res0.plot_pops()
-res0.make_movie()
+psik_shifted = ps.shift_momentum(ps.psik)
+plt.figure()
+plt.imshow(ttools.density(psik_shifted[0]), aspect=2)
+plt.show()
 
-# --------- 4. SETUP --------------
+psi_shifted = ttools.ifft_2d(psik_shifted, ps.delta_r)
+plt.figure()
+plt.imshow(ttools.density(psi_shifted[0]), aspect=2)
+plt.show()
 
-
-# --------- 5. RUN (Real) ---------
-ps.N_STEPS = 2000
-ps.dt = 1/5000
-ps.is_sampling = True
-
-res1 = ps.real()
-
-# --------- 6. ANALYZE ------------
-res1.plot_spins()
-res1.plot_total()
-res1.plot_eng()
-res1.plot_pops()
-res1.make_movie()
+ps.plot_rdens(psi_shifted, spin=None, scale=ps.rad_tf)
+ps.plot_kdens(psik_shifted, spin=None, scale=ps.kL_recoil)

@@ -11,11 +11,14 @@ import os
 import shutil
 
 import numpy as np
+from scipy.ndimage import fourier_shift
+from matplotlib import pyplot as plt
 # import torch
-# from matplotlib import pyplot as plt
+
 
 import constants as const
 from pspinor import tensor_tools as ttools
+from pspinor import plotting_tools as ptools
 
 
 class PSpinor:
@@ -311,7 +314,7 @@ class PSpinor:
         mom_shift : :obj:`bool`
             Option for a momentum-(in)dependent coupling.
         """
-        # pass wavelength, relative scaling of k_L, momentum-(in)depenedency
+        # pass wavelength, relative scaling of k_L, momentum-(in)dependency
         # pylint: disable=attribute-defined-outside-init
         #: Designator attribute for the presence of coupling
         self.is_coupling = True
@@ -330,6 +333,22 @@ class PSpinor:
 
         self.kin_eng_spin = [self.kin_eng + shift, self.kin_eng - shift]
         self.kin_eng_spin = [k - np.min(k) for k in self.kin_eng_spin]
+
+    def shift_momentum(self, psik, kshift_val=1, frac=(0.5, 0.5)):
+        """Shifts the momentum components pf `psi` by +/- kL_recoil."""
+        assert self.is_coupling, f"The `is_coupling` option is \
+            {self.is_coupling}. Initialize coupling with `coupling_setup()`."
+        shift = kshift_val * self.kL_recoil / self.delta_k[0]
+        input_ = ttools.fft_2d(psik, self.delta_r)
+        result = [np.zeros_like(pk) for pk in psik]
+        for i in range(len(psik)):
+            positive = fourier_shift(input_[i], shift=[0, shift], axis=1)
+            negative = fourier_shift(input_[i], shift=[0, -shift], axis=1)
+            result[i] = frac[0]*positive + frac[1]*negative
+            frac = np.flip(frac)
+        psik_shift = ttools.ifft_2d(result, self.delta_r)
+
+        return psik_shift
 
     @property
     def coupling(self):
@@ -370,6 +389,58 @@ class PSpinor:
 
     def detuning_uniform(self):
         """Generate a uniform coupling detuning."""
+
+    def plot_rdens(self, psi=None, spin=None, cmap='viridis', scale=1):
+        """Plot the real-space density of the wavefunction.
+
+        Based on the value passed to `spin`, this function will plot either
+        the up (0), down (1), or both (None) spin components.
+
+        """
+        if psi is None:
+            psi = self.psi
+
+        extent = np.ravel(np.vstack((-self.r_sizes, self.r_sizes)).T) / scale
+        ptools.plot_dens(psi, spin, cmap, scale, extent=extent)
+
+    def plot_kdens(self, psik=None, spin=None, cmap='viridis', scale=1):
+        """Plot the real-space density of the wavefunction.
+
+        Based on the value passed to `spin`, this function will plot either
+        the up (0), down (1), or both (None) spin components.
+
+        """
+        if psik is None:
+            psik = self.psik
+
+        extent = np.ravel(np.vstack((-self.k_sizes, self.k_sizes)).T) / scale
+        ptools.plot_dens(psik, spin, cmap, scale, extent)
+
+    def plot_dens(self, psi=None, spin=None, cmap='viridis', scale=1,
+                  extent=None):
+        """Plot the real or k-space density of the wavefunction.
+
+        Based on the value passed to `spin`, this function will plot either
+        the up (0), down (1), or both (None) spin components.
+
+        """
+        if spin is None:
+            n_plots = 2
+        else:
+            assert spin in (0, 1), f"The `spin` parameter should be 0 or 1, \
+                not {spin}."
+            n_plots = 1
+            psi = [psi[spin]]
+
+        dens = ttools.density(psi)
+
+        fig, axs = plt.subplots(1, n_plots, sharex=True, sharey=True)
+        if not isinstance(axs, np.ndarray):  # Makes single axs an array
+            axs = np.array([axs])
+
+        for i, d in enumerate(dens):
+            axs[i].imshow(d, cmap=cmap, extent=extent)
+        plt.show()
 
 
 class PropResult:
