@@ -6,9 +6,11 @@ Created on Wed Apr  7 11:25:01 2021
 """
 
 import numpy as np
-from matplotlib import pyplot as plt
-import spinor_gpe.pspinor.pspinor as spin
 import torch
+from matplotlib import pyplot as plt
+
+import spinor_gpe.pspinor.pspinor as spin
+
 
 # BASIC STRUCTURE OF A SIMULATION:
 

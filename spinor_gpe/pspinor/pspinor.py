@@ -16,9 +16,11 @@ import os
 import shutil
 
 import numpy as np
-import torch
+# import torch
 # from matplotlib import pyplot as plt
-from spinor_gpe import constants as const
+
+import constants as const
+from pspinor import tensor_tools as ttools
 
 
 
@@ -164,8 +166,8 @@ class PSpinor:
                     in zip(self.pop_frac, g_bare)]
         self.psi[1] *= phase_factor
 
-        self.psi, _ = norm(self.psi, self.dv_r, self.atom_num)
-        self.psik = fft_2d(self.psi, self.delta_r)
+        self.psi, _ = ttools.norm(self.psi, self.dv_r, self.atom_num)
+        self.psik = ttools.fft_2d(self.psi, self.delta_r)
 
         # Saves the real- and k-space versions of the Thomas-Fermi wavefunction
         np.savez(self.trial_data_path + 'tf-wf', psi=self.psi, psik=self.psik)
