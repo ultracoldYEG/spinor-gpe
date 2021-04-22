@@ -265,21 +265,30 @@ class PSpinor:
         #: Kinetic energy grid [hbar*omeg_x]
         self.kin_eng = (self.kx_mesh**2 + self.ky_mesh**2) / 2
 
-    def _calc_atoms(self, psi):
+    def _calc_atoms(self, psi=None, space='r'):
         """Given a list of wavefunctions, calculates the total atom number.
 
         May need to consider the difference between numpy and tensor versions.
 
         Parameters
         ----------
-        psi : :obj:`list` of numpy arrays
+        psi : :obj:`list` of Numpy :obj:`array`, optional.
             The pseudospinor wavefunction.
+        space : {'r', 'k'}, optional
 
         Returns
         -------
         atom_num : :obj:`float`
         """
-        atom_num = np.sum(np.abs(psi[0])**2 + np.abs(psi[1])**2) * self.dv_r
+        if psi is None:
+            psi = self.psi
+
+        if space == 'r':
+            vol_elem = self.dv_r
+        elif space == 'k':
+            vol_elem = self.dv_k
+
+        atom_num = ttools.calc_atoms(psi, vol_elem)
         return atom_num
 
     def imaginary(self):

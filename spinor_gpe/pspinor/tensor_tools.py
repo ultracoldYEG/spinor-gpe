@@ -3,10 +3,14 @@ import numpy as np
 import torch
 
 # Would it be a good idea to allow all these functions to accept both arrays
-# and tensors? Maybe, for completeness it's a good idea.\
+# and tensors? Maybe, for completeness it's a good idea.
+
+# ??? How should the individual FFT operations be normalized? Should they
+# remain as "backward", or because of the nature of our operations changed
+# to "ortho"?
 
 
-def fft_1d(psi, delta_r, axis=0) -> list:
+def fft_1d(psi, delta_r=(1, 1), axis=0) -> list:
     """Compute the forward 1D FFT of `psi` along a single axis.
 
     Parameters
@@ -25,21 +29,24 @@ def fft_1d(psi, delta_r, axis=0) -> list:
         The FFT of psi along `axis`.
 
     """
-    delta_r = np.flip(delta_r)  # (x, y) to (y, x) to match axes convention.
+    true_ax = np.array([1, 0])
     normalization = delta_r[axis] / np.sqrt(2 * np.pi)
 
     if isinstance(psi[0], np.ndarray):
-        psik_axis = [np.fft.fftn(p, axes=[axis]) * normalization for p in psi]
-        psik_axis = [np.fft.fftshift(pk, axes=axis) for pk in psik_axis]
-    elif isinstance(psi[0], torch.Tensor):
-        psik_axis = [torch.fft.fftn(p, axes=[axis]) * normalization
+        psik_axis = [np.fft.fftn(p, axes=[true_ax[axis]]) * normalization
                      for p in psi]
-        psik_axis = [torch.fft.fftshift(pk, dim=axis) for pk in psik_axis]
+        psik_axis = [np.fft.fftshift(pk, axes=true_ax[axis])
+                     for pk in psik_axis]
+    elif isinstance(psi[0], torch.Tensor):
+        psik_axis = [torch.fft.fftn(p, dim=[true_ax[axis]]) * normalization
+                     for p in psi]
+        psik_axis = [torch.fft.fftshift(pk, dim=true_ax[axis])
+                     for pk in psik_axis]
 
     return psik_axis
 
 
-def ifft_1d(psik, delta_r, axis=0) -> list:
+def ifft_1d(psik, delta_r=(1, 1), axis=0) -> list:
     """Compute the inverse 1D FFT of `psi` along a single axis.
 
     Parameters
@@ -49,8 +56,8 @@ def ifft_1d(psik, delta_r, axis=0) -> list:
     delta_r : Numpy :obj:`array`
         A two-element list of the x- and y-mesh spacings, respectively.
     axis : :obj:`int`, optional
-        The axis along which to transform; note that 0 -> y-axis, and
-        1 -> x-axis.
+        The axis along which to transform; note that 0 -> x-axis, and
+        1 -> y-axis.
 
     Returns
     -------
@@ -58,22 +65,21 @@ def ifft_1d(psik, delta_r, axis=0) -> list:
         The FFT of psi along `axis`.
 
     """
-    delta_r = np.flip(delta_r)  # (x, y) to (y, x) to match axes convention.
+    true_ax = np.array([1, 0])  # Makes the x/y axes correspond to 0/1
     normalization = delta_r[axis] / np.sqrt(2 * np.pi)
-
     if isinstance(psik[0], np.ndarray):
-        psi_axis = [np.fft.ifftshift(pk, axes=axis) for pk in psik]
-        psi_axis = [np.fft.ifftn(p, axes=[axis]) * normalization
+        psi_axis = [np.fft.ifftshift(pk, axes=true_ax[axis]) for pk in psik]
+        psi_axis = [np.fft.ifftn(p, axes=[true_ax[axis]]) / normalization
                     for p in psi_axis]
     elif isinstance(psik[0], torch.Tensor):
-        psi_axis = [torch.fft.ifftshift(pk, dim=axis) for pk in psik]
-        psi_axis = [torch.fft.fftn(p, axes=[axis]) * normalization
+        psi_axis = [torch.fft.ifftshift(pk, dim=true_ax[axis]) for pk in psik]
+        psi_axis = [torch.fft.ifftn(p, dim=[true_ax[axis]]) / normalization
                     for p in psi_axis]
 
     return psi_axis
 
 
-def fft_2d(psi, delta_r) -> list:
+def fft_2d(psi, delta_r=(1, 1)) -> list:
     """Compute the forward 2D FFT of `psi`.
 
     Parameters
@@ -102,7 +108,7 @@ def fft_2d(psi, delta_r) -> list:
     return psik
 
 
-def ifft_2d(psik, delta_r) -> list:
+def ifft_2d(psik, delta_r=(1, 1)) -> list:
     """Compute the inverse 2D FFT of `psik`.
 
     Parameters
@@ -294,7 +300,7 @@ def norm_sq(psi_comp):
         psi_sq = np.abs(psi_comp)**2
 
     elif isinstance(psi_comp, torch.Tensor):
-        psi_sq = psi_comp[:, :, 0]**2 + psi_comp[:, :, 1]**2
+        psi_sq = torch.abs(psi_comp)**2
 
     return psi_sq
 
@@ -432,3 +438,24 @@ def phase(psi):
         phase = angle(psi)
 
     return phase
+
+
+def calc_atoms(psi, vol_elem=1.0):
+    """Calculate the total number of atoms.
+
+    Parameters
+    ----------
+    psi : :obj:`list` of 2D Numpy :obj:`array` or PyTorch :obj:`Tensor`
+        The input spinor wavefunction.
+    vol_elem : :obj:`float`
+        2D volume element of the space.
+
+    Returns
+    -------
+    atom_num : :obj:`float`
+        The total atom number in both spin components.
+
+    """
+    dens = density(psi)
+    atom_num = float(sum(dens).sum() * vol_elem)
+    return atom_num
