@@ -29,7 +29,7 @@ g_sc = {'uu': 1.0, 'dd': 1.0, 'ud': 1.04}
 pop_frac = (0.5, 0.5)
 ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=-1, is_coupling=False,
-                  pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(256, 128))
+                  pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(256, 512))
 
 plt.figure()
 # plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.delta_r))[0])

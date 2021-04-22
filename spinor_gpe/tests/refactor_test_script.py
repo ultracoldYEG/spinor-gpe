@@ -92,7 +92,7 @@ plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.delta_r))[0])
 plt.show()
 
 ps.coupling_setup(wavel=790.1)
-ps.coupling_grad()
+ps.coupling_grad(2, 0)
 
 psi = ps.psi
 psik = ttools.fft_2d(psi, ps.delta_r)

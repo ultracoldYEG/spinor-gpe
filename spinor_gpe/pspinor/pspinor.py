@@ -12,13 +12,14 @@ import shutil
 
 import numpy as np
 from scipy.ndimage import fourier_shift
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 # import torch
 
 
 import constants as const
 from pspinor import tensor_tools as ttools
 from pspinor import plotting_tools as ptools
+from pspinor import tensor_propagator as tprop
 
 
 class PSpinor:
@@ -114,6 +115,7 @@ class PSpinor:
 
         self.prop = None
         self.n_steps = None
+        self.rand_seed = None
 
     def setup_data_path(self, path, overwrite):
         """Create new data directory to store simulation data & results.
@@ -291,16 +293,6 @@ class PSpinor:
         atom_num = ttools.calc_atoms(psi, vol_elem)
         return atom_num
 
-    def imaginary(self):
-        """Perform imaginary-time propagation."""
-        self.prop = TensorPropagator(self)
-        return PropResult()
-
-    def real(self):
-        """Perform real-time propagation."""
-        self.prop = TensorPropagator(self)
-        return PropResult()
-
     def no_coupling_setup(self):
         """Calculate the kinetic & potential energy grids for no coupling."""
         self.is_coupling = False
@@ -387,17 +379,108 @@ class PSpinor:
         self.pot_eng_spin = [self.pot_eng + self._detuning / 2,
                              self.pot_eng - self._detuning / 2]
 
-    def coupling_grad(self):
-        """Generate linear gradient of the interspin coupling strength."""
+    def coupling_grad(self, slope, offset, axis=1):
+        """Generate a linear gradient of the interspin coupling strength.
 
-    def coupling_uniform(self):
-        """Generate a uniform interspin coupling strength."""
+        Convenience function for generating linear gradients of the coupling.
+        `coupling` can also be set to any arbitrary numpy array directly:
 
-    def detuning_grad(self):
-        """Generate a linear gradient of the coupling detuning."""
+        >>> ps = PSpinor()
+        >>> ps.coupling_setup()
+        >>> ps.coupling = np.exp(-ps.x_mesh**2 / 2)  # Gaussian function
 
-    def detuning_uniform(self):
-        """Generate a uniform coupling detuning."""
+        **Note**: when working with Raman recoil units [E_L], they will first
+        need to be converted to [hbar*omeg_x] units before.
+
+        Parameters
+        ----------
+        slope : :obj:`float`
+            The slope of the coupling gradient, in [hbar*omeg_x/a_x].
+        offset : :obj:`float`
+            The origin offset of the coupling gradient, in [hbar*omeg_x].
+        axis : :obj:`int`, optional
+            The axis along which the coupling gradient runs.
+
+        """
+        if axis == 0:
+            mesh = self.x_mesh
+        elif axis == 1:
+            mesh = self.y_mesh
+
+        self.coupling = mesh * slope + offset
+
+    def coupling_uniform(self, value):
+        """Generate a uniform interspin coupling strength.
+
+        Convenience function for generating unirom gradients of the coupling.
+        `coupling` can also be set to any arbitrary numpy array directly.
+
+        Parameters
+        ----------
+        value : :obj:`float`
+            The value of the coupling, in [hbar*omega_x].
+
+        See Also
+        --------
+        PSpinor.coupling_grad : Coupling gradient
+
+        """
+        assert value >= 0, f"Cannot have a negative coupling value: {value}."
+        self.coupling = np.ones_like(self.x_mesh) * value
+
+    def detuning_grad(self, slope, offset, axis=1):
+        """Generate a linear gradient of the interspin coupling strength.
+
+        Convenience function for generating linear gradients of the coupling.
+        `detuning` can also be set to any arbitrary numpy array directly:
+
+        >>> ps = PSpinor()
+        >>> ps.coupling_setup()
+        >>> ps.detuning = np.sin(2 * np.pi * ps.x_mesh)  # Sin function
+
+        **Note**: when working with Raman recoil units [E_L], they will first
+        need to be converted to [hbar*omeg_x] units.
+
+        Parameters
+        ----------
+        slope : :obj:`float`
+            The slope of the detuning gradient, in [hbar*omeg_x/a_x].
+        offset : :obj:`float`
+            The origin offset of the detuning gradient, in [hbar*omeg_x].
+        axis : :obj:`int`, optional
+            The axis along which the detuning gradient runs.
+
+        """
+        if axis == 0:
+            mesh = self.x_mesh
+        elif axis == 1:
+            mesh = self.y_mesh
+
+        self.detuning = mesh * slope + offset
+
+    def detuning_uniform(self, value):
+        """Generate a uniform coupling detuning.
+
+        Convenience function for generating unirom gradients of the coupling.
+        `detuning` can also be set to any arbitrary numpy array directly.
+
+        Parameters
+        ----------
+        value : :obj:`float`
+            The value of the coupling, in [hbar*omega_x].
+
+        See Also
+        --------
+        PSpinor.detuning_grad : Detuning gradient
+
+        """
+        self.detuning = np.ones_like(self.x_mesh) * value
+
+    def seed_regular_vortices():
+        """Seed regularly-arranged vortices into the wavefunction."""
+
+    def seed_random_vortices():
+        """Seed randomly-arranged vortices into the wavefunction."""
 
     def plot_rdens(self, psi=None, spin=None, cmap='viridis', scale=1.):
         """Plot the real-space density of the wavefunction.
@@ -454,6 +537,22 @@ class PSpinor:
         extent = np.ravel(np.vstack((-self.r_sizes, self.r_sizes)).T) / scale
         ptools.plot_phase(psi, spin, cmap, scale, extent)
 
+    def imaginary(self, t_step, n_steps=1000, device='cpu',
+                  is_sampling=False, samples=0,
+                  is_annealing=False, anneals=0):
+        """Perform imaginary-time propagation."""
+        # Pass PSpinor object instance `self` as the first parameter of
+        # TensorPropagator.__init__.
+        self.prop = tprop.TensorPropagator(self, t_step, n_steps, device,
+                                           is_sampling, samples,
+                                           is_annealing, anneals)
+        return PropResult()
+
+    def real(self):
+        """Perform real-time propagation."""
+        self.prop = tprop.TensorPropagator(self)
+        return PropResult()
+
 
 class PropResult:
     """Results of propagation, along with plotting and analysis tools."""
@@ -480,84 +579,7 @@ class PropResult:
         """Generate a movie of the wavefunctions' densities and phases."""
 
 
-class TensorPropagator:
-    """CPU- or GPU-compatible propagator of the GPE, with tensors."""
 
-    # Object that sucks in the needed energy grids and parameters for
-    # propagation, converts them to tensors, & performs the propagation.
-    #  - It means that two copies of the grids aren't carried in the main class
-    #  - However, it restricts access to the tensor form of the grids; unless
-    #    I keep the Propagation object as a class "attribute".
-    #  - I can directly pass `self` to this class and access class attributes,
-    #    methods, esp. energy grids. Only do this in the __init__ function
-    #    so as to not store the main Spinor object in the class
-
-    # --> Should it be a class or just a pure function??
-    #      - Maybe a class because then it can store the grids it needs, and
-    #        then access them from the different functions for free.
-    #      - It would allow these operations to reside in a separate module.
-    # BUT, then I have two classes who are attributes of each other, and
-    #     THAT's a weird structure.
-    #    - Maybe this class doesn't have to attribute the other one; it just
-    #      sucks in the data it needs.
-
-    # Will need to calculate certain data throughout the loop, and then
-    #     create and populate the PropResult object.
-
-    def __init__(self, spin):
-        # Needs:
-        #  - Energy grids
-        #  - Raman grids
-        #  - Atom number
-        #  - Number of steps
-        #  - grid parameters [don't keep tensor versions in a dict, not stable]
-        #  - dt
-        #  - sample (bool)
-        #  - wavefunction sample frequency
-        #  - wavefunction anneal frequency (imaginary time)
-        #  - device (cpu vs. gpu)
-        #  - volume elements
-
-        pass
-
-    def evolution_op(self):
-        """Compute the time-evolution operator for a given energy term."""
-
-    def coupling_op(self):
-        """Compute the time-evolution operator for the coupling term."""
-
-    def single_step(self):
-        """Single step forward in real or imaginary time."""
-
-    def full_step(self):
-        """Full step forward in real or imaginary time.
-
-        Divide the full propagation step into three single steps using
-        the magic gamma for accuracy.
-        """
-        self.single_step()
-        self.single_step()
-        self.single_step()
-
-    def propagation(self, n_steps):
-        """Contains the actual propagation for-loop."""
-        for _i in range(n_steps):
-            self.full_step()
-
-    def energy_exp(self):
-        """Compute the energy expectation value."""
-
-    def normalize(self):
-        """Normalize the wavefunction to the expected atom number."""
-
-    def density(self):
-        """Compute the density of the given wavefunction."""
-
-    def inner_prod(self):
-        """Compute the inner product of two wavefunctions."""
-
-    def expect_val(self):
-        """Compute the expectation value of the supplied spatial operator."""
 
 
 # ----- DOCUMENTATION -----

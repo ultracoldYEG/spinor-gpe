@@ -2,12 +2,9 @@
 import numpy as np
 import torch
 
-# Would it be a good idea to allow all these functions to accept both arrays
-# and tensors? Maybe, for completeness it's a good idea.
-
 # ??? How should the individual FFT operations be normalized? Should they
-# remain as "backward", or because of the nature of our operations changed
-# to "ortho"?
+# remain as norm="backward", or, because of the nature of our operations,
+# changed to norm="ortho"?
 
 
 def fft_1d(psi, delta_r=(1, 1), axis=0) -> list:
@@ -73,7 +70,7 @@ def ifft_1d(psik, delta_r=(1, 1), axis=0) -> list:
                     for p in psi_axis]
     elif isinstance(psik[0], torch.Tensor):
         psi_axis = [torch.fft.ifftshift(pk, dim=true_ax[axis]) for pk in psik]
-        psi_axis = [torch.fft.ifftn(p, dim=[true_ax[axis]]) / normalization
+        psi_axis = [torch.fft.ifftn(p, dim=true_ax[axis]) / normalization
                     for p in psi_axis]
 
     return psi_axis
@@ -135,38 +132,6 @@ def ifft_2d(psik, delta_r=(1, 1)) -> list:
         psi = [torch.fft.ifftn(p) / normalization for p in psik]
 
     return psi
-
-
-# def fftshift(psi_comp, axis=None):
-#     """Shift the zero-frequency component to the center of the spectrum.
-
-#     This function provides
-
-#     Parameters
-#     ----------
-#     psi_comp : PyTorch :obj:`Tensor`
-#         The input wavefunction.
-#     axis : :obj:`int`, optional. Default is `None`.
-#         The axis along which to shift the wavefunction component. If axis is
-#         None, then the wavefunction is shifted along both axes.
-
-#     Returns
-#     -------
-#     psi_shifted : PyTorch :obj:`Tensor`
-#         The shifted wavefunction.
-#     """
-#     shape = psi_comp.shape
-#     assert all(s % 2 == 0 for s in shape), f"""Number of
-#             mesh points {shape} should be powers of 2."""
-#     psi_shifted = torch.fft.fftshift(psi_comp, dim=axis)
-#     return psi_shifted
-
-
-# def ifftshift(psi_comp):
-#     """Inverse of `fftshift`."""
-#     shape = psi_comp.shape
-#     assert all(s % 2 == 0 for s in shape), f"""Number of
-#             mesh points {shape} should be powers of 2."""
 
 
 def to_numpy(input_tens):
@@ -277,9 +242,9 @@ def to_gpu(input_tens, dev='cuda'):
     return output_tens
 
 
-def t_mult(first, second):
-    """Assert that a and b are tensors."""
-    return first * second
+def mult(input_tens, psi):
+    """Elementwise multiplication of `input` onto the elements of `psi`."""
+    return input_tens * psi
 
 
 def norm_sq(psi_comp):
@@ -320,18 +285,18 @@ def angle(psi_comp):
 
     """
     if isinstance(psi_comp, np.ndarray):
-        angle = np.angle(psi_comp)
+        ang = np.angle(psi_comp)
     elif isinstance(psi_comp, torch.Tensor):
-        angle = torch.angle(psi_comp)
+        ang = torch.angle(psi_comp)
 
-    return angle
+    return ang
 
 
-def t_cosh():
+def cosh():
     """Hyperbolic cosine of a complex tensor."""
 
 
-def t_sinh():
+def sinh():
     """Hyperbolic sine of a complex tensor."""
 
 
@@ -433,11 +398,11 @@ def phase(psi):
         The phase of each component's wavefunction.
     """
     if isinstance(psi, list):
-        phase = [angle(p) for p in psi]
+        phase_psi = [angle(p) for p in psi]
     else:
-        phase = angle(psi)
+        phase_psi = angle(psi)
 
-    return phase
+    return phase_psi
 
 
 def calc_atoms(psi, vol_elem=1.0):
@@ -459,3 +424,7 @@ def calc_atoms(psi, vol_elem=1.0):
     dens = density(psi)
     atom_num = float(sum(dens).sum() * vol_elem)
     return atom_num
+
+
+def inner_prod():
+    """Calculate the inner product of two wavefunctions."""
