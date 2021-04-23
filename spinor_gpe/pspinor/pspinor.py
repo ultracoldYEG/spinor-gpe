@@ -5,6 +5,7 @@
 #  - PropResult
 #  - TensorPropagator
 #  - tensor_tools
+#  - plotting_tools
 #  - constants
 
 import os
@@ -16,6 +17,7 @@ from scipy.ndimage import fourier_shift
 # import torch
 
 from definitions import ROOT_DIR
+# pylint: disable=import-error
 import constants as const
 from pspinor import tensor_tools as ttools
 from pspinor import plotting_tools as ptools
@@ -35,8 +37,6 @@ class PSpinor:
     The dominant length scale is in terms of the harmonic oscillator length
     along the x-direction `a_x`. The dominant energy scale is the harmonic
     trapping energy along the x-direction [hbar * `omeg['x']`].
-
-    # TODO: Reduce the number of public attributes in this class
 
     Attributes
     ----------
@@ -73,11 +73,13 @@ class PSpinor:
 
     pot_eng :
     kin_eng :
-    psi :
-    psik :
-    is_coupling :
     kin_eng_spin :
     pot_eng_spin :
+
+    psi :
+    psik :
+
+    is_coupling :
     kL_recoil :
     EL_recoil :
 
@@ -136,6 +138,7 @@ class PSpinor:
         self.setup_data_path(path, overwrite)
 
         self.atom_num = atom_num
+        self.space = {}
 
         assert sum(pop_frac) == 1.0, "Total population must equal 1."
         self.pop_frac = pop_frac  #: Spins' initial population fraction
@@ -168,6 +171,7 @@ class PSpinor:
         self.no_coupling_setup()
 
         self.rand_seed = None
+        self.prop = None
 
     def setup_data_path(self, path, overwrite):
         """Create new data directory to store simulation data & results.
@@ -223,8 +227,8 @@ class PSpinor:
                     in zip(self.pop_frac, g_bare)]
         self.psi[1] *= phase_factor
 
-        self.psi, _ = ttools.norm(self.psi, self.dv_r, self.atom_num)
-        self.psik = ttools.fft_2d(self.psi, self.delta_r)
+        self.psi, _ = ttools.norm(self.psi, self.space['dv_r'], self.atom_num)
+        self.psik = ttools.fft_2d(self.psi, self.space['dr'])
 
         # Saves the real- and k-space versions of the Thomas-Fermi wavefunction
         np.savez(self.paths['trial'] + 'tf-wf', psi=self.psi, psik=self.psik)
@@ -271,30 +275,30 @@ class PSpinor:
         r_sizes = np.array(r_sizes)
 
         #: Spacing between real-space mesh points [a_x]
-        self.space['delta_r'] = 2 * r_sizes / mesh_points
+        self.space['dr'] = 2 * r_sizes / mesh_points
         #: Half size of the grid along the kx- and ky- axes [1/a_x]
-        self.space['k_sizes'] = np.pi / self.spatial['delta_r']
+        self.space['k_sizes'] = np.pi / self.space['dr']
         #: Spacing between momentum-space mesh points [1/a_x]
-        self.space['delta_k'] = np.pi / r_sizes
+        self.space['dk'] = np.pi / r_sizes
 
         #: Linear arrays for real- [a_x] and k-space [1/a_x], x- and y-axes
-        self.space['x_lin'] = self._compute_lin(r_sizes, mesh_points, axis=0)
-        self.space['y_lin'] = self._compute_lin(r_sizes, mesh_points, axis=1)
-        self.space['kx_lin'] = self._compute_lin(r_sizes, mesh_points, axis=0)
-        self.space['ky_lin'] = self._compute_lin(r_sizes, mesh_points, axis=1)
+        self.space['x'] = self._compute_lin(r_sizes, mesh_points, axis=0)
+        self.space['y'] = self._compute_lin(r_sizes, mesh_points, axis=1)
+        self.space['kx'] = self._compute_lin(r_sizes, mesh_points, axis=0)
+        self.space['ky'] = self._compute_lin(r_sizes, mesh_points, axis=1)
 
         #: 2D meshes for computing the energy grids [a_x] and [1/a_x]
-        X, Y = np.meshgrid(self.x_lin, self.y_lin)
-        kX, kY = np.meshgrid(self.kx_lin, self.ky_lin)
-        self.space.update({'x_mesh': X, 'y_mesh': Y})
-        self.space.update({'kx_mesh': kX, 'ky_mesh': kY})
+        x_mesh, y_mesh = np.meshgrid(self.space['x'], self.space['y'])
+        kx_mesh, ky_mesh = np.meshgrid(self.space['kx'], self.space['ky'])
+        self.space.update({'x_mesh': x_mesh, 'y_mesh': y_mesh})
+        self.space.update({'kx_mesh': kx_mesh, 'ky_mesh': ky_mesh})
 
         # ??? Add functionality for Tukey filter window?
 
         #: Real-space volume element used for normalization [a_x^2]
-        self.space['dv_r'] = np.prod(self.space['delta_r'])
+        self.space['dv_r'] = np.prod(self.space['dr'])
         #: k-space volume element used for normalization [1/a_x^2]
-        self.space['dv_k'] = np.prod(self.space['delta_k'])
+        self.space['dv_k'] = np.prod(self.space['dk'])
 
         self.space['mesh_points'] = mesh_points
         self.space['r_sizes'] = r_sizes
@@ -331,9 +335,11 @@ class PSpinor:
         """
         y_trap = self.omeg['y'] / self.omeg['x']
         #: Potential energy grid [hbar*omeg_x]
-        self.pot_eng = (self.x_mesh**2 + (y_trap * self.y_mesh)**2) / 2
+        self.pot_eng = (self.space['x_mesh']**2
+                        + (y_trap * self.space['y_mesh'])**2) / 2
         #: Kinetic energy grid [hbar*omeg_x]
-        self.kin_eng = (self.kx_mesh**2 + self.ky_mesh**2) / 2
+        self.kin_eng = (self.space['kx_mesh']**2
+                        + self.space['kx_mesh']**2) / 2
 
     def _calc_atoms(self, psi=None, space='r'):
         """Given a list of wavefunctions, calculates the total atom number.
@@ -354,9 +360,9 @@ class PSpinor:
             psi = self.psi
 
         if space == 'r':
-            vol_elem = self.dv_r
+            vol_elem = self.space['dv_r']
         elif space == 'k':
-            vol_elem = self.dv_k
+            vol_elem = self.space['dv_k']
 
         atom_num = ttools.calc_atoms(psi, vol_elem)
         return atom_num
@@ -396,7 +402,7 @@ class PSpinor:
         self.EL_recoil = self.kL_recoil**2 / 2
         #: Momentum shift option
         if mom_shift:
-            shift = self.kx_mesh * self.kL_recoil
+            shift = self.space['kx_mesh'] * self.kL_recoil
         else:
             shift = 0
 
@@ -411,15 +417,15 @@ class PSpinor:
         if psik is None:
             psik = self.psik
 
-        shift = kshift_val * self.kL_recoil / self.delta_k[0]
-        input_ = ttools.fft_2d(psik, self.delta_r)
+        shift = kshift_val * self.kL_recoil / self.space['dk'][0]
+        input_ = ttools.fft_2d(psik, self.space['dr'])
         result = [np.zeros_like(pk) for pk in psik]
         for i in range(len(psik)):
             positive = fourier_shift(input_[i], shift=[0, shift], axis=1)
             negative = fourier_shift(input_[i], shift=[0, -shift], axis=1)
             result[i] = frac[0]*positive + frac[1]*negative
             frac = np.flip(frac)
-        psik_shift = ttools.ifft_2d(result, self.delta_r)
+        psik_shift = ttools.ifft_2d(result, self.space['dr'])
 
         return psik_shift
 
@@ -475,9 +481,9 @@ class PSpinor:
 
         """
         if axis == 0:
-            mesh = self.x_mesh
+            mesh = self.space['x_mesh']
         elif axis == 1:
-            mesh = self.y_mesh
+            mesh = self.space['y_mesh']
 
         self.coupling = mesh * slope + offset
 
@@ -498,7 +504,7 @@ class PSpinor:
 
         """
         assert value >= 0, f"Cannot have a negative coupling value: {value}."
-        self.coupling = np.ones_like(self.x_mesh) * value
+        self.coupling = np.ones_like(self.space['x_mesh']) * value
 
     def detuning_grad(self, slope, offset, axis=1):
         """Generate a linear gradient of the interspin coupling strength.
@@ -524,9 +530,9 @@ class PSpinor:
 
         """
         if axis == 0:
-            mesh = self.x_mesh
+            mesh = self.space['x_mesh']
         elif axis == 1:
-            mesh = self.y_mesh
+            mesh = self.space['y_mesh']
 
         self.detuning = mesh * slope + offset
 
@@ -546,7 +552,7 @@ class PSpinor:
         PSpinor.detuning_grad : Detuning gradient
 
         """
-        self.detuning = np.ones_like(self.x_mesh) * value
+        self.detuning = np.ones_like(self.space['x_mesh']) * value
 
     def seed_regular_vortices(self):
         """Seed regularly-arranged vortices into the wavefunction.
@@ -571,8 +577,8 @@ class PSpinor:
         """
         if psi is None:
             psi = self.psi
-
-        extent = np.ravel(np.vstack((-self.r_sizes, self.r_sizes)).T) / scale
+        sizes = self.space['r_sizes']
+        extent = np.ravel(np.vstack((-sizes, sizes)).T) / scale
         ptools.plot_dens(psi, spin, cmap, scale, extent=extent)
 
     def plot_kdens(self, psik=None, spin=None, cmap='viridis', scale=1.):
@@ -589,8 +595,8 @@ class PSpinor:
         """
         if psik is None:
             psik = self.psik
-
-        extent = np.ravel(np.vstack((-self.k_sizes, self.k_sizes)).T) / scale
+        sizes = self.space['k_sizes']
+        extent = np.ravel(np.vstack((-sizes, sizes)).T) / scale
         ptools.plot_dens(psik, spin, cmap, scale, extent)
 
     def plot_rphase(self, psi=None, spin=None, cmap='twilight_shifted',
@@ -608,31 +614,33 @@ class PSpinor:
         """
         if psi is None:
             psi = self.psi
-
-        extent = np.ravel(np.vstack((-self.r_sizes, self.r_sizes)).T) / scale
+        sizes = self.space['r_sizes']
+        extent = np.ravel(np.vstack((-sizes, sizes)).T) / scale
         ptools.plot_phase(psi, spin, cmap, scale, extent)
 
     # pylint: disable=too-many-arguments
     def imaginary(self, t_step, n_steps=1000, device='cpu',
-                  is_sampling=False, n_samples=0,
-                  is_annealing=False, n_anneals=0):
+                  is_sampling=False, n_samples=1,
+                  is_annealing=False, n_anneals=1):
         """Perform imaginary-time propagation."""
         # Pass PSpinor object instance `self` as the first parameter of
         # TensorPropagator.__init__.
-        prop = tprop.TensorPropagator(self, t_step, n_steps, device,
-                                      is_sampling=is_sampling,
-                                      n_samples=n_samples,
-                                      is_annealing=is_annealing,
-                                      n_anneals=n_anneals)
-        return PropResult(), prop
+        self.prop = tprop.TensorPropagator(self, t_step, n_steps, device,
+                                           time='imag',
+                                           is_sampling=is_sampling,
+                                           n_samples=n_samples,
+                                           is_annealing=is_annealing,
+                                           n_anneals=n_anneals)
+        return PropResult()
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
-             n_samples=0):
+             n_samples=1):
         """Perform real-time propagation."""
-        prop = tprop.TensorPropagator(self, t_step, n_steps, device,
-                                      is_sampling=is_sampling,
-                                      n_samples=n_samples)
-        return PropResult(), prop
+        self.prop = tprop.TensorPropagator(self, t_step, n_steps, device,
+                                           time='real',
+                                           is_sampling=is_sampling,
+                                           n_samples=n_samples)
+        return PropResult()
 
 
 class PropResult:

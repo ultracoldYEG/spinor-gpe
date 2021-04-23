@@ -1,4 +1,8 @@
 """Placeholder for the tensor_propagator.py module."""
+import torch
+from tqdm import tqdm
+
+from pspinor import tensor_tools as ttools
 
 
 class TensorPropagator:
@@ -7,7 +11,7 @@ class TensorPropagator:
     Attributes
     ----------
     t_step :
-    
+
     """
 
     # Object that sucks in the needed energy grids and parameters for
@@ -35,7 +39,8 @@ class TensorPropagator:
     # wavefunction structure, i.e. pseudospinors vs. scalars vs. spin-1.
 
     # pylint: disable=too-many-instance-attributes
-    def __init__(self, spin, t_step, n_steps, device='cpu', **kwargs):
+    def __init__(self, spin, t_step, n_steps, device='cpu', time='imag',
+                 **kwargs):
         """Begin a propagation.
 
         Parameters
@@ -44,6 +49,7 @@ class TensorPropagator:
         t_step :
         n_steps :
         device :
+        time :
 
         Other Parameters
         ----------------
@@ -63,12 +69,14 @@ class TensorPropagator:
         #   - Interaction parameters -> dict
 
         #   - Atom number
-        #   - grid parameters -> tensor [maybe ok as dict of tensors]
+        #   - space parameters -> tensor [maybe ok as dict of tensors]
         #     - delta_r
         #     - delta_k
         #     - x_mesh
         #     - y_mesh
-        #   - volume elements
+        #     - volume elements
+        #   - psi
+        #   - psik
         #
         #  imaginary/real:
         #   + Number of steps
@@ -78,51 +86,75 @@ class TensorPropagator:
         #   + wavefunction anneal frequency (imaginary time)
         #   + device (cpu vs. gpu)
 
-        self.t_step = t_step
         self.n_steps = n_steps
         self.device = device
+
+        # Calculate the time step intervals
+        if time == 'imag':
+            self.t_step = -1.0j * t_step
+        elif time == 'real':
+            self.t_step = t_step
+
+        magic_gamma = 1/(2 + 2**(1/3))
+        magic_gamma_diff = 1 - 2*magic_gamma
+        self.dt_out = self.t_step * magic_gamma
+        self.dt_in = self.t_step * magic_gamma_diff
 
         self.is_sampling = kwargs.get('is_sampling', False)
         self.is_annealing = kwargs.get('is_sampling', False)
         n_samples = kwargs.get('n_samples', 1)
         n_anneals = kwargs.get('n_anneals', 1)
 
+        # Load in data from PSpinor object as tensors
         self.is_coupling = spin.is_coupling
         self.g_sc = spin.g_sc
-        self.kin_eng = spin.kin_eng_spin
-        self.pot_eng = spin.pot_eng_spin
+        kin_eng = ttools.to_tensor(spin.kin_eng_spin, dev=self.device)
+        pot_eng = ttools.to_tensor(spin.pot_eng_spin, dev=self.device)
         if self.is_coupling:
-            self.coupling = spin.coupling
+            self.coupling = ttools.to_tensor(spin.coupling, dev=self.device)
         else:
             self.coupling = None
+        # self.psi = ttools.to_tensor(spin.psi, dev=self.device, dtype=128)
+        self.psik = ttools.to_tensor(spin.psik, dev=self.device, dtype=128)
 
-        if (self.is_sampling and n_samples == 1):
-            n_samples = 100
-        assert self.n_steps % n_samples == 0, ("The number of samples "
-                                               f"requested {n_samples} does "
-                                               "not evenly divide the total "
-                                               "number of steps "
-                                               f"{self.n_steps}.")
+        keys_space = ['dr', 'dk', 'x_mesh', 'y_mesh', 'dv_r', 'dv_k']
+        self.space = {k: torch.tensor(spin.space[k], device=self.device)
+                      for k in keys_space}
+
+        # Calculate the sampling and annealing rates, as needed.
+        if self.is_sampling:
+            if n_samples == 1:
+                n_samples = 100
+            assert self.n_steps % n_samples == 0, (
+                f"The number of samples requested {n_samples} does not evenly "
+                f"divide the total number of steps {self.n_steps}.")
+
+        if self.is_annealing:
+            assert self.n_steps % n_anneals == 0, (
+                f"The number of annealings requested {n_anneals} does not "
+                f"evenly divide the total number of steps {self.n_steps}.")
+
+        self.anneal_rate = self.n_steps / n_anneals
         self.sample_rate = self.n_steps / n_samples
 
-        assert self.n_steps % n_anneals == 0, ("The number of samples "
-                                               f"requested {n_samples} does "
-                                               "not evenly divide the total "
-                                               "number of steps "
-                                               f"{self.n_steps}.")
-        self.anneal_rate = self.n_steps / n_anneals
+        # Pre-compute several evolution operators
+        self.eng_out = {'kin': ttools.evolution_op(kin_eng, self.dt_out / 2),
+                        'pot': ttools.evolution_op(pot_eng, self.dt_out)}
+        self.eng_in = {'kin': ttools.evolution_op(kin_eng, self.dt_in / 2),
+                       'pot': ttools.evolution_op(pot_eng, self.dt_in)}
 
-    def evolution_op(self):
-        """Compute the time-evolution operator for a given energy term."""
+    def apply_coupling_op(self):
+        """Apply the time-evolution operator for the coupling matrix."""
 
-    def coupling_op(self):
+    def coupling_op(self, coupling):
         """Compute the time-evolution operator for the coupling term.
 
         - May not be needed :)
         """
 
-    def single_step(self):
+    def single_step(self, dt):
         """Single step forward in real or imaginary time."""
+        return
 
     def full_step(self):
         """Full step forward in real or imaginary time.
@@ -130,14 +162,17 @@ class TensorPropagator:
         Divide the full propagation step into three single steps using
         the magic gamma for accuracy.
         """
-        self.single_step()
-        self.single_step()
-        self.single_step()
+        self.single_step(self.dt_out)
+        self.single_step(self.dt_in)
+        self.single_step(self.dt_out)
 
-    def propagation(self, n_steps):
+    def prop_loop(self, n_steps):
         """Contains the actual propagation for-loop."""
-        for _i in range(n_steps):
+        for _i in tqdm(range(n_steps)):
             self.full_step()
+
+    def run_prop(self):
+        """Start and processes a propagation cycle."""
 
     def eng_expect(self):
         """Compute the energy expectation value."""

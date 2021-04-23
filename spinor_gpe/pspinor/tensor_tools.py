@@ -428,3 +428,20 @@ def calc_atoms(psi, vol_elem=1.0):
 
 def inner_prod():
     """Calculate the inner product of two wavefunctions."""
+
+
+def evolution_op(energy, t_step):
+    """Compute the unitary time-evolution operator for the given energy.
+
+    Parameters
+    ----------
+    energy :
+    time_step :
+
+    """
+    if isinstance(energy, list):
+        ev_op = [torch.exp(-1.0j * eng * t_step) for eng in energy]
+    else:
+        ev_op = torch.exp(-1.0j * energy * t_step)
+
+    return ev_op
