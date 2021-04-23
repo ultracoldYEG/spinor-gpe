@@ -2,7 +2,7 @@
 # pylint: disable=wrong-import-position
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 import numpy as np  # noqa: E402
 # import torch  # noqa: E402
@@ -85,14 +85,15 @@ g_sc = {'uu': 1.0, 'dd': 1.0, 'ud': 1.04}
 pop_frac = (0.5, 0.5)
 ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=-1, is_coupling=False,
-                  pop_frac=pop_frac, r_sizes=(8, 8))
+                  pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(128, 128))
 
 plt.figure()
 plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.delta_r))[0])
 plt.show()
 
-ps.coupling_setup(wavel=790.1)
-ps.coupling_grad(2, 0)
+# ps.coupling_setup(wavel=790.1)
+# ps.coupling_grad(2, 0)
+ps.shift_momentum()
 
 psi = ps.psi
 psik = ttools.fft_2d(psi, ps.delta_r)
@@ -100,12 +101,12 @@ psi_prime = ttools.ifft_2d(psik, ps.delta_r)
 print((np.abs(psi[0])**2 - np.abs(psi_prime[0])**2).max())
 
 # --------- 2. RUN (Imaginary) ----
-ps.N_STEPS = 1000
-ps.dt = 1/50
-ps.is_sampling = True
-ps.device = 'cuda:0'
+N_STEPS = 1000
+dt = 1/50
+is_sampling = True
+device = 'cuda'
 
-res0 = ps.imaginary()
+res0 = ps.imaginary(dt, N_STEPS, device, is_sampling=is_sampling)
 # `res0` is an object containing the final wavefunctions, the energy exp.
 # values, populations, average positions, and a directory path to sampled
 # wavefunctions. It also has class methods for plotting and analysis.
@@ -121,11 +122,11 @@ res0.make_movie()
 
 
 # --------- 5. RUN (Real) ---------
-ps.N_STEPS = 2000
-ps.dt = 1/5000
-ps.is_sampling = True
+N_STEPS = 2000
+dt = 1/5000
+is_sampling = True
 
-res1 = ps.real()
+res1 = ps.real(dt, N_STEPS, device, is_sampling=is_sampling)
 
 # --------- 6. ANALYZE ------------
 res1.plot_spins()

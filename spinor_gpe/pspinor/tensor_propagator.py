@@ -2,7 +2,13 @@
 
 
 class TensorPropagator:
-    """CPU- or GPU-compatible propagator of the GPE, with tensors."""
+    """CPU- or GPU-compatible propagator of the GPE, with tensors.
+
+    Attributes
+    ----------
+    t_step :
+    
+    """
 
     # Object that sucks in the needed energy grids and parameters for
     # propagation, converts them to tensors, & performs the propagation.
@@ -42,17 +48,26 @@ class TensorPropagator:
         Other Parameters
         ----------------
         is_sampling :
-        sample :
+        n_samples :
         is_annealing :
-        anneals :
+        n_anneals :
 
         """
         # Needs:
         #  spin
         #   - Energy grids -> tensor
+        #     - Kinetic spinor
+        #     - Potential + detuning spinor
         #   - Raman grids -> tensor
+        #     - coupling
+        #   - Interaction parameters -> dict
+
         #   - Atom number
         #   - grid parameters -> tensor [maybe ok as dict of tensors]
+        #     - delta_r
+        #     - delta_k
+        #     - x_mesh
+        #     - y_mesh
         #   - volume elements
         #
         #  imaginary/real:
@@ -68,12 +83,34 @@ class TensorPropagator:
         self.device = device
 
         self.is_sampling = kwargs.get('is_sampling', False)
-        self.samples = kwargs.get('samples', 0)
         self.is_annealing = kwargs.get('is_sampling', False)
-        self.anneals = kwargs.get('anneals', 0)
+        n_samples = kwargs.get('n_samples', 1)
+        n_anneals = kwargs.get('n_anneals', 1)
 
+        self.is_coupling = spin.is_coupling
+        self.g_sc = spin.g_sc
         self.kin_eng = spin.kin_eng_spin
+        self.pot_eng = spin.pot_eng_spin
+        if self.is_coupling:
+            self.coupling = spin.coupling
+        else:
+            self.coupling = None
 
+        if (self.is_sampling and n_samples == 1):
+            n_samples = 100
+        assert self.n_steps % n_samples == 0, ("The number of samples "
+                                               f"requested {n_samples} does "
+                                               "not evenly divide the total "
+                                               "number of steps "
+                                               f"{self.n_steps}.")
+        self.sample_rate = self.n_steps / n_samples
+
+        assert self.n_steps % n_anneals == 0, ("The number of samples "
+                                               f"requested {n_samples} does "
+                                               "not evenly divide the total "
+                                               "number of steps "
+                                               f"{self.n_steps}.")
+        self.anneal_rate = self.n_steps / n_anneals
 
     def evolution_op(self):
         """Compute the time-evolution operator for a given energy term."""
