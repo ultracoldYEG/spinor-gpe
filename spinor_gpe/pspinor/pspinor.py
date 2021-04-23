@@ -40,31 +40,36 @@ class PSpinor:
 
     Attributes
     ----------
-    paths : :obj:`str`
+    paths : :obj:`dict`
+        data :
+        trial :
+        code :
 
     atom_num : :obj:`int`
     pop_frac : :obj:`tuple`
     omeg : :obj:`dict`
     g_sc : :obj:`dict`
     a_x :
+    chem_pot :
     rad_tf :
     time_scale :
 
-    mesh_points :
-    r_sizes :
-    delta_r :
-    k_sizes :
-    delta_k :
-    x_lin :
-    y_lin :
-    kx_lin :
-    ky_lin :
-    x_mesh :
-    y_mesh :
-    kx_mesh :
-    ky_mesh :
-    dv_r :
-    dv_k :
+    space :
+        mesh_points :
+        r_sizes :
+        delta_r :
+        k_sizes :
+        delta_k :
+        x_lin :
+        y_lin :
+        kx_lin :
+        ky_lin :
+        x_mesh :
+        y_mesh :
+        kx_mesh :
+        ky_mesh :
+        dv_r :
+        dv_k :
 
     pot_eng :
     kin_eng :
@@ -75,9 +80,7 @@ class PSpinor:
     pot_eng_spin :
     kL_recoil :
     EL_recoil :
-    mom_shift :
-    prop :
-    n_steps :
+
     rand_seed :
 
     """
@@ -164,8 +167,6 @@ class PSpinor:
         self.compute_tf_psi(phase_factor)
         self.no_coupling_setup()
 
-        self.prop = None
-        self.n_steps = None
         self.rand_seed = None
 
     def setup_data_path(self, path, overwrite):
@@ -174,14 +175,13 @@ class PSpinor:
         Parameters
         ----------
         path : :obj:`str`
-            The name of the directory to save the simulation. If `path` 
+            The name of the directory to save the simulation. If `path`
             does not represent an absolute path, then the data is stored
             in spinor-gpe/data/`path`.
         overwrite : :obj:`bool`
             Gives the option to overwrite existing data sub-directories
 
         """
-        # TODO: Make it so the user can use any arbitrary data path.
         #: Path to the directory containing all the simulation data & results
         if not os.path.isabs(path):
             data_path = ROOT_DIR + '/data/' + path + '/'
@@ -267,32 +267,37 @@ class PSpinor:
         """
         assert all(point % 2 == 0 for point in mesh_points), (
             f"Number of mesh points {mesh_points} should be powers of 2.")
-        self.mesh_points = np.array(mesh_points)
-        self.r_sizes = np.array(r_sizes)
+        mesh_points = np.array(mesh_points)
+        r_sizes = np.array(r_sizes)
 
         #: Spacing between real-space mesh points [a_x]
-        self.delta_r = 2 * self.r_sizes / self.mesh_points
+        self.space['delta_r'] = 2 * r_sizes / mesh_points
         #: Half size of the grid along the kx- and ky- axes [1/a_x]
-        self.k_sizes = np.pi / self.delta_r
+        self.space['k_sizes'] = np.pi / self.spatial['delta_r']
         #: Spacing between momentum-space mesh points [1/a_x]
-        self.delta_k = np.pi / self.r_sizes
+        self.space['delta_k'] = np.pi / r_sizes
 
         #: Linear arrays for real- [a_x] and k-space [1/a_x], x- and y-axes
-        self.x_lin = self._compute_lin(self.r_sizes, self.mesh_points, axis=0)
-        self.y_lin = self._compute_lin(self.r_sizes, self.mesh_points, axis=1)
-        self.kx_lin = self._compute_lin(self.r_sizes, self.mesh_points, axis=0)
-        self.ky_lin = self._compute_lin(self.r_sizes, self.mesh_points, axis=1)
+        self.space['x_lin'] = self._compute_lin(r_sizes, mesh_points, axis=0)
+        self.space['y_lin'] = self._compute_lin(r_sizes, mesh_points, axis=1)
+        self.space['kx_lin'] = self._compute_lin(r_sizes, mesh_points, axis=0)
+        self.space['ky_lin'] = self._compute_lin(r_sizes, mesh_points, axis=1)
 
         #: 2D meshes for computing the energy grids [a_x] and [1/a_x]
-        self.x_mesh, self.y_mesh = np.meshgrid(self.x_lin, self.y_lin)
-        self.kx_mesh, self.ky_mesh = np.meshgrid(self.x_lin, self.y_lin)
+        X, Y = np.meshgrid(self.x_lin, self.y_lin)
+        kX, kY = np.meshgrid(self.kx_lin, self.ky_lin)
+        self.space.update({'x_mesh': X, 'y_mesh': Y})
+        self.space.update({'kx_mesh': kX, 'ky_mesh': kY})
 
         # ??? Add functionality for Tukey filter window?
 
         #: Real-space volume element used for normalization [a_x^2]
-        self.dv_r = np.prod(self.delta_r)
+        self.space['dv_r'] = np.prod(self.space['delta_r'])
         #: k-space volume element used for normalization [1/a_x^2]
-        self.dv_k = np.prod(self.delta_k)
+        self.space['dv_k'] = np.prod(self.space['delta_k'])
+
+        self.space['mesh_points'] = mesh_points
+        self.space['r_sizes'] = r_sizes
 
     @classmethod
     def _compute_lin(cls, sizes, points, axis=0):
@@ -364,7 +369,6 @@ class PSpinor:
         # pylint: disable=invalid-name
         self.kL_recoil = None
         self.EL_recoil = None
-        self.mom_shift = None
         # self.coupling = None
         # self.detuning = None
 
@@ -391,8 +395,7 @@ class PSpinor:
         # pylint: disable=invalid-name
         self.EL_recoil = self.kL_recoil**2 / 2
         #: Momentum shift option
-        self.mom_shift = mom_shift
-        if self.mom_shift:
+        if mom_shift:
             shift = self.kx_mesh * self.kL_recoil
         else:
             shift = 0
@@ -616,20 +619,20 @@ class PSpinor:
         """Perform imaginary-time propagation."""
         # Pass PSpinor object instance `self` as the first parameter of
         # TensorPropagator.__init__.
-        self.prop = tprop.TensorPropagator(self, t_step, n_steps, device,
-                                           is_sampling=is_sampling,
-                                           n_samples=n_samples,
-                                           is_annealing=is_annealing,
-                                           n_anneals=n_anneals)
-        return PropResult()
+        prop = tprop.TensorPropagator(self, t_step, n_steps, device,
+                                      is_sampling=is_sampling,
+                                      n_samples=n_samples,
+                                      is_annealing=is_annealing,
+                                      n_anneals=n_anneals)
+        return PropResult(), prop
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
              n_samples=0):
         """Perform real-time propagation."""
-        self.prop = tprop.TensorPropagator(self, t_step, n_steps, device,
-                                           is_sampling=is_sampling,
-                                           n_samples=n_samples)
-        return PropResult()
+        prop = tprop.TensorPropagator(self, t_step, n_steps, device,
+                                      is_sampling=is_sampling,
+                                      n_samples=n_samples)
+        return PropResult(), prop
 
 
 class PropResult:
