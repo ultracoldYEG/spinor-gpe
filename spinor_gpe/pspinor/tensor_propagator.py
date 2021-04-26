@@ -111,16 +111,19 @@ class TensorPropagator:
         self.g_sc = spin.g_sc
         kin_eng = ttools.to_tensor(spin.kin_eng_spin, dev=self.device)
         pot_eng = ttools.to_tensor(spin.pot_eng_spin, dev=self.device)
-        if self.is_coupling:
-            self.coupling = ttools.to_tensor(spin.coupling, dev=self.device)
-        else:
-            self.coupling = None
+
         # self.psi = ttools.to_tensor(spin.psi, dev=self.device, dtype=128)
         self.psik = ttools.to_tensor(spin.psik, dev=self.device, dtype=128)
 
         keys_space = ['dr', 'dk', 'x_mesh', 'y_mesh', 'dv_r', 'dv_k']
         self.space = {k: torch.tensor(spin.space[k], device=self.device)
                       for k in keys_space}
+
+        if self.is_coupling:
+            self.coupling = ttools.to_tensor(spin.coupling, dev=self.device)
+            expon = 2 * spin.kL_recoil * self.space['x_mesh']
+        else:
+            self.coupling = None
 
         # Calculate the sampling and annealing rates, as needed.
         if self.is_sampling:
@@ -140,21 +143,26 @@ class TensorPropagator:
 
         # Pre-compute several evolution operators
         self.eng_out = {'kin': ttools.evolution_op(kin_eng, self.dt_out / 2),
-                        'pot': ttools.evolution_op(pot_eng, self.dt_out)}
+                        'pot': ttools.evolution_op(pot_eng, self.dt_out),
+                        'coupl': ttools.coupling_op(self.dt_out / 2,
+                                                    self.coupling, expon)}
         self.eng_in = {'kin': ttools.evolution_op(kin_eng, self.dt_in / 2),
-                       'pot': ttools.evolution_op(pot_eng, self.dt_in)}
-
-    def apply_coupling_op(self, psi, shifted=False):
-        """Apply the time-evolution operator for the coupling matrix."""
-
-    def coupling_op(self, coupling):
-        """Compute the time-evolution operator for the coupling term.
-
-        - May not be needed :)
-        """
+                       'pot': ttools.evolution_op(pot_eng, self.dt_in),
+                       'coupl': ttools.coupling_op(self.dt_in / 2,
+                                                   self.coupling, expon)}
 
     def single_step(self, t_step, eng):
-        """Single step forward in real or imaginary time."""
+        """Single step forward in real or imaginary time.
+
+        Parameters
+        ----------
+        t_step : :obj:`float`
+            The sub-time step.
+        eng : :obj:`dict`
+            The kinetic and potential energy evolution operators corresponding
+            to the given sub-time step.
+
+        """
         # First half step of the kinetic energy operator
         psik = [eng * pk for eng, pk in zip(eng['kin'], self.psik)]
         psi = ttools.ifft_2d(psik, delta_r=self.space['dr'])
@@ -168,14 +176,16 @@ class TensorPropagator:
 
         # First half step of the coupling energy operator
         if self.is_coupling:
-            psi = self.apply_coupling_op(psi, shifted=False)
+            psi = [sum([r * p for r, p in zip(row, psi)])
+                   for row in eng['coupl']]
 
         # Full step of the potential energy operator
         psi = [eng * p for eng, p in zip(eng['pot'], psi)]
 
         # Second half step of the coupling energy operator
         if self.is_coupling:
-            psi = self.apply_coupling_op(psi, shifted=False)
+            psi = [sum([r * p for r, p in zip(row, psi)])
+                   for row in eng['coupl']]
 
         # Second half step of the interaction energy operator
         # ??? Is renormalization needed? We don't have it in the previous code.
@@ -188,7 +198,7 @@ class TensorPropagator:
         # Second half step of the kintetic energy operator
         psik = ttools.fft_2d(psi, delta_r=self.space['dr'])
         psik = [eng * pk for eng, pk in zip(eng['kin'], self.psik)]
-        self.psik, densk = ttools.norm(psik, self.space['dv_k'], self.atom_num)
+        self.psik, _ = ttools.norm(psik, self.space['dv_k'], self.atom_num)
 
     def full_step(self):
         """Full step forward in real or imaginary time.
@@ -201,16 +211,25 @@ class TensorPropagator:
         self.single_step(self.dt_out, self.eng_out)  # Outer sub-time step
 
     def prop_loop(self, n_steps):
-        """Contains the actual propagation for-loop."""
+        """Contains the actual propagation for-loop.
+
+        Parameters
+        ----------
+        n_steps : :obj:`int`
+            The number of propagation steps.
+
+        """
         for _i in tqdm(range(n_steps)):
             self.full_step()
             atom_num = ttools.calc_atoms(self.psik, self.space['dv_k'])
+        return atom_num
 
     def run_prop(self):
         """Start and processes a propagation cycle."""
 
     def eng_expect(self):
-        """Compute the energy expectation value."""
+        """Compute the energy expectation value. Needs to be computed on the
+        fly for proper annealing."""
 
     def expect_val(self):
         """Compute the expectation value of the supplied spatial operator."""

@@ -448,3 +448,34 @@ def evolution_op(energy, t_step):
         ev_op = torch.exp(-1.0j * energy * t_step)
 
     return ev_op
+
+
+def coupling_op(t_step, coupling=None, expon=0):
+    """Compute the time-evolution operator for the coupling term.
+
+    Parameters
+    ----------
+    t_step : :obj:`float`
+        Sub-time step.
+    coupling : 2D PyTorch complex :obj:`Tensor`, optional.
+        The coupling mesh. Default is none if `self.is_coupling = False`.
+        In this case, the evolution operator returned will the identity
+        matrix.
+    expon : 2D PyTorch real :obj:`Tensor`, optional.
+        The exponential argument in the bare coupling term. If there is
+        no coupling, then this is 0 by default.
+
+    Returns
+    -------
+    coupl_ev_op : 2D PyTorch :obj:`Tensor`, optional.
+
+    """
+    if coupling is None:
+        coupling = 0
+
+    arg = coupling * t_step / 2
+    cosine = torch.cos(arg)
+    sine = -1.0j * torch.sin(arg)
+    operator = [[cosine, sine * torch.exp(-1.0j * expon)],
+                [sine * torch.exp(1.0j * expon), cosine]]
+    return operator

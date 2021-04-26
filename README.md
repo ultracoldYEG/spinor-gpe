@@ -9,6 +9,7 @@ A python package simulating the quasi-2D pseudospin-1/2 Gross-Pitaevskii equatio
 * Numpy       1.19.2
 * Matplotlib  3.3.4
 * PyTorch     1.8.1
+* tqdm        4.59.0
 
 
 ## Getting Started:
