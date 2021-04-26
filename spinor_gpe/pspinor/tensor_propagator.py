@@ -106,6 +106,7 @@ class TensorPropagator:
         n_anneals = kwargs.get('n_anneals', 1)
 
         # Load in data from PSpinor object as tensors
+        self.atom_num = spin.atom_num
         self.is_coupling = spin.is_coupling
         self.g_sc = spin.g_sc
         kin_eng = ttools.to_tensor(spin.kin_eng_spin, dev=self.device)
@@ -143,7 +144,7 @@ class TensorPropagator:
         self.eng_in = {'kin': ttools.evolution_op(kin_eng, self.dt_in / 2),
                        'pot': ttools.evolution_op(pot_eng, self.dt_in)}
 
-    def apply_coupling_op(self):
+    def apply_coupling_op(self, psi, shifted=False):
         """Apply the time-evolution operator for the coupling matrix."""
 
     def coupling_op(self, coupling):
@@ -152,9 +153,42 @@ class TensorPropagator:
         - May not be needed :)
         """
 
-    def single_step(self, dt):
+    def single_step(self, t_step, eng):
         """Single step forward in real or imaginary time."""
-        return
+        # First half step of the kinetic energy operator
+        psik = [eng * pk for eng, pk in zip(eng['kin'], self.psik)]
+        psi = ttools.ifft_2d(psik, delta_r=self.space['dr'])
+        psi, dens = ttools.norm(psi, self.space['dv_r'], self.atom_num)
+
+        # First half step of the interaction energy operator
+        int_eng = [self.g_sc['uu'] * dens[0] + self.g_sc['ud'] * dens[1],
+                   self.g_sc['dd'] * dens[1] + self.g_sc['ud'] * dens[0]]
+        int_op = ttools.evolution_op(int_eng, t_step / 2)
+        psi = [op * p for op, p in zip(int_op, psi)]
+
+        # First half step of the coupling energy operator
+        if self.is_coupling:
+            psi = self.apply_coupling_op(psi, shifted=False)
+
+        # Full step of the potential energy operator
+        psi = [eng * p for eng, p in zip(eng['pot'], psi)]
+
+        # Second half step of the coupling energy operator
+        if self.is_coupling:
+            psi = self.apply_coupling_op(psi, shifted=False)
+
+        # Second half step of the interaction energy operator
+        # ??? Is renormalization needed? We don't have it in the previous code.
+        # psi, dens = ttools.norm(psi, self.space['dv_r'], self.atom_num)
+        # int_eng = [self.g_sc['uu'] * dens[0] + self.g_sc['ud'] * dens[1],
+        #            self.g_sc['dd'] * dens[1] + self.g_sc['ud'] * dens[0]]
+        # int_op = ttools.evolution_op(int_eng, t_step / 2)
+        psi = [op * p for op, p in zip(int_op, psi)]
+
+        # Second half step of the kintetic energy operator
+        psik = ttools.fft_2d(psi, delta_r=self.space['dr'])
+        psik = [eng * pk for eng, pk in zip(eng['kin'], self.psik)]
+        self.psik, densk = ttools.norm(psik, self.space['dv_k'], self.atom_num)
 
     def full_step(self):
         """Full step forward in real or imaginary time.
@@ -162,14 +196,15 @@ class TensorPropagator:
         Divide the full propagation step into three single steps using
         the magic gamma for accuracy.
         """
-        self.single_step(self.dt_out)
-        self.single_step(self.dt_in)
-        self.single_step(self.dt_out)
+        self.single_step(self.dt_out, self.eng_out)  # Outer sub-time step
+        self.single_step(self.dt_in, self.eng_in)  # Inner sub-time step
+        self.single_step(self.dt_out, self.eng_out)  # Outer sub-time step
 
     def prop_loop(self, n_steps):
         """Contains the actual propagation for-loop."""
         for _i in tqdm(range(n_steps)):
             self.full_step()
+            atom_num = ttools.calc_atoms(self.psik, self.space['dv_k'])
 
     def run_prop(self):
         """Start and processes a propagation cycle."""

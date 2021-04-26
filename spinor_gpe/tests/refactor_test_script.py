@@ -2,7 +2,7 @@
 # pylint: disable=wrong-import-position
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('..'))
 
 import numpy as np  # noqa: E402
 # import torch  # noqa: E402

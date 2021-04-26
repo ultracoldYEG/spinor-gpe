@@ -335,6 +335,9 @@ def norm(psi, vol_elem, atom_num, pop_frac=None):
     Returns
     -------
     psi_norm : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`Tensors`.
+        The normalized wavefunction.
+    dens_norm : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`Tensors`.
+        The densities of the normalized wavefunction's components
 
     """
     dens = density(psi)
