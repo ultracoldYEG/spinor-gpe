@@ -106,7 +106,7 @@ print((np.abs(psi[0])**2 - np.abs(psi_prime[0])**2).max())
 
 # --------- 2. RUN (Imaginary) ----
 print('Starting imaginary time.')
-N_STEPS = 1000
+N_STEPS = 100
 DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'
@@ -131,7 +131,7 @@ res0.make_movie()
 
 # --------- 5. RUN (Real) ---------
 print('Starting real time.')
-N_STEPS = 1000
+N_STEPS = 100
 DT = 1/5000
 IS_SAMPLING = True
 

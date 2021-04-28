@@ -636,6 +636,10 @@ class PSpinor:
                                       n_anneals=n_anneals,
                                       rand_seed=self.rand_seed)
         result = prop.prop_loop(prop.n_steps)
+        result.paths = self.paths
+        result.r_scale = self.a_x
+        result.k_scale = self.kL_recoil
+        result.t_scale = self.time_scale
         return result
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
@@ -647,8 +651,11 @@ class PSpinor:
                                       n_samples=n_samples,
                                       rand_seed=self.rand_seed)
         result = prop.prop_loop(prop.n_steps)
+        result.paths = self.paths
+        result.r_scale = self.a_x
+        result.k_scale = self.kL_recoil
+        result.t_scale = self.time_scale
         return result
-
 
 
 # ----- DOCUMENTATION -----
