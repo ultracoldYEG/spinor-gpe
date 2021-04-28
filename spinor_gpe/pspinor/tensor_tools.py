@@ -15,9 +15,9 @@ def fft_1d(psi, delta_r=(1, 1), axis=0) -> list:
 
     Parameters
     ----------
-    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
-    delta_r : Numpy :obj:`array`
+    delta_r : NumPy :obj:`array`
         A two-element list of the x- and y-mesh spacings, respectively.
     axis : :obj:`int`, optional
         The axis along which to transform; note that 0 -> y-axis, and
@@ -25,7 +25,7 @@ def fft_1d(psi, delta_r=(1, 1), axis=0) -> list:
 
     Returns
     -------
-    psik_axis : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psik_axis : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The FFT of psi along `axis`.
 
     """
@@ -51,9 +51,9 @@ def ifft_1d(psik, delta_r=(1, 1), axis=0) -> list:
 
     Parameters
     ----------
-    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psik : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
-    delta_r : Numpy :obj:`array`
+    delta_r : NumPy :obj:`array`
         A two-element list of the x- and y-mesh spacings, respectively.
     axis : :obj:`int`, optional
         The axis along which to transform; note that 0 -> x-axis, and
@@ -61,7 +61,7 @@ def ifft_1d(psik, delta_r=(1, 1), axis=0) -> list:
 
     Returns
     -------
-    psi_axis : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi_axis : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The FFT of psi along `axis`.
 
     """
@@ -84,14 +84,14 @@ def fft_2d(psi, delta_r=(1, 1)) -> list:
 
     Parameters
     ----------
-    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
-    delta_r : Numpy :obj:`array`
+    delta_r : NumPy :obj:`array`
         A two-element list of the x- and y-mesh spacings, respectively.
 
     Returns
     -------
-    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psik : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The k-space FFT of the input wavefunction.
 
     """
@@ -113,14 +113,14 @@ def ifft_2d(psik, delta_r=(1, 1)) -> list:
 
     Parameters
     ----------
-    psik : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psik : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
-    delta_r : Numpy :obj:`array`
+    delta_r : NumPy :obj:`array`
         A two-element list of the x- and y-mesh spacings, respectively.
 
     Returns
     -------
-    psi : :obj:`list` of Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The real-space FFT of the input wavefunction.
 
     """
@@ -151,7 +151,7 @@ def to_numpy(input_tens):
 
     Returns
     -------
-    output_arr : Numpy :obj:`array` or :obj:`list` of Numpy :obj:`array`
+    output_arr : NumPy :obj:`array` or :obj:`list` of NumPy :obj:`array`
         Output array stored on CPU memory.
     """
     if isinstance(input_tens, list):
@@ -164,14 +164,14 @@ def to_numpy(input_tens):
 
 
 def to_tensor(input_arr, dev='cpu', dtype=64):
-    """Convert from Numpy arrays to Tensors.
+    """Convert from NumPy arrays to Tensors.
 
-    Accepts a single Numpy array, or a :obj:`list` of Numpy arrays, as in the
+    Accepts a single NumPy array, or a :obj:`list` of NumPy arrays, as in the
     wavefunction objects.
 
     Parameters
     ----------
-    input_arr : Numpy :obj:`array`,  or :obj:`list` of Numpy :obj:`array`
+    input_arr : NumPy :obj:`array`,  or :obj:`list` of NumPy :obj:`array`
         Input array, or list of arrays, to be converted to a :obj:`Tensor`,
         on either CPU or GPU memory.
     dev : :obj:`str`, optional
@@ -255,12 +255,12 @@ def norm_sq(psi_comp):
 
     Parameters
     ----------
-    psi_comp : Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi_comp : NumPy :obj:`array` or PyTorch :obj:`Tensor`
         A single wavefunction component.
 
     Returns
     -------
-    psi_sq : Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi_sq : NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The norm-square of the wavefunction.
 
     """
@@ -278,12 +278,12 @@ def angle(psi_comp):
 
     Parameters
     ----------
-    psi_comp : Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi_comp : NumPy :obj:`array` or PyTorch :obj:`Tensor`
         A single wavefunction component.
 
     Returns
     -------
-    angle : Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    angle : NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The phase (angle) of the component's wavefunction.
 
     """
@@ -364,7 +364,7 @@ def norm(psi, vol_elem, atom_num, pop_frac=None):
 
     Parameters
     ----------
-    psi : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`Tensors`.
+    psi : :obj:`list` of NumPy :obj:`arrays` or PyTorch :obj:`Tensors`.
         The wavefunction to normalize.
     vol_elem : :obj:`float`
         Volume element for either real- or k-space.
@@ -375,9 +375,9 @@ def norm(psi, vol_elem, atom_num, pop_frac=None):
 
     Returns
     -------
-    psi_norm : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`Tensors`.
+    psi_norm : :obj:`list` of NumPy :obj:`arrays` or PyTorch :obj:`Tensors`.
         The normalized wavefunction.
-    dens_norm : :obj:`list` of Numpy :obj:`arrays` or PyTorch :obj:`Tensors`.
+    dens_norm : :obj:`list` of NumPy :obj:`arrays` or PyTorch :obj:`Tensors`.
         The densities of the normalized wavefunction's components
 
     """
@@ -391,7 +391,7 @@ def norm(psi, vol_elem, atom_num, pop_frac=None):
             # TODO: Implement population fraction normalization.
             raise NotImplementedError("""Normalizing to the expected population
                                       fractions is not yet implemented for
-                                      Numpy arrays.""")
+                                      NumPy arrays.""")
 
     elif isinstance(dens[0], torch.Tensor):
         if pop_frac is None:
@@ -412,12 +412,12 @@ def density(psi):
 
     Parameters
     ----------
-    psi : :obj:`list` of 2D Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi : :obj:`list` of 2D NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input spinor wavefunction.
 
     Returns
     -------
-    dens : Numpy :obj:`array`, PyTorch :obj:`Tensor`, or :obj:`list` thereof
+    dens : NumPy :obj:`array`, PyTorch :obj:`Tensor`, or :obj:`list` thereof
         The density of each component's wavefunction.
 
     """
@@ -433,12 +433,12 @@ def phase(psi):
 
     Parameters
     ----------
-    psi : :obj:`list` of 2D Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi : :obj:`list` of 2D NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input spinor wavefunction.
 
     Returns
     -------
-    phase : Numpy :obj:`array`, PyTorch :obj:`Tensor`, or :obj:`list` thereof
+    phase : NumPy :obj:`array`, PyTorch :obj:`Tensor`, or :obj:`list` thereof
         The phase of each component's wavefunction.
     """
     if isinstance(psi, list):
@@ -454,7 +454,7 @@ def calc_atoms(psi, vol_elem=1.0):
 
     Parameters
     ----------
-    psi : :obj:`list` of 2D Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi : :obj:`list` of 2D NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input spinor wavefunction.
     vol_elem : :obj:`float`
         2D volume element of the space.
@@ -476,7 +476,7 @@ def calc_pops(psi, vol_elem=1.0):
 
     Parameters
     ----------
-    psi : :obj:`list` of 2D Numpy :obj:`array` or PyTorch :obj:`Tensor`
+    psi : :obj:`list` of 2D NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input spinor wavefunction.
     vol_elem : :obj:`float`
         2D volume element of the space.

@@ -216,7 +216,7 @@ class PSpinor:
     def compute_tf_psi(self, phase_factor):
         """Compute the intial pseudospinor wavefunction `psi` and FFT `psik`.
 
-        `psi` is a list of 2D numpy arrays.
+        `psi` is a list of 2D NumPy arrays.
 
         """
         assert abs(phase_factor) == 1.0, ("Relative phase factor must have "
@@ -347,11 +347,11 @@ class PSpinor:
     def _calc_atoms(self, psi=None, space='r'):
         """Given a list of wavefunctions, calculates the total atom number.
 
-        May need to consider the difference between numpy and tensor versions.
+        May need to consider the difference between NumPy and tensor versions.
 
         Parameters
         ----------
-        psi : :obj:`list` of Numpy :obj:`array`, optional.
+        psi : :obj:`list` of NumPy :obj:`array`, optional.
             The pseudospinor wavefunction.
         space : {'r', 'k'}, optional
 
@@ -464,7 +464,7 @@ class PSpinor:
         """Generate a linear gradient of the interspin coupling strength.
 
         Convenience function for generating linear gradients of the coupling.
-        `coupling` can also be set to any arbitrary numpy array directly:
+        `coupling` can also be set to any arbitrary NumPy array directly:
 
         >>> ps = PSpinor()
         >>> ps.coupling_setup()
@@ -494,7 +494,7 @@ class PSpinor:
         """Generate a uniform interspin coupling strength.
 
         Convenience function for generating unirom gradients of the coupling.
-        `coupling` can also be set to any arbitrary numpy array directly.
+        `coupling` can also be set to any arbitrary NumPy array directly.
 
         Parameters
         ----------
@@ -513,7 +513,7 @@ class PSpinor:
         """Generate a linear gradient of the interspin coupling strength.
 
         Convenience function for generating linear gradients of the coupling.
-        `detuning` can also be set to any arbitrary numpy array directly:
+        `detuning` can also be set to any arbitrary NumPy array directly:
 
         >>> ps = PSpinor()
         >>> ps.coupling_setup()
@@ -543,7 +543,7 @@ class PSpinor:
         """Generate a uniform coupling detuning.
 
         Convenience function for generating unirom gradients of the coupling.
-        `detuning` can also be set to any arbitrary numpy array directly.
+        `detuning` can also be set to any arbitrary NumPy array directly.
 
         Parameters
         ----------

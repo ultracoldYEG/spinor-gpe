@@ -228,15 +228,24 @@ class TensorPropagator:
         n_steps : :obj:`int`
             The number of propagation steps.
 
+        Returns
+        -------
+
+
         """
 
         # Every sample_rate steps, need to save a copy of the wavefunction to a
-        #    Numpy array in memory.
+        #    NumPy array in memory.
         # Every anneal_rate steps, need to
-        n_samples = int(n_steps / self.sample_rate)
-        sampled_psik = np.empty((n_samples, 2, *self.psik[0].shape),
-                                dtype=np.complex128())
-        pops = np.empty((n_steps, 2))
+        pop_times = np.linspace(0, self.n_steps * np.abs(self.t_step), n_steps)
+        pops = {'times': pop_times, 'vals': np.empty((n_steps, 2))}
+        if self.is_sampling:
+            n_samples = int(n_steps / self.sample_rate)
+            sampled_psik = np.empty((n_samples, 2, *self.psik[0].shape),
+                                    dtype=np.complex128)
+            sampled_times = np.linspace(0, self.n_steps * np.abs(self.t_step),
+                                        n_samples)
+
         # if self.is_annealing:
         #     best_config = {'psik': self.psik,
         #                    'eng': self.eng_expect(self.psik)}
@@ -244,8 +253,8 @@ class TensorPropagator:
         for _i in tqdm(range(n_steps)):
             if (self.is_sampling and (_i % self.sample_rate) == 0):
                 # sampled_psik.append(ttools.to_numpy(self.psik))
-                idx = int(_i / self.sample_rate)
-                sampled_psik[idx] = np.array(ttools.to_numpy(self.psik))
+                samp_idx = int(_i / self.sample_rate)
+                sampled_psik[samp_idx] = np.array(ttools.to_numpy(self.psik))
                 continue
 
             self.full_step()
@@ -260,24 +269,27 @@ class TensorPropagator:
             #         # ADD: Annealing stuff here.
             #     # Save energy value(s)
 
-            # TODO: For some reason the first element is not saved properly
-            pops[_i] = ttools.calc_pops(self.psik, self.space['dv_k'])
-            # Save population values, pre-allocate these ones too.
+            # FIXME: For some reason the first element is not saved properly
+            pops['vals'][_i] = ttools.calc_pops(self.psik, self.space['dv_k'])
 
         energy = self.eng_expect(self.psik)
         print('\n', energy)
-        sampled_times = np.linspace(0, self.n_steps * np.abs(self.t_step),
-                                    n_samples)
 
-        # Save sampled wavefunctions; times are in dimensionless time units
-        sampled_psik_path = (self.paths['trial'] + 'psik_sampled-'
-                             + self.paths['folder'] + '.npy')
-        sampled_times_path = (self.paths['trial'] + 'times_sampled-'
-                              + self.paths['folder'] + '.npy')
-        print(pops)
-        np.save(sampled_psik_path, sampled_psik)
-        np.save(sampled_times_path, sampled_times)
-        return prop_result.PropResult(self.psik)
+        if self.is_sampling:
+            # Save sampled wavefunctions; times are in dimensionless time units
+            save_path = (self.paths['trial'] + 'psik_sampled-'
+                         + self.paths['folder'])
+            # FIXME: What if I'm sampling multiple propagations?? I need to
+            # save to different paths, and then keep a reference to each.
+            np.savez(save_path, psiks=sampled_psik, times=sampled_times)
+        else:
+            save_path = None
+
+        psik = ttools.to_numpy(self.psik)
+        psi = ttools.ifft_2d(psik, ttools.to_numpy(self.space['dr']))
+
+        result = prop_result.PropResult(psi, psik, energy, pops, save_path)
+        return result
 
     def eng_expect(self, psik):
         """Compute the energy expectation value.
