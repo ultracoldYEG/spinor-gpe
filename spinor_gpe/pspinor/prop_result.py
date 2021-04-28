@@ -3,6 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from spinor_gpe.pspinor import tensor_tools as ttools
+from spinor_gpe.pspinor import plotting_tools as ptools
 
 
 class PropResult:
@@ -56,18 +57,36 @@ class PropResult:
     def plot_eng(self):
         """Plot the sampled energy expectation values."""
 
-    def plot_pops(self, scaled=False, save=False):
-        """Plot the spin populations as a function of propagation time."""
+    def plot_pops(self, scaled=True, save=True, ext='.pdf'):
+        """Plot the spin populations as a function of propagation time.
+
+        Parameters
+        ----------
+        scaled : :obj:`bool`, optional
+            If `scaled` is True then the time-axis will be rescaled into
+            proper time units. Otherwise, it's left in dimensionless time
+            units.
+        save : :obj:`bool`, optional
+            Saves the figure as a .pdf file (default). The filename has the
+            format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
+        """
+        if scaled:
+            xlabel = 'Time [s]'
+            scale = self.t_scale
+        else:
+            xlabel = 'Time [$1/\\omega_x$]'
+            scale = 1.0
         plt.figure()
-        plt.plot(self.pops['times'] * self.t_scale, self.pops['vals'])
+        plt.plot(self.pops['times'] * scale, self.pops['vals'])
         plt.ylabel('Population')
-        plt.xlabel('Time')
+        plt.xlabel(xlabel)
         plt.grid(alpha=0.25)
-        plt.show()
         if save:
-            filename = (self.paths['data'] + 'pop_evolution-'
-                        + self.paths['folder'])
-            plt.savefig(filename + '.pdf')
+            test_name = self.paths['data'] + 'pop_evolution'
+            file_name = ptools.next_available_path(test_name,
+                                                   self.paths['folder'], ext)
+            plt.savefig(file_name)
+        plt.show()
 
     def analyze_vortex(self):
         """Compute the total vorticity in each spin component."""

@@ -4,6 +4,7 @@ import torch
 from tqdm import tqdm
 
 from spinor_gpe.pspinor import tensor_tools as ttools
+from spinor_gpe.pspinor.plotting_tools import next_available_path
 from spinor_gpe.pspinor import prop_result
 from skimage.restoration import unwrap_phase
 
@@ -255,7 +256,6 @@ class TensorPropagator:
                 # sampled_psik.append(ttools.to_numpy(self.psik))
                 samp_idx = int(_i / self.sample_rate)
                 sampled_psik[samp_idx] = np.array(ttools.to_numpy(self.psik))
-                continue
 
             self.full_step()
 
@@ -273,22 +273,23 @@ class TensorPropagator:
             pops['vals'][_i] = ttools.calc_pops(self.psik, self.space['dv_k'])
 
         energy = self.eng_expect(self.psik)
-        print('\n', energy)
 
         if self.is_sampling:
             # Save sampled wavefunctions; times are in dimensionless time units
-            save_path = (self.paths['trial'] + 'psik_sampled-'
-                         + self.paths['folder'])
+            test_name = self.paths['trial'] + 'psik_sampled'
+            file_name = next_available_path(test_name,
+                                            self.paths['folder'], '.npz')
+
             # FIXME: What if I'm sampling multiple propagations?? I need to
             # save to different paths, and then keep a reference to each.
-            np.savez(save_path, psiks=sampled_psik, times=sampled_times)
+            np.savez(file_name, psiks=sampled_psik, times=sampled_times)
         else:
-            save_path = None
+            file_name = None
 
         psik = ttools.to_numpy(self.psik)
         psi = ttools.ifft_2d(psik, ttools.to_numpy(self.space['dr']))
 
-        result = prop_result.PropResult(psi, psik, energy, pops, save_path)
+        result = prop_result.PropResult(psi, psik, energy, pops, file_name)
         return result
 
     def eng_expect(self, psik):

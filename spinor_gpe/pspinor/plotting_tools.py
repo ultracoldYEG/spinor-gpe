@@ -1,8 +1,32 @@
 """plotting_tools.py module."""
+import os
+
 import numpy as np
 from matplotlib import pyplot as plt
 
 from spinor_gpe.pspinor import tensor_tools as ttools
+
+
+def next_available_path(file_name, trial_name, ext=''):
+    """
+    Test for the next available path for a given file.
+
+    Parameters
+    ----------
+    path_pattern : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    i = 1
+    test_path = file_name + str(i) + '-' + trial_name + ext
+    while os.path.exists(test_path):
+        i += 1
+        test_path = file_name + str(i) + '-' + trial_name + ext
+    return test_path
 
 
 def plot_dens(psi, spin=None, cmap='viridis', scale=1.,
