@@ -1,4 +1,7 @@
 """tensor_tools.py module."""
+import operator
+from functools import reduce
+
 import numpy as np
 import torch
 
@@ -26,7 +29,7 @@ def fft_1d(psi, delta_r=(1, 1), axis=0) -> list:
         The FFT of psi along `axis`.
 
     """
-    true_ax = np.array([1, 0])
+    true_ax = [1, 0]
     normalization = delta_r[axis] / np.sqrt(2 * np.pi)
 
     if isinstance(psi[0], np.ndarray):
@@ -62,7 +65,7 @@ def ifft_1d(psik, delta_r=(1, 1), axis=0) -> list:
         The FFT of psi along `axis`.
 
     """
-    true_ax = np.array([1, 0])  # Makes the x/y axes correspond to 0/1
+    true_ax = [1, 0]  # Makes the x/y axes correspond to 0/1
     normalization = delta_r[axis] / np.sqrt(2 * np.pi)
     if isinstance(psik[0], np.ndarray):
         psi_axis = [np.fft.ifftshift(pk, axes=true_ax[axis]) for pk in psik]
@@ -92,7 +95,7 @@ def fft_2d(psi, delta_r=(1, 1)) -> list:
         The k-space FFT of the input wavefunction.
 
     """
-    normalization = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
+    normalization = prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
 
     if isinstance(psi[0], np.ndarray):
         psik = [np.fft.fftn(p) * normalization for p in psi]
@@ -121,7 +124,7 @@ def ifft_2d(psik, delta_r=(1, 1)) -> list:
         The real-space FFT of the input wavefunction.
 
     """
-    normalization = np.prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
+    normalization = prod(delta_r) / (2 * np.pi)  #: FFT normalization factor
 
     if isinstance(psik[0], np.ndarray):
         psik = [np.fft.ifftshift(pk) for pk in psik]
@@ -152,7 +155,7 @@ def to_numpy(input_tens):
         Output array stored on CPU memory.
     """
     if isinstance(input_tens, list):
-        output_tens = [inp.cpu() for inp in input_tens]
+        output_tens = [inp.cpu().numpy() for inp in input_tens]
 
     elif isinstance(input_tens, torch.Tensor):
         output_tens = input_tens.cpu().numpy()
@@ -292,24 +295,62 @@ def angle(psi_comp):
     return ang
 
 
-def cosh():
-    """Hyperbolic cosine of a complex tensor."""
-
-
-def sinh():
-    """Hyperbolic sine of a complex tensor."""
-
-
-def grad():
+def grad(psi, delta_r):
     """Take a list of tensors or np arrays; checks type."""
+    if isinstance(psi, list):
+        gradient = [grad_comp(p, delta_r) for p in psi]
+    else:
+        gradient = grad_comp(psi, delta_r)
+
+    return gradient
 
 
-def grad__sq():
+def grad_comp(psi_comp, delta_r):
+    """Spatial gradient of a single wavefunction component."""
+    if isinstance(psi_comp, np.ndarray):
+        delta_r = np.array(delta_r)
+        grad_comp = np.gradient(psi_comp, *delta_r)
+    elif isinstance(psi_comp, torch.Tensor):
+        raise NotImplementedError(("Spatial gradients for tensors are not yet "
+                                  "implemented."))
+
+    return grad_comp
+
+
+def grad_sq_comp(psi_comp, delta_r):
     """Take a list of tensors or np arrays; checks type."""
+    grd_x, grd_y = grad_comp(psi_comp, delta_r)
+
+    return grd_x**2 + grd_y**2
 
 
-def conj():
+def grad_sq(psi, delta_r):
+    """Compute the gradient squared of a wavefunction."""
+    if isinstance(psi, list):
+        g_sq = [grad_sq_comp(p, delta_r) for p in psi]
+    else:
+        g_sq = grad_sq_comp(psi, delta_r)
+
+    return g_sq
+
+
+def conj_comp(psi_comp):
+    """Complex conjugate of a single wavefunction component."""
+    if isinstance(psi_comp, np.ndarray):
+        cconj = np.conj(psi_comp)
+    elif isinstance(psi_comp, torch.Tensor):
+        cconj = torch.conj(psi_comp)
+
+    return cconj
+
+
+def conj(psi):
     """Complex conjugate of a complex tensor."""
+    if isinstance(psi, list):
+        conjugate = [conj_comp(p) for p in psi]
+    else:
+        conjugate = conj_comp(psi)
+    return conjugate
 
 
 def norm(psi, vol_elem, atom_num, pop_frac=None):
@@ -424,9 +465,31 @@ def calc_atoms(psi, vol_elem=1.0):
         The total atom number in both spin components.
 
     """
-    dens = density(psi)
-    atom_num = float(sum(dens).sum() * vol_elem)
+    pops = calc_pops(psi, vol_elem=vol_elem)
+    atom_num = sum(pops)
+
     return atom_num
+
+
+def calc_pops(psi, vol_elem=1.0):
+    """Calculate the populations in each spin component.
+
+    Parameters
+    ----------
+    psi : :obj:`list` of 2D Numpy :obj:`array` or PyTorch :obj:`Tensor`
+        The input spinor wavefunction.
+    vol_elem : :obj:`float`
+        2D volume element of the space.
+
+    Returns
+    -------
+    pops : :obj:`list` of :obj:`float`
+        The atom number in each spin component.
+    """
+    dens = density(psi)
+    pops = [float(d.sum() * vol_elem) for d in dens]
+
+    return pops
 
 
 def inner_prod():
@@ -479,3 +542,19 @@ def coupling_op(t_step, coupling=None, expon=0):
     operator = [[cosine, sine * torch.exp(-1.0j * expon)],
                 [sine * torch.exp(1.0j * expon), cosine]]
     return operator
+
+
+def prod(factors):
+    """General function for multiplying the elements of a data structure.
+
+    Unlike the `sum` function, this one is not built in to the standard
+    library.
+    """
+    return reduce(operator.mul, factors, 1)
+
+
+def expect_val(psi):
+    """Compute the expectation value of the supplied spatial operator."""
+    raise NotImplementedError(("Function for computing the expectation "
+                               "value of an arbitrary spatial operator "
+                               "is not implemented."))

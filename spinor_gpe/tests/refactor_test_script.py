@@ -2,14 +2,14 @@
 # pylint: disable=wrong-import-position
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 import numpy as np  # noqa: E402
 # import torch  # noqa: E402
 from matplotlib import pyplot as plt  # noqa: E402
 
-from pspinor import pspinor as spin  # noqa: E402
-from pspinor import tensor_tools as ttools  # noqa: E402
+from spinor_gpe.pspinor import pspinor as spin  # noqa: E402
+from spinor_gpe.pspinor import tensor_tools as ttools  # noqa: E402
 
 
 # BASIC STRUCTURE OF A SIMULATION:
@@ -57,7 +57,8 @@ DATA_PATH = 'ground_state/Trial_000'
 #     |    |    |   ├── code
 #     |    |    |   |   └── this_script.py
 #     |    |    |   ├── trial_data
-#     |    |    |   |   ├── sampled_wavefunctions.npy
+#     |    |    |   |   ├── sampled_psik.npy
+#     |    |    |   |   ├── sampled_times.npy
 #     |    |    |   |   └── initial_wavefunction.npy
 #     |    |    |   ├── description.txt
 #     |    |    |   ├── assorted_images.png
@@ -87,6 +88,9 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=-1, is_coupling=False,
                   pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(128, 128))
 
+# dens = ttools.density(ps.psi)
+# grad_sq = ttools.grad_sq(dens, ps.space['dr'])
+
 plt.figure()
 plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.space['dr']))[0])
 plt.show()
@@ -101,12 +105,16 @@ psi_prime = ttools.ifft_2d(psik, ps.space['dr'])
 print((np.abs(psi[0])**2 - np.abs(psi_prime[0])**2).max())
 
 # --------- 2. RUN (Imaginary) ----
+print('Starting imaginary time.')
 N_STEPS = 1000
-dt = 1/50
-is_sampling = True
-device = 'cuda'
+DT = 1/50
+IS_SAMPLING = True
+DEVICE = 'cuda'
+ps.rand_seed = 99999
+N_SAMPLES = 10
 
-res0 = ps.imaginary(dt, N_STEPS, device, is_sampling=is_sampling)
+res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
+                    n_samples=N_SAMPLES)
 # print(ps.prop.space)
 # `res0` is an object containing the final wavefunctions, the energy exp.
 # values, populations, average positions, and a directory path to sampled
@@ -115,7 +123,6 @@ res0 = ps.imaginary(dt, N_STEPS, device, is_sampling=is_sampling)
 # --------- 3. ANALYZE ------------
 res0.plot_spins()
 res0.plot_total()
-res0.plot_eng()
 res0.plot_pops()
 res0.make_movie()
 
@@ -123,11 +130,13 @@ res0.make_movie()
 
 
 # --------- 5. RUN (Real) ---------
-N_STEPS = 2000
-dt = 1/5000
-is_sampling = True
+print('Starting real time.')
+N_STEPS = 1000
+DT = 1/5000
+IS_SAMPLING = True
 
-res1 = ps.real(dt, N_STEPS, device, is_sampling=is_sampling)
+res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
+               n_samples=N_SAMPLES)
 
 # --------- 6. ANALYZE ------------
 res1.plot_spins()

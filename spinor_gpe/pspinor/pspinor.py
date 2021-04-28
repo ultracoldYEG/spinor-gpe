@@ -18,10 +18,10 @@ from scipy.ndimage import fourier_shift
 
 from definitions import ROOT_DIR
 # pylint: disable=import-error
-import constants as const
-from pspinor import tensor_tools as ttools
-from pspinor import plotting_tools as ptools
-from pspinor import tensor_propagator as tprop
+import spinor_gpe.constants as const
+from spinor_gpe.pspinor import tensor_tools as ttools
+from spinor_gpe.pspinor import plotting_tools as ptools
+from spinor_gpe.pspinor import tensor_propagator as tprop
 
 
 # pylint: disable=too-many-public-methods
@@ -208,8 +208,10 @@ class PSpinor:
         os.makedirs(code_data_path)
         os.makedirs(trial_data_path)
 
+        folder_name = os.path.basename(os.path.normpath(data_path))
+
         self.paths = {'data': data_path, 'trial': trial_data_path,
-                      'code': code_data_path}
+                      'code': code_data_path, 'folder': folder_name}
 
     def compute_tf_psi(self, phase_factor):
         """Compute the intial pseudospinor wavefunction `psi` and FFT `psik`.
@@ -231,7 +233,8 @@ class PSpinor:
         self.psik = ttools.fft_2d(self.psi, self.space['dr'])
 
         # Saves the real- and k-space versions of the Thomas-Fermi wavefunction
-        np.savez(self.paths['trial'] + 'tf-wf', psi=self.psi, psik=self.psik)
+        np.savez(self.paths['trial'] + 'tf_wf-' + self.paths['folder'],
+                 psi=self.psi, psik=self.psik)
 
     def compute_tf_params(self, species='Rb87'):
         """Compute parameters and scales for the Thomas-Fermi solution."""
@@ -625,47 +628,27 @@ class PSpinor:
         """Perform imaginary-time propagation."""
         # Pass PSpinor object instance `self` as the first parameter of
         # TensorPropagator.__init__.
-        self.prop = tprop.TensorPropagator(self, t_step, n_steps, device,
-                                           time='imag',
-                                           is_sampling=is_sampling,
-                                           n_samples=n_samples,
-                                           is_annealing=is_annealing,
-                                           n_anneals=n_anneals)
-        return PropResult()
+        prop = tprop.TensorPropagator(self, t_step, n_steps, device,
+                                      time='imag',
+                                      is_sampling=is_sampling,
+                                      n_samples=n_samples,
+                                      is_annealing=is_annealing,
+                                      n_anneals=n_anneals,
+                                      rand_seed=self.rand_seed)
+        result = prop.prop_loop(prop.n_steps)
+        return result
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
              n_samples=1):
         """Perform real-time propagation."""
-        self.prop = tprop.TensorPropagator(self, t_step, n_steps, device,
-                                           time='real',
-                                           is_sampling=is_sampling,
-                                           n_samples=n_samples)
-        return PropResult()
+        prop = tprop.TensorPropagator(self, t_step, n_steps, device,
+                                      time='real',
+                                      is_sampling=is_sampling,
+                                      n_samples=n_samples,
+                                      rand_seed=self.rand_seed)
+        result = prop.prop_loop(prop.n_steps)
+        return result
 
-
-class PropResult:
-    """Results of propagation, along with plotting and analysis tools."""
-
-    def __init__(self):
-        pass
-
-    def plot_spins(self):
-        """Plot the densities (real & k) and phases of spin components."""
-
-    def plot_total(self):
-        """Plot the total real-space density and phase of the wavefunction."""
-
-    def plot_eng(self):
-        """Plot the sampled energy expectation values."""
-
-    def plot_pops(self):
-        """Plot the spin populations as a function of propagation time."""
-
-    def analyze_vortex(self):
-        """Compute the total vorticity in each spin component."""
-
-    def make_movie(self):
-        """Generate a movie of the wavefunctions' densities and phases."""
 
 
 # ----- DOCUMENTATION -----

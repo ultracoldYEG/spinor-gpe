@@ -1,8 +1,11 @@
 """Placeholder for the tensor_propagator.py module."""
+import numpy as np
 import torch
 from tqdm import tqdm
 
-from pspinor import tensor_tools as ttools
+from spinor_gpe.pspinor import tensor_tools as ttools
+from spinor_gpe.pspinor import prop_result
+from skimage.restoration import unwrap_phase
 
 
 class TensorPropagator:
@@ -88,6 +91,7 @@ class TensorPropagator:
 
         self.n_steps = n_steps
         self.device = device
+        self.paths = spin.paths
 
         # Calculate the time step intervals
         if time == 'imag':
@@ -100,6 +104,9 @@ class TensorPropagator:
         self.dt_out = self.t_step * magic_gamma
         self.dt_in = self.t_step * magic_gamma_diff
 
+        self.rand_seed = kwargs.get('rand_seed', None)
+        if self.rand_seed is not None:
+            torch.manual_seed(self.rand_seed)
         self.is_sampling = kwargs.get('is_sampling', False)
         self.is_annealing = kwargs.get('is_sampling', False)
         n_samples = kwargs.get('n_samples', 1)
@@ -110,7 +117,7 @@ class TensorPropagator:
         self.is_coupling = spin.is_coupling
         self.g_sc = spin.g_sc
         kin_eng = ttools.to_tensor(spin.kin_eng_spin, dev=self.device)
-        pot_eng = ttools.to_tensor(spin.pot_eng_spin, dev=self.device)
+        self.pot_eng = ttools.to_tensor(spin.pot_eng_spin, dev=self.device)
 
         # self.psi = ttools.to_tensor(spin.psi, dev=self.device, dtype=128)
         self.psik = ttools.to_tensor(spin.psik, dev=self.device, dtype=128)
@@ -121,9 +128,12 @@ class TensorPropagator:
 
         if self.is_coupling:
             self.coupling = ttools.to_tensor(spin.coupling, dev=self.device)
-            expon = 2 * spin.kL_recoil * self.space['x_mesh']
+            # pylint: disable=invalid-name
+            self.kL_recoil = spin.kL_recoil
+            expon = 2 * self.kL_recoil * self.space['x_mesh']
         else:
             self.coupling = None
+            self.kL_recoil = 0
 
         # Calculate the sampling and annealing rates, as needed.
         if self.is_sampling:
@@ -143,11 +153,11 @@ class TensorPropagator:
 
         # Pre-compute several evolution operators
         self.eng_out = {'kin': ttools.evolution_op(kin_eng, self.dt_out / 2),
-                        'pot': ttools.evolution_op(pot_eng, self.dt_out),
+                        'pot': ttools.evolution_op(self.pot_eng, self.dt_out),
                         'coupl': ttools.coupling_op(self.dt_out / 2,
                                                     self.coupling, expon)}
         self.eng_in = {'kin': ttools.evolution_op(kin_eng, self.dt_in / 2),
-                       'pot': ttools.evolution_op(pot_eng, self.dt_in),
+                       'pot': ttools.evolution_op(self.pot_eng, self.dt_in),
                        'coupl': ttools.coupling_op(self.dt_in / 2,
                                                    self.coupling, expon)}
 
@@ -219,17 +229,95 @@ class TensorPropagator:
             The number of propagation steps.
 
         """
+
+        # Every sample_rate steps, need to save a copy of the wavefunction to a
+        #    Numpy array in memory.
+        # Every anneal_rate steps, need to
+        n_samples = int(n_steps / self.sample_rate)
+        sampled_psik = np.empty((n_samples, 2, *self.psik[0].shape),
+                                dtype=np.complex128())
+        pops = np.empty((n_steps, 2))
+        # if self.is_annealing:
+        #     best_config = {'psik': self.psik,
+        #                    'eng': self.eng_expect(self.psik)}
+
         for _i in tqdm(range(n_steps)):
+            if (self.is_sampling and (_i % self.sample_rate) == 0):
+                # sampled_psik.append(ttools.to_numpy(self.psik))
+                idx = int(_i / self.sample_rate)
+                sampled_psik[idx] = np.array(ttools.to_numpy(self.psik))
+                continue
+
             self.full_step()
-            atom_num = ttools.calc_atoms(self.psik, self.space['dv_k'])
-        return atom_num
 
-    def run_prop(self):
-        """Start and processes a propagation cycle."""
+            # if (_i % self.anneal_rate) == 0:  # Measure the energy & anneal
+            #     eng = self.eng_expect(self.psik)
+            #     if self.is_annealing:
+            #         if eng < best_config['eng']:
+            #             best_config.update({'psik': self.psik, 'eng': eng})
+            #         else:
+            #             self.psik = best_config['psik']
+            #         # ADD: Annealing stuff here.
+            #     # Save energy value(s)
 
-    def eng_expect(self):
-        """Compute the energy expectation value. Needs to be computed on the
-        fly for proper annealing."""
+            # TODO: For some reason the first element is not saved properly
+            pops[_i] = ttools.calc_pops(self.psik, self.space['dv_k'])
+            # Save population values, pre-allocate these ones too.
 
-    def expect_val(self):
-        """Compute the expectation value of the supplied spatial operator."""
+        energy = self.eng_expect(self.psik)
+        print('\n', energy)
+        sampled_times = np.linspace(0, self.n_steps * np.abs(self.t_step),
+                                    n_samples)
+
+        # Save sampled wavefunctions; times are in dimensionless time units
+        sampled_psik_path = (self.paths['trial'] + 'psik_sampled-'
+                             + self.paths['folder'] + '.npy')
+        sampled_times_path = (self.paths['trial'] + 'times_sampled-'
+                              + self.paths['folder'] + '.npy')
+        print(pops)
+        np.save(sampled_psik_path, sampled_psik)
+        np.save(sampled_times_path, sampled_times)
+        return prop_result.PropResult(self.psik)
+
+    def eng_expect(self, psik):
+        """Compute the energy expectation value.
+
+        Needs to be computed on the fly. Energies are computed with NumPy
+        on the CPU.
+        """
+        assert len(psik) == 2, ("Requires two spinor components to calculate "
+                                "the energy expectation value.")
+        # TODO: Debug this later when running a Raman configuration.
+        if not isinstance(psik[0], np.ndarray):
+            psik = ttools.to_numpy(psik)
+        delta_r = ttools.to_numpy(self.space['dr'])
+
+        psi = ttools.ifft_2d(psik, delta_r)
+        dens = ttools.density(psi)
+        dens_sqrt = [np.sqrt(d) for d in dens]
+
+        phase = ttools.phase(psi)
+        phase = [unwrap_phase(phz) for phz in phase]
+        phase_gradx = [ph_x for ph_x, _ in ttools.grad(phase, delta_r)]
+        phase_gradsq = ttools.grad_sq(phase, delta_r)
+
+        kin = (sum(ttools.grad_sq(dens_sqrt, delta_r))
+               + sum([d * p for d, p in zip(dens, phase_gradsq)])
+               + sum([d * p for d, p in zip(dens, phase_gradx)])
+               * 2 * self.kL_recoil) / 2
+
+        pot = sum([d * pot for d, pot in
+                   zip(dens, ttools.to_numpy(self.pot_eng))])
+
+        int_e = (self.g_sc['uu'] * dens[0]**2 + self.g_sc['dd'] * dens[1]**2
+                 + self.g_sc['ud'] * dens[0] * dens[1])
+
+        if self.is_coupling:
+            coupl_e = ((np.conj(psi[0]) * psi[1] + np.conj(psi[1]) * psi[0])
+                       * ttools.to_numpy(self.coupling) / 2)
+        else:
+            coupl_e = 0
+
+        total_eng = np.real((kin + pot + int_e + coupl_e).sum())
+        print(total_eng)
+        return total_eng

@@ -2,7 +2,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from pspinor import tensor_tools as ttools
+from spinor_gpe.pspinor import tensor_tools as ttools
 
 
 def plot_dens(psi, spin=None, cmap='viridis', scale=1.,
@@ -45,8 +45,8 @@ def plot_dens(psi, spin=None, cmap='viridis', scale=1.,
     if not isinstance(axs, np.ndarray):  # Makes single axs an array
         axs = np.array([axs])
 
-    for i, d in enumerate(dens):
-        axs[i].imshow(d, cmap=cmap, extent=extent)
+    for i, den in enumerate(dens):
+        axs[i].imshow(den, cmap=cmap, extent=extent)
 
     plt.show()
 
@@ -92,8 +92,8 @@ def plot_phase(psi=None, spin=None, cmap='twilight_shifted', scale=1,
     if not isinstance(axs, np.ndarray):  # Makes single axs an array
         axs = np.array([axs])
 
-    for i, ph in enumerate(phase):
-        ph[dens[i] < 1e-6 * np.max(dens[i])] = 0
-        axs[i].imshow(ph, cmap=cmap, extent=extent)
+    for i, phz in enumerate(phase):
+        phz[dens[i] < 1e-6 * np.max(dens[i])] = 0
+        axs[i].imshow(phz, cmap=cmap, extent=extent)
 
     plt.show()

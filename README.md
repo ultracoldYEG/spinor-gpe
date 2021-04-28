@@ -3,13 +3,14 @@
 A python package simulating the quasi-2D pseudospin-1/2 Gross-Pitaevskii equation with NVIDIA GPU acceleration.
 
 ## Dependencies:
-* Python      3.8.8
-* CUDA        11.3
-* cuDNN       8.1.1
-* Numpy       1.19.2
-* Matplotlib  3.3.4
-* PyTorch     1.8.1
-* tqdm        4.59.0
+* Python         3.8.8
+* CUDA           11.3
+* cuDNN          8.1.1
+* Numpy          1.19.2
+* Matplotlib     3.3.4
+* PyTorch        1.8.1
+* tqdm           4.59.0
+* scikit-image   0.18.1
 
 
 ## Getting Started:
