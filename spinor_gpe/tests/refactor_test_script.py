@@ -96,7 +96,7 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
 # plt.show()
 
 ps.coupling_setup(wavel=790.1e-9)
-ps.coupling_grad(2, 0)
+ps.detuning_grad(2, 0)
 ps.shift_momentum()
 
 psi = ps.psi
@@ -111,7 +111,7 @@ DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'
 ps.rand_seed = 99999
-N_SAMPLES = 10
+N_SAMPLES = 50
 
 res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
                     n_samples=N_SAMPLES)
@@ -124,22 +124,22 @@ res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 res0.plot_spins(kscale=ps.kL_recoil)
 # res0.plot_total(kscale=ps.kL_recoil)
 # res0.plot_pops()
-# res0.make_movie()
+res0.make_movie()
 
 # --------- 4. SETUP --------------
 
 
-# --------- 5. RUN (Real) ---------
-print('Starting real time.')
-N_STEPS = 1000
-DT = 1/5000
-IS_SAMPLING = True
+# # --------- 5. RUN (Real) ---------
+# print('Starting real time.')
+# N_STEPS = 100
+# DT = 1/5000
+# IS_SAMPLING = True
 
-res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
-               n_samples=N_SAMPLES)
+# res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
+#                n_samples=N_SAMPLES)
 
-# --------- 6. ANALYZE ------------
-res1.plot_spins(kscale=ps.kL_recoil)
-# res1.plot_total(kscale=ps.kL_recoil)
-# res1.plot_pops()
-res1.make_movie()
+# # --------- 6. ANALYZE ------------
+# res1.plot_spins(kscale=ps.kL_recoil)
+# # res1.plot_total(kscale=ps.kL_recoil)
+# # res1.plot_pops()
+# # res1.make_movie()

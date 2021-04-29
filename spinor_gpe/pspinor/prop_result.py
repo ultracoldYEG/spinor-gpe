@@ -1,10 +1,14 @@
-"""Placeholder for the prop_result.py module."""
+"""prop_result.py module."""
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
+import matplotlib.animation as animation
 
 from spinor_gpe.pspinor import tensor_tools as ttools
 from spinor_gpe.pspinor import plotting_tools as ptools
+
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
 
 
 class PropResult:
@@ -40,8 +44,6 @@ class PropResult:
         self.phase = ttools.phase(self.psi, uwrap=True, dens=self.dens)
 
         self.paths = dict()
-        self.r_scale = None  # ??? Needed?
-        self.k_scale = None  # ??? Needed?
         self.t_scale = None
         self.space = dict()
 
@@ -89,9 +91,9 @@ class PropResult:
         r_plots = [ax.imshow(d, cmap=cmap, origin='lower', extent=r_extent,
                              vmin=0)
                    for ax, d in zip(r_axs, self.dens)]
-        [fig.colorbar(plot, ax=ax) for plot, ax in zip(r_plots, r_axs)]
-        [ax.set_xlabel('$x$') for ax in r_axs]
-        [ax.set_ylabel('$y$') for ax in r_axs]
+        any(fig.colorbar(plot, ax=ax) for plot, ax in zip(r_plots, r_axs))
+        any(ax.set_xlabel('$x$') for ax in r_axs)
+        any(ax.set_ylabel('$y$') for ax in r_axs)
 
         # Real-space phase plot
         ph_plots = [ax.imshow(phz, cmap='twilight_shifted', origin='lower',
@@ -99,11 +101,11 @@ class PropResult:
                     for ax, phz in zip(ph_axs, self.phase)]
         ph_cb = [fig.colorbar(plot, ax=ax)
                  for plot, ax in zip(ph_plots, ph_axs)]
-        [cb.set_ticks(np.linspace(-np.pi, np.pi, 5)) for cb in ph_cb]
-        [cb.set_ticklabels(['$-\\pi$', '', '$0$', '', '$\\pi$'])
-         for cb in ph_cb]
-        [ax.set_xlabel('$x$') for ax in ph_axs]
-        [ax.set_ylabel('$y$') for ax in ph_axs]
+        any(cb.set_ticks(np.linspace(-np.pi, np.pi, 5)) for cb in ph_cb)
+        any(cb.set_ticklabels(['$-\\pi$', '', '$0$', '', '$\\pi$'])
+            for cb in ph_cb)
+        any(ax.set_xlabel('$x$') for ax in ph_axs)
+        any(ax.set_ylabel('$y$') for ax in ph_axs)
 
         # Momentum-space density plot
         k_sizes = self.space['k_sizes']
@@ -111,9 +113,9 @@ class PropResult:
         k_plots = [ax.imshow(d, cmap=cmap, origin='lower', extent=k_extent,
                              vmin=0)
                    for ax, d in zip(k_axs, self.densk)]
-        [fig.colorbar(plot, ax=ax) for plot, ax in zip(k_plots, k_axs)]
-        [ax.set_xlabel('$k_x$') for ax in k_axs]
-        [ax.set_ylabel('$k_y$') for ax in k_axs]
+        any(fig.colorbar(plot, ax=ax) for plot, ax in zip(k_plots, k_axs))
+        any(ax.set_xlabel('$k_x$') for ax in k_axs)
+        any(ax.set_ylabel('$k_y$') for ax in k_axs)
 
         plt.tight_layout()
 
@@ -124,6 +126,8 @@ class PropResult:
                                                    self.paths['folder'], ext)
             plt.savefig(file_name)
         plt.show()
+        all_plots = {'r': r_plots, 'ph': ph_plots, 'k': k_plots}
+        return fig, all_plots
 
     def plot_total(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
                    ext='.pdf'):
@@ -237,5 +241,65 @@ class PropResult:
     def analyze_vortex(self):
         """Compute the total vorticity in each spin component."""
 
-    def make_movie(self):
-        """Generate a movie of the wavefunctions' densities and phases."""
+    def make_movie(self, rscale=1.0, kscale=1.0, cmap='viridis'):
+        """Generate a movie of the wavefunctions' densities and phases.
+
+        Parameters
+        ----------
+        rscale : :obj:`float`, optional
+            Real-space length scale. The default of 1.0 corresponds to the
+            naturatl harmonic length scale along the x-axis.
+        kscale : :obj:`float`, optional
+            Momentum-space length scale. The default of 1.0 corresponds to the
+            inverse harmonic length scale along the x-axis.
+        cmap : :obj:`str`, optional
+            Color map name for the real- and momentum-space density plots.
+        """
+        with np.load(self.sampled_path) as sampled:
+            times = sampled['times']
+            psiks = sampled['psiks']
+            # ??? Need to rebin for speed?
+        n_samples = len(times)
+        writer = animation.writers['ffmpeg'](fps=5, bitrate=-1)
+        fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False)
+
+        def animate(frame, n_total):
+            global timelast, timethis
+            psik = psiks[frame]
+            psi = ttools.ifft_2d(psik, self.space['dr'])
+
+            dens = ttools.density(psi)
+            phase = ttools.phase(psi, uwrap=True, dens=dens)
+            densk = ttools.density(psik)
+
+            any(plot.set_data(d) for plot, d in zip(all_plots['r'], dens))
+            any(plot.set_data(ph) for plot, ph in zip(all_plots['ph'], phase))
+            any(plot.set_data(dk) for plot, dk in zip(all_plots['k'], densk))
+
+            ptools.progress_message(frame, n_total)
+
+        # create and then save the animation
+        anim = animation.FuncAnimation(fig, animate, frames=n_samples,
+                                       blit=False, fargs=(n_samples,))
+
+        # Save animation
+        test_name = self.paths['data'] + 'prop_movie'
+        file_name = ptools.next_available_path(test_name,
+                                               self.paths['folder'], '.mp4')
+        anim.save(file_name, writer=writer)
+        plt.close(fig)
+
+
+def rebin(arr, new_shape=(256, 256)):
+    """Rebin 2D array arr to shape new_shape by averaging."""
+    assert arr[0].shape == arr[1].shape
+    new_arr = [0, 0]
+    curr_shape = arr[0].shape
+    if new_shape < curr_shape:
+        for i, a in enumerate(arr):
+            shape = (new_shape[0], a.shape[0] // new_shape[0],
+                     new_shape[1], a.shape[1] // new_shape[1])
+            new_arr[i] = a.reshape(shape).mean(-1).mean(1)
+    else:
+        new_arr = arr
+    return new_arr

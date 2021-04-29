@@ -247,10 +247,6 @@ class TensorPropagator:
             sampled_times = np.linspace(0, self.n_steps * np.abs(self.t_step),
                                         n_samples)
 
-        # if self.is_annealing:
-        #     best_config = {'psik': self.psik,
-        #                    'eng': self.eng_expect(self.psik)}
-
         for _i in tqdm(range(n_steps)):
             if (self.is_sampling and (_i % self.sample_rate) == 0):
                 # sampled_psik.append(ttools.to_numpy(self.psik))
@@ -259,17 +255,6 @@ class TensorPropagator:
 
             self.full_step()
 
-            # if (_i % self.anneal_rate) == 0:  # Measure the energy & anneal
-            #     eng = self.eng_expect(self.psik)
-            #     if self.is_annealing:
-            #         if eng < best_config['eng']:
-            #             best_config.update({'psik': self.psik, 'eng': eng})
-            #         else:
-            #             self.psik = best_config['psik']
-            #         # ADD: Annealing stuff here.
-            #     # Save energy value(s)
-
-            # FIXME: For some reason the first element is not saved properly
             pops['vals'][_i] = ttools.calc_pops(self.psik, self.space['dv_k'])
 
         energy = self.eng_expect(self.psik)
@@ -279,9 +264,6 @@ class TensorPropagator:
             test_name = self.paths['trial'] + 'psik_sampled'
             file_name = next_available_path(test_name,
                                             self.paths['folder'], '.npz')
-
-            # FIXME: What if I'm sampling multiple propagations?? I need to
-            # save to different paths, and then keep a reference to each.
             np.savez(file_name, psiks=sampled_psik, times=sampled_times)
         else:
             file_name = None

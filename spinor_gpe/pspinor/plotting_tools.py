@@ -1,5 +1,7 @@
 """plotting_tools.py module."""
 import os
+import sys
+import time as t
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -27,6 +29,47 @@ def next_available_path(file_name, trial_name, ext=''):
         i += 1
         test_path = file_name + str(i) + '-' + trial_name + ext
     return test_path
+
+
+def progress_message(frame, n_total):
+    """Display an updating progress message while the animation is saving."""
+    global timelast
+    if frame != 0:
+        timethis = t.time()
+        itertime = 1 / (timethis - timelast)
+        timelast = timethis
+        remaining = time_remaining(frame, n_total, itertime)
+
+        message = ('\r' + str(frame) + '/' + str(n_total) + ', '
+                   + remaining + f', {itertime:.2f} it/sec')
+        sys.stdout.write(message)
+        sys.stdout.flush()
+    else:
+        timelast = t.time()
+    return timelast
+
+
+def time_remaining(frame, n_total, its):
+    """Calculate completion time in the progressMessage function."""
+    totaltime = (n_total - frame) / its
+    hours = int(np.floor(totaltime / 3600))
+    minutes = int(np.floor((totaltime - hours * 3600) / 60))
+    seconds = int(np.mod(totaltime, 60))
+    if len(str(hours)) < 2:
+        hour_str = '0' + str(hours)
+    else:
+        hour_str = str(hours)
+
+    if len(str(minutes)) < 2:
+        minute_str = '0' + str(minutes)
+    else:
+        minute_str = str(minutes)
+
+    if len(str(seconds)) < 2:
+        second_str = '0' + str(seconds)
+    else:
+        second_str = str(seconds)
+    return f'[{hour_str}:{minute_str}:{second_str}]'
 
 
 def plot_dens(psi, spin=None, cmap='viridis', scale=1.,

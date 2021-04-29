@@ -172,6 +172,8 @@ class PSpinor:
 
         self.rand_seed = None
         self.prop = None
+        self.coupling = np.zeros(mesh_points)
+        self.detuning = np.zeros(mesh_points)
 
     def setup_data_path(self, path, overwrite):
         """Create new data directory to store simulation data & results.
@@ -447,9 +449,9 @@ class PSpinor:
     @coupling.setter
     def coupling(self, array):
         """Set the `coupling` attribute."""
-        if not self.is_coupling:
-            raise Exception(f"The `is_coupling` option is {self.is_coupling}. \
-                            Initialize coupling with `coupling_setup()`.")
+        # if not self.is_coupling:
+        #     raise Exception(f"The `is_coupling` option is {self.is_coupling}. \
+        #                     Initialize coupling with `coupling_setup()`.")
         self._coupling = array
 
     @property
@@ -460,9 +462,9 @@ class PSpinor:
     @detuning.setter
     def detuning(self, array):
         """Set the `detuning` attribute."""
-        if not self.is_coupling:
-            raise Exception(f"The `is_coupling` option is {self.is_coupling}. \
-                            Initialize coupling with `coupling_setup()`.")
+        # if not self.is_coupling:
+        #     raise Exception(f"The `is_coupling` option is {self.is_coupling}. \
+        #                     Initialize coupling with `coupling_setup()`.")
         self._detuning = array
         self.pot_eng_spin = [self.pot_eng + self._detuning / 2,
                              self.pot_eng - self._detuning / 2]
@@ -644,10 +646,11 @@ class PSpinor:
                                       rand_seed=self.rand_seed)
         result = prop.prop_loop(prop.n_steps)
         result.paths = self.paths
-        result.r_scale = self.a_x
-        result.k_scale = self.kL_recoil
         result.t_scale = self.time_scale
         result.space = self.space
+
+        self.psik = result.psik
+        self.psi = result.psi
         return result
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
@@ -660,10 +663,11 @@ class PSpinor:
                                       rand_seed=self.rand_seed)
         result = prop.prop_loop(prop.n_steps)
         result.paths = self.paths
-        result.r_scale = self.a_x
-        result.k_scale = self.kL_recoil
         result.t_scale = self.time_scale
         result.space = self.space
+
+        self.psik = result.psik
+        self.psi = result.psi
         return result
 
 
