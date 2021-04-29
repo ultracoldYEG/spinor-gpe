@@ -122,8 +122,8 @@ res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 
 # --------- 3. ANALYZE ------------
 res0.plot_spins()
-res0.plot_total()
-# res0.plot_pops()
+res0.plot_total(kscale=ps.kL_recoil)
+res0.plot_pops()
 # res0.make_movie()
 
 # --------- 4. SETUP --------------
@@ -140,6 +140,6 @@ res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 
 # --------- 6. ANALYZE ------------
 res1.plot_spins()
-res1.plot_total()
+res1.plot_total(kscale=ps.kL_recoil)
 res1.plot_pops()
 res1.make_movie()

@@ -2,7 +2,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from spinor_gpe.pspinor import tensor_tools as ttools
 from spinor_gpe.pspinor import plotting_tools as ptools
@@ -51,24 +50,69 @@ class PropResult:
         s = 1 - np.sum(ttools.prod(self.dens))  # FIXME
         return s
 
-    def plot_spins(self):
-        """Plot the densities (real & k) and phases of spin components."""
+    def plot_spins(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
+                   ext='.pdf'):
+        """Plot the densities (real & k) and phases of spin components.
 
-    def plot_total(self, rscale=1.0, kscale=1.0, cmap='viridis'):
-        """Plot the total real-space density and phase of the wavefunction."""
-        dens_tot_r = sum(self.dens)
-        ph_tot_r = ttools.phase(sum(self.psi), uwrap=True)
-        dens_tot_k = sum(self.densk)
-        widths = [1, 1, 1, 1]
-        heights = [1, 1, 1, 1]
+        Parameters
+        ----------
+        rscale : :obj:`float`, optional
+            Real-space length scale. The default of 1.0 corresponds to the
+            naturatl harmonic length scale along the x-axis.
+        kscale : :obj:`float`, optional
+            Momentum-space length scale. The default of 1.0 corresponds to the
+            inverse harmonic length scale along the x-axis.
+        cmap : :obj:`str`, optional
+            Color map name for the real- and momentum-space density plots.
+        save : :obj:`bool`, optional
+            Saves the figure as a .pdf file (default). The filename has the
+            format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
+        ext : :obj:`str`, optional
+            Saved plot image file extension.
+
+        """
+        widths = [1] * 4
+        heights = [1] * 4
         fig = plt.figure()
         gsp = gridspec.GridSpec(4, 4, width_ratios=widths,
                                 height_ratios=heights)
+        r_u_ax = fig.add_subplot(gsp[0:2, 0:2])
+        ph_ax = fig.add_subplot(gsp[0:2, 2:])
+        k_ax = fig.add_subplot(gsp[2:, 1:3])
 
+    def plot_total(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
+                   ext='.pdf'):
+        """Plot the total real-space density and phase of the wavefunction.
+
+        Parameters
+        ----------
+        rscale : :obj:`float`, optional
+            Real-space length scale. The default of 1.0 corresponds to the
+            naturatl harmonic length scale along the x-axis.
+        kscale : :obj:`float`, optional
+            Momentum-space length scale. The default of 1.0 corresponds to the
+            inverse harmonic length scale along the x-axis.
+        cmap : :obj:`str`, optional
+            Color map name for the real- and momentum-space density plots.
+        save : :obj:`bool`, optional
+            Saves the figure as a .pdf file (default). The filename has the
+            format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
+        ext : :obj:`str`, optional
+            Saved plot image file extension.
+
+        """
+        dens_tot_r = sum(self.dens)
+        ph_tot_r = ttools.phase(sum(self.psi), uwrap=True)
+        dens_tot_k = sum(self.densk)
+
+        widths = [1] * 4
+        heights = [1] * 4
+        fig = plt.figure()
+        gsp = gridspec.GridSpec(4, 4, width_ratios=widths,
+                                height_ratios=heights)
         r_ax = fig.add_subplot(gsp[0:2, 0:2])
         ph_ax = fig.add_subplot(gsp[0:2, 2:])
         k_ax = fig.add_subplot(gsp[2:, 1:3])
-        # fig.add_subplot(r_plot, ph_plot, k_plot)
 
         # Real-space density plot
         r_sizes = self.space['r_sizes']
@@ -76,7 +120,6 @@ class PropResult:
         r_plot = r_ax.imshow(dens_tot_r, cmap=cmap, origin='lower',
                              extent=r_extent, vmin=0)
         fig.colorbar(r_plot, ax=r_ax)
-        # r_ax.set_title('Total real-space density')
         r_ax.set_xlabel('$x$')
         r_ax.set_ylabel('$y$')
 
@@ -90,11 +133,6 @@ class PropResult:
         ph_cb.set_ticklabels(['$-\\pi$', '', '$0$', '', '$\\pi$'])
         ph_ax.set_xlabel('$x$')
         ph_ax.set_ylabel('$y$')
-        # ph_divider = make_axes_locatable(ph_plot)
-        # ph_cb = ph_divider.append_axes('right', '5%', pad=0.1)
-        # ph_cb_ax = fig.colorbar(ph_plot, cax=ph_cb, orientation='vertical',
-        #                         format='%.0e')
-        # ph_ax.set_title('Total phase')
 
         # Momentum-space density plot
         k_sizes = self.space['k_sizes']
@@ -104,8 +142,15 @@ class PropResult:
         fig.colorbar(k_plot, ax=k_ax)
         k_ax.set_xlabel('$k_x$')
         k_ax.set_ylabel('$k_y$')
-        # k_ax.set_title('Total k-space density')
+
         plt.tight_layout()
+
+        # Save figure
+        if save:
+            test_name = self.paths['data'] + 'total_dens_phase'
+            file_name = ptools.next_available_path(test_name,
+                                                   self.paths['folder'], ext)
+            plt.savefig(file_name)
         plt.show()
 
     # def plot_eng(self):
@@ -123,6 +168,8 @@ class PropResult:
         save : :obj:`bool`, optional
             Saves the figure as a .pdf file (default). The filename has the
             format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
+        ext : :obj:`str`, optional
+            Saved plot image file extension.
         """
         if scaled:
             xlabel = 'Time [s]'
