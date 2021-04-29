@@ -381,13 +381,13 @@ class PSpinor:
         # self.coupling = None
         # self.detuning = None
 
-    def coupling_setup(self, wavel=790.1e-9, scale=1, mom_shift=False):
+    def coupling_setup(self, wavel=790.1e-9, scale=1.0, mom_shift=False):
         """Calculate parameters for the momentum-(in)dependent coupling.
 
         Parameters
         ----------
         wavel : :obj:`float`
-            Wavelength of Raman coupling (in [m])
+            Wavelength of Raman coupling in [m]
         scale : :obj:`float`
             Relative scale of recoil momentum
         mom_shift : :obj:`bool`
@@ -413,7 +413,14 @@ class PSpinor:
         self.kin_eng_spin = [k - np.min(k) for k in self.kin_eng_spin]
 
     def shift_momentum(self, psik=None, kshift_val=1, frac=(0.5, 0.5)):
-        """Shifts the momentum components pf `psi` by +/- kL_recoil."""
+        """Shifts the momentum components pf `psi` by +/- kL_recoil.
+
+        Parameters
+        ----------
+        psik :
+        kshift_val :
+        frac :
+        """
         assert self.is_coupling, ("The `is_coupling` option is "
                                   f"{self.is_coupling}. Initialize coupling "
                                   "with `coupling_setup()`.")

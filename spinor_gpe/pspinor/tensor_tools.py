@@ -407,7 +407,7 @@ def density(psi):
     return dens
 
 
-def phase_comp(psi_comp, uwrap=False):
+def phase_comp(psi_comp, uwrap=False, dens=None):
     """Compute the phase (angle) of a single complex wavefunction component.
 
     Parameters
@@ -430,10 +430,12 @@ def phase_comp(psi_comp, uwrap=False):
         if uwrap:
             raise NotImplementedError("Unwrapping the complex phase is not "
                                       "implemented for PyTorch tensors.")
+    if dens is not None:
+        ang[dens < (dens.max() * 1e-6)] = 0
     return ang
 
 
-def phase(psi, uwrap=False):
+def phase(psi, uwrap=False, dens=None):
     """Compute the phase of a real-space spinor wavefunction.
 
     Parameters
@@ -446,10 +448,16 @@ def phase(psi, uwrap=False):
     phase : NumPy :obj:`array`, PyTorch :obj:`Tensor`, or :obj:`list` thereof
         The phase of each component's wavefunction.
     """
+    if dens is not None:
+        assert len(psi) == len(dens), ("`psi` and `dens` should have the same "
+                                       "length.")
+    elif (dens is None and isinstance(psi, list)):
+        dens = [None] * len(psi)
+
     if isinstance(psi, list):
-        phase_psi = [phase_comp(p, uwrap) for p in psi]
+        phase_psi = [phase_comp(p, uwrap, d) for p, d in zip(psi, dens)]
     else:
-        phase_psi = phase_comp(psi, uwrap)
+        phase_psi = phase_comp(psi, uwrap, dens)
 
     return phase_psi
 

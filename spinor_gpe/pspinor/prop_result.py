@@ -37,11 +37,11 @@ class PropResult:
 
         self.dens = ttools.density(self.psi)
         self.densk = ttools.density(self.psik)
-        self.phase = ttools.phase(self.psi)
+        self.phase = ttools.phase(self.psi, uwrap=True, dens=self.dens)
 
         self.paths = dict()
-        self.r_scale = None
-        self.k_scale = None
+        self.r_scale = None  # ??? Needed?
+        self.k_scale = None  # ??? Needed?
         self.t_scale = None
         self.space = dict()
 
@@ -72,13 +72,58 @@ class PropResult:
 
         """
         widths = [1] * 4
-        heights = [1] * 4
-        fig = plt.figure()
-        gsp = gridspec.GridSpec(4, 4, width_ratios=widths,
+        heights = [1] * 6
+        fig = plt.figure(figsize=(5.5, 6.4))
+        gsp = gridspec.GridSpec(6, 4, width_ratios=widths,
                                 height_ratios=heights)
-        r_u_ax = fig.add_subplot(gsp[0:2, 0:2])
-        ph_ax = fig.add_subplot(gsp[0:2, 2:])
-        k_ax = fig.add_subplot(gsp[2:, 1:3])
+        r_axs = [fig.add_subplot(gsp[0:2, 0:2]),
+                 fig.add_subplot(gsp[0:2, 2:])]
+        ph_axs = [fig.add_subplot(gsp[2:4, 0:2]),
+                  fig.add_subplot(gsp[2:4, 2:])]
+        k_axs = [fig.add_subplot(gsp[4:6, 0:2]),
+                 fig.add_subplot(gsp[4:6, 2:])]
+
+        # Real-space density plot
+        r_sizes = self.space['r_sizes']
+        r_extent = np.ravel(np.vstack((-r_sizes, r_sizes)).T) / rscale
+        r_plots = [ax.imshow(d, cmap=cmap, origin='lower', extent=r_extent,
+                             vmin=0)
+                   for ax, d in zip(r_axs, self.dens)]
+        [fig.colorbar(plot, ax=ax) for plot, ax in zip(r_plots, r_axs)]
+        [ax.set_xlabel('$x$') for ax in r_axs]
+        [ax.set_ylabel('$y$') for ax in r_axs]
+
+        # Real-space phase plot
+        ph_plots = [ax.imshow(phz, cmap='twilight_shifted', origin='lower',
+                              extent=r_extent, vmin=-np.pi, vmax=np.pi)
+                    for ax, phz in zip(ph_axs, self.phase)]
+        ph_cb = [fig.colorbar(plot, ax=ax)
+                 for plot, ax in zip(ph_plots, ph_axs)]
+        [cb.set_ticks(np.linspace(-np.pi, np.pi, 5)) for cb in ph_cb]
+        [cb.set_ticklabels(['$-\\pi$', '', '$0$', '', '$\\pi$'])
+         for cb in ph_cb]
+        [ax.set_xlabel('$x$') for ax in ph_axs]
+        [ax.set_ylabel('$y$') for ax in ph_axs]
+
+        # Momentum-space density plot
+        k_sizes = self.space['k_sizes']
+        k_extent = np.ravel(np.vstack((-k_sizes, k_sizes)).T) / kscale
+        k_plots = [ax.imshow(d, cmap=cmap, origin='lower', extent=k_extent,
+                             vmin=0)
+                   for ax, d in zip(k_axs, self.densk)]
+        [fig.colorbar(plot, ax=ax) for plot, ax in zip(k_plots, k_axs)]
+        [ax.set_xlabel('$k_x$') for ax in k_axs]
+        [ax.set_ylabel('$k_y$') for ax in k_axs]
+
+        plt.tight_layout()
+
+        # Save figure
+        if save:
+            test_name = self.paths['data'] + 'spin_dens_phase'
+            file_name = ptools.next_available_path(test_name,
+                                                   self.paths['folder'], ext)
+            plt.savefig(file_name)
+        plt.show()
 
     def plot_total(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
                    ext='.pdf'):
@@ -102,7 +147,7 @@ class PropResult:
 
         """
         dens_tot_r = sum(self.dens)
-        ph_tot_r = ttools.phase(sum(self.psi), uwrap=True)
+        ph_tot_r = ttools.phase(sum(self.psi), uwrap=True, dens=dens_tot_r)
         dens_tot_k = sum(self.densk)
 
         widths = [1] * 4

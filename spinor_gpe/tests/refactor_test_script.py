@@ -95,7 +95,7 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
 # plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.space['dr']))[0])
 # plt.show()
 
-ps.coupling_setup(wavel=790.1)
+ps.coupling_setup(wavel=790.1e-9)
 ps.coupling_grad(2, 0)
 ps.shift_momentum()
 
@@ -106,7 +106,7 @@ print((np.abs(psi[0])**2 - np.abs(psi_prime[0])**2).max())
 
 # --------- 2. RUN (Imaginary) ----
 print('Starting imaginary time.')
-N_STEPS = 100
+N_STEPS = 1000
 DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'
@@ -121,9 +121,9 @@ res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 # wavefunctions. It also has class methods for plotting and analysis.
 
 # --------- 3. ANALYZE ------------
-res0.plot_spins()
-res0.plot_total(kscale=ps.kL_recoil)
-res0.plot_pops()
+res0.plot_spins(kscale=ps.kL_recoil)
+# res0.plot_total(kscale=ps.kL_recoil)
+# res0.plot_pops()
 # res0.make_movie()
 
 # --------- 4. SETUP --------------
@@ -131,7 +131,7 @@ res0.plot_pops()
 
 # --------- 5. RUN (Real) ---------
 print('Starting real time.')
-N_STEPS = 100
+N_STEPS = 1000
 DT = 1/5000
 IS_SAMPLING = True
 
@@ -139,7 +139,7 @@ res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
                n_samples=N_SAMPLES)
 
 # --------- 6. ANALYZE ------------
-res1.plot_spins()
-res1.plot_total(kscale=ps.kL_recoil)
-res1.plot_pops()
+res1.plot_spins(kscale=ps.kL_recoil)
+# res1.plot_total(kscale=ps.kL_recoil)
+# res1.plot_pops()
 res1.make_movie()

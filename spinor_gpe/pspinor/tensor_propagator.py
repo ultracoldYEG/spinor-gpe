@@ -309,7 +309,7 @@ class TensorPropagator:
         dens = ttools.density(psi)
         dens_sqrt = [np.sqrt(d) for d in dens]
 
-        phase = ttools.phase(psi, uwrap=True)
+        phase = ttools.phase(psi, uwrap=True, dens=dens)
         phase_gradx = [ph_x for ph_x, _ in ttools.grad(phase, delta_r)]
         phase_gradsq = ttools.grad_sq(phase, delta_r)
 
