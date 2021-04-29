@@ -231,10 +231,9 @@ class TensorPropagator:
 
         Returns
         -------
-
+        result : :obj:`PropResult`
 
         """
-
         # Every sample_rate steps, need to save a copy of the wavefunction to a
         #    NumPy array in memory.
         # Every anneal_rate steps, need to
