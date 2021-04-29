@@ -96,7 +96,7 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
 # plt.show()
 
 ps.coupling_setup(wavel=790.1e-9)
-ps.detuning_grad(2, 0)
+ps.detuning_grad(20, 0)
 ps.shift_momentum()
 
 psi = ps.psi
@@ -124,7 +124,7 @@ res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 res0.plot_spins(kscale=ps.kL_recoil)
 # res0.plot_total(kscale=ps.kL_recoil)
 # res0.plot_pops()
-res0.make_movie()
+# res0.make_movie(kscale=ps.kL_recoil, play=True)
 
 # --------- 4. SETUP --------------
 

@@ -1,4 +1,6 @@
 """prop_result.py module."""
+import os
+
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
@@ -241,7 +243,7 @@ class PropResult:
     def analyze_vortex(self):
         """Compute the total vorticity in each spin component."""
 
-    def make_movie(self, rscale=1.0, kscale=1.0, cmap='viridis'):
+    def make_movie(self, rscale=1.0, kscale=1.0, cmap='viridis', play=False):
         """Generate a movie of the wavefunctions' densities and phases.
 
         Parameters
@@ -288,6 +290,9 @@ class PropResult:
                                                self.paths['folder'], '.mp4')
         anim.save(file_name, writer=writer)
         plt.close(fig)
+
+        if play:
+            os.startfile(file_name)
 
 
 def rebin(arr, new_shape=(256, 256)):
