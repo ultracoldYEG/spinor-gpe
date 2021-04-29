@@ -640,6 +640,7 @@ class PSpinor:
         result.r_scale = self.a_x
         result.k_scale = self.kL_recoil
         result.t_scale = self.time_scale
+        result.space = self.space
         return result
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
@@ -655,6 +656,7 @@ class PSpinor:
         result.r_scale = self.a_x
         result.k_scale = self.kL_recoil
         result.t_scale = self.time_scale
+        result.space = self.space
         return result
 
 

@@ -91,9 +91,9 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
 # dens = ttools.density(ps.psi)
 # grad_sq = ttools.grad_sq(dens, ps.space['dr'])
 
-plt.figure()
-plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.space['dr']))[0])
-plt.show()
+# plt.figure()
+# plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.space['dr']))[0])
+# plt.show()
 
 ps.coupling_setup(wavel=790.1)
 ps.coupling_grad(2, 0)
@@ -123,8 +123,8 @@ res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 # --------- 3. ANALYZE ------------
 res0.plot_spins()
 res0.plot_total()
-res0.plot_pops()
-res0.make_movie()
+# res0.plot_pops()
+# res0.make_movie()
 
 # --------- 4. SETUP --------------
 
@@ -141,6 +141,5 @@ res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 # --------- 6. ANALYZE ------------
 res1.plot_spins()
 res1.plot_total()
-res1.plot_eng()
 res1.plot_pops()
 res1.make_movie()

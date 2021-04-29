@@ -4,6 +4,7 @@ from functools import reduce
 
 import numpy as np
 import torch
+from skimage import restoration as rest
 
 # ??? How should the individual FFT operations be normalized? Should they
 # remain as norm="backward", or, because of the nature of our operations,
@@ -273,28 +274,6 @@ def norm_sq(psi_comp):
     return psi_sq
 
 
-def angle(psi_comp):
-    """Compute the phase (angle) of a single complex wavefunction component.
-
-    Parameters
-    ----------
-    psi_comp : NumPy :obj:`array` or PyTorch :obj:`Tensor`
-        A single wavefunction component.
-
-    Returns
-    -------
-    angle : NumPy :obj:`array` or PyTorch :obj:`Tensor`
-        The phase (angle) of the component's wavefunction.
-
-    """
-    if isinstance(psi_comp, np.ndarray):
-        ang = np.angle(psi_comp)
-    elif isinstance(psi_comp, torch.Tensor):
-        ang = torch.angle(psi_comp)
-
-    return ang
-
-
 def grad(psi, delta_r):
     """Take a list of tensors or np arrays; checks type."""
     if isinstance(psi, list):
@@ -309,12 +288,12 @@ def grad_comp(psi_comp, delta_r):
     """Spatial gradient of a single wavefunction component."""
     if isinstance(psi_comp, np.ndarray):
         delta_r = np.array(delta_r)
-        grad_comp = np.gradient(psi_comp, *delta_r)
+        g_comp = np.gradient(psi_comp, *delta_r)
     elif isinstance(psi_comp, torch.Tensor):
         raise NotImplementedError(("Spatial gradients for tensors are not yet "
                                   "implemented."))
 
-    return grad_comp
+    return g_comp
 
 
 def grad_sq_comp(psi_comp, delta_r):
@@ -389,9 +368,9 @@ def norm(psi, vol_elem, atom_num, pop_frac=None):
             dens_norm = [d / norm_factor for d in dens]
         else:
             # TODO: Implement population fraction normalization.
-            raise NotImplementedError("""Normalizing to the expected population
-                                      fractions is not yet implemented for
-                                      NumPy arrays.""")
+            raise NotImplementedError("Normalizing to the expected population "
+                                      "fractions is not yet implemented for "
+                                      "NumPy arrays.")
 
     elif isinstance(dens[0], torch.Tensor):
         if pop_frac is None:
@@ -399,9 +378,9 @@ def norm(psi, vol_elem, atom_num, pop_frac=None):
             psi_norm = [p / np.sqrt(norm_factor.item()) for p in psi]
             dens_norm = [d / norm_factor.item() for d in dens]
         else:
-            raise NotImplementedError("""Normalizing to the expected population
-                                      fractions is not implemented for
-                                      PyTorch tensors.""")
+            raise NotImplementedError("Normalizing to the expected population "
+                                      "fractions is not implemented for "
+                                      "PyTorch tensors.")
 
     return psi_norm, dens_norm
 
@@ -428,7 +407,33 @@ def density(psi):
     return dens
 
 
-def phase(psi):
+def phase_comp(psi_comp, uwrap=False):
+    """Compute the phase (angle) of a single complex wavefunction component.
+
+    Parameters
+    ----------
+    psi_comp : NumPy :obj:`array` or PyTorch :obj:`Tensor`
+        A single wavefunction component.
+
+    Returns
+    -------
+    angle : NumPy :obj:`array` or PyTorch :obj:`Tensor`
+        The phase (angle) of the component's wavefunction.
+
+    """
+    if isinstance(psi_comp, np.ndarray):
+        ang = np.angle(psi_comp)
+        if uwrap:
+            ang = rest.unwrap_phase(ang)
+    elif isinstance(psi_comp, torch.Tensor):
+        ang = torch.angle(psi_comp)
+        if uwrap:
+            raise NotImplementedError("Unwrapping the complex phase is not "
+                                      "implemented for PyTorch tensors.")
+    return ang
+
+
+def phase(psi, uwrap=False):
     """Compute the phase of a real-space spinor wavefunction.
 
     Parameters
@@ -442,9 +447,9 @@ def phase(psi):
         The phase of each component's wavefunction.
     """
     if isinstance(psi, list):
-        phase_psi = [angle(p) for p in psi]
+        phase_psi = [phase_comp(p, uwrap) for p in psi]
     else:
-        phase_psi = angle(psi)
+        phase_psi = phase_comp(psi, uwrap)
 
     return phase_psi
 
@@ -539,9 +544,9 @@ def coupling_op(t_step, coupling=None, expon=0):
     arg = coupling * t_step / 2
     cosine = torch.cos(arg)
     sine = -1.0j * torch.sin(arg)
-    operator = [[cosine, sine * torch.exp(-1.0j * expon)],
-                [sine * torch.exp(1.0j * expon), cosine]]
-    return operator
+    op = [[cosine, sine * torch.exp(-1.0j * expon)],
+          [sine * torch.exp(1.0j * expon), cosine]]
+    return op
 
 
 def prod(factors):
