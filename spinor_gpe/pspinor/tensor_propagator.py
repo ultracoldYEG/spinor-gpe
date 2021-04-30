@@ -139,8 +139,8 @@ class TensorPropagator:
 
         # Calculate the sampling and annealing rates, as needed.
         if self.is_sampling:
-            if n_samples == 1:
-                n_samples = 100
+            # if n_samples == 1:
+            #     n_samples = 100
             assert self.n_steps % n_samples == 0, (
                 f"The number of samples requested {n_samples} does not evenly "
                 f"divide the total number of steps {self.n_steps}.")
@@ -315,5 +315,5 @@ class TensorPropagator:
             coupl_e = 0
 
         total_eng = np.real((kin + pot + int_e + coupl_e).sum())
-        print(total_eng)
+        # print(total_eng)
         return total_eng

@@ -177,12 +177,6 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
     psik :
     extents :
     paths :
-    rscale : :obj:`float`, optional
-        Real-space length scale. The default of 1.0 corresponds to the
-        naturatl harmonic length scale along the x-axis.
-    kscale : :obj:`float`, optional
-        Momentum-space length scale. The default of 1.0 corresponds to the
-        inverse harmonic length scale along the x-axis.
     cmap : :obj:`str`, optional
         Color map name for the real- and momentum-space density plots.
     save : :obj:`bool`, optional

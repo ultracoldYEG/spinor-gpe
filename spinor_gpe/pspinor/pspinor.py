@@ -349,7 +349,7 @@ class PSpinor:
                         + (y_trap * self.space['y_mesh'])**2) / 2
         #: Kinetic energy grid [hbar*omeg_x]
         self.kin_eng = (self.space['kx_mesh']**2
-                        + self.space['kx_mesh']**2) / 2
+                        + self.space['ky_mesh']**2) / 2
 
     def _calc_atoms(self, psi=None, space='r'):
         """Given a list of wavefunctions, calculates the total atom number.
@@ -676,6 +676,7 @@ class PSpinor:
         """Perform imaginary-time propagation."""
         # Pass PSpinor object instance `self` as the first parameter of
         # TensorPropagator.__init__.
+        print('Starting imaginary time propagation:')
         prop = tprop.TensorPropagator(self, t_step, n_steps, device,
                                       time='imag',
                                       is_sampling=is_sampling,

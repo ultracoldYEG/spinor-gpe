@@ -85,9 +85,10 @@ ATOM_NUM = 1e2
 omeg = {'x': W, 'y': GAMMA*W, 'z': ETA*W}
 g_sc = {'uu': 1.0, 'dd': 1.0, 'ud': 1.04}
 pop_frac = (0.5, 0.5)
+# pop_frac = (1.0, 0.0)
 ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
-                  g_sc=g_sc, phase_factor=-1, is_coupling=False,
-                  pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(128, 256))
+                  g_sc=g_sc, phase_factor=-1,
+                  pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(256, 256))
 
 # ps.plot_rdens()
 # ps.plot_rphase()
@@ -98,19 +99,14 @@ ps.plot_spins()
 # ps.detuning_grad(20, 0)
 # ps.shift_momentum()
 
-psi = ps.psi
-psik = ttools.fft_2d(psi, ps.space['dr'])
-psi_prime = ttools.ifft_2d(psik, ps.space['dr'])
-print((np.abs(psi[0])**2 - np.abs(psi_prime[0])**2).max())
-
 # --------- 2. RUN (Imaginary) ----
-print('Starting imaginary time.')
-N_STEPS = 100
+
+N_STEPS = 2000
 DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'
 ps.rand_seed = 99999
-N_SAMPLES = 50
+N_SAMPLES = 100
 
 res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
                     n_samples=N_SAMPLES)
@@ -123,7 +119,7 @@ res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 res0.plot_spins(kscale=ps.kL_recoil)
 # res0.plot_total(kscale=ps.kL_recoil)
 # res0.plot_pops()
-res0.make_movie(kscale=ps.kL_recoil, play=True)
+res0.make_movie(kscale=ps.kL_recoil, play=False)
 
 # --------- 4. SETUP --------------
 
