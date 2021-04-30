@@ -109,15 +109,15 @@ class TensorPropagator:
         if self.rand_seed is not None:
             torch.manual_seed(self.rand_seed)
         self.is_sampling = kwargs.get('is_sampling', False)
-        self.is_annealing = kwargs.get('is_sampling', False)
+        # self.is_annealing = kwargs.get('is_sampling', False)
         n_samples = kwargs.get('n_samples', 1)
-        n_anneals = kwargs.get('n_anneals', 1)
+        # n_anneals = kwargs.get('n_anneals', 1)
 
         # Load in data from PSpinor object as tensors
         self.atom_num = spin.atom_num
         self.is_coupling = spin.is_coupling
         self.g_sc = spin.g_sc
-        kin_eng = ttools.to_tensor(spin.kin_eng_spin, dev=self.device)
+        self.kin_eng = ttools.to_tensor(spin.kin_eng_spin, dev=self.device)
         self.pot_eng = ttools.to_tensor(spin.pot_eng_spin, dev=self.device)
 
         # self.psi = ttools.to_tensor(spin.psi, dev=self.device, dtype=128)
@@ -145,20 +145,22 @@ class TensorPropagator:
                 f"The number of samples requested {n_samples} does not evenly "
                 f"divide the total number of steps {self.n_steps}.")
 
-        if self.is_annealing:
-            assert self.n_steps % n_anneals == 0, (
-                f"The number of annealings requested {n_anneals} does not "
-                f"evenly divide the total number of steps {self.n_steps}.")
+        # if self.is_annealing:
+        #     assert self.n_steps % n_anneals == 0, (
+        #         f"The number of annealings requested {n_anneals} does not "
+        #         f"evenly divide the total number of steps {self.n_steps}.")
 
-        self.anneal_rate = self.n_steps / n_anneals
+        # self.anneal_rate = self.n_steps / n_anneals
         self.sample_rate = self.n_steps / n_samples
 
         # Pre-compute several evolution operators
-        self.eng_out = {'kin': ttools.evolution_op(kin_eng, self.dt_out / 2),
+        self.eng_out = {'kin': ttools.evolution_op(self.kin_eng,
+                                                   self.dt_out / 2),
                         'pot': ttools.evolution_op(self.pot_eng, self.dt_out),
                         'coupl': ttools.coupling_op(self.dt_out / 2,
                                                     self.coupling, expon)}
-        self.eng_in = {'kin': ttools.evolution_op(kin_eng, self.dt_in / 2),
+        self.eng_in = {'kin': ttools.evolution_op(self.kin_eng,
+                                                  self.dt_in / 2),
                        'pot': ttools.evolution_op(self.pot_eng, self.dt_in),
                        'coupl': ttools.coupling_op(self.dt_in / 2,
                                                    self.coupling, expon)}
@@ -246,8 +248,10 @@ class TensorPropagator:
                                     dtype=np.complex128)
             sampled_times = np.linspace(0, self.n_steps * np.abs(self.t_step),
                                         n_samples)
-
+        energy = self.eng_expect(self.psik)
+        print('\n', energy)
         # Main propagation loop
+        
         for _i in tqdm(range(n_steps)):
             if self.is_sampling:
                 if (_i % self.sample_rate == 0):
@@ -260,6 +264,7 @@ class TensorPropagator:
             pops['vals'][_i] = ttools.calc_pops(self.psik, self.space['dv_k'])
 
         energy = self.eng_expect(self.psik)
+        print('\n', energy)
 
         if self.is_sampling:
             # Save sampled wavefunctions; times are in dimensionless time units
@@ -316,4 +321,4 @@ class TensorPropagator:
 
         total_eng = np.real((kin + pot + int_e + coupl_e).sum())
         # print(total_eng)
-        return total_eng
+        return [total_eng, np.real(kin).sum(), np.real(pot).sum(), np.real(int_e).sum()]

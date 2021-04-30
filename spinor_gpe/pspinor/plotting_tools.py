@@ -168,7 +168,7 @@ def plot_phase(psi=None, spin=None, cmap='twilight_shifted', scale=1,
 
 
 def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
-               ext='.pdf'):
+               ext='.pdf', show=True, zoom=1.0):
     """Plot the densities (real & k) and phases of spin components.
 
     Parameters
@@ -199,14 +199,11 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
     widths = [1] * 4
     heights = [1] * 6
     fig = plt.figure(figsize=(5.5, 6.4))
-    gsp = gridspec.GridSpec(6, 4, width_ratios=widths,
-                            height_ratios=heights)
-    r_axs = [fig.add_subplot(gsp[0:2, 0:2]),
-             fig.add_subplot(gsp[0:2, 2:])]
-    ph_axs = [fig.add_subplot(gsp[2:4, 0:2]),
-              fig.add_subplot(gsp[2:4, 2:])]
-    k_axs = [fig.add_subplot(gsp[4:6, 0:2]),
-             fig.add_subplot(gsp[4:6, 2:])]
+    gsp = gridspec.GridSpec(6, 4, width_ratios=widths, height_ratios=heights)
+
+    r_axs = [fig.add_subplot(gsp[0:2, 0:2]), fig.add_subplot(gsp[0:2, 2:])]
+    ph_axs = [fig.add_subplot(gsp[2:4, 0:2]), fig.add_subplot(gsp[2:4, 2:])]
+    k_axs = [fig.add_subplot(gsp[4:6, 0:2]), fig.add_subplot(gsp[4:6, 2:])]
 
     # Real-space density plot
     r_plots = [ax.imshow(d, cmap=cmap, origin='lower', extent=extents['r'],
@@ -225,8 +222,8 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
     any(cb.set_ticks(np.linspace(-np.pi, np.pi, 5)) for cb in ph_cb)
     any(cb.set_ticklabels(['$-\\pi$', '', '$0$', '', '$\\pi$'])
         for cb in ph_cb)
-    any(ax.set_xlabel('$x$') for ax in ph_axs)
-    any(ax.set_ylabel('$y$') for ax in ph_axs)
+    all(ax.set_xlabel('$x$') for ax in ph_axs)
+    all(ax.set_ylabel('$y$') for ax in ph_axs)
 
     # Momentum-space density plot
     k_plots = [ax.imshow(d, cmap=cmap, origin='lower', extent=extents['k'],
@@ -243,7 +240,13 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
         test_name = paths['data'] + 'spin_dens_phase'
         file_name = next_available_path(test_name, paths['folder'], ext)
         plt.savefig(file_name)
-    plt.show()
+    if show:
+        plt.show()
 
     all_plots = {'r': r_plots, 'ph': ph_plots, 'k': k_plots}
     return fig, all_plots
+
+
+def plot_total():
+    """Plot the total densities and phase of the wavefunction."""
+    pass

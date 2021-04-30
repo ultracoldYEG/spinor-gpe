@@ -188,6 +188,7 @@ class PSpinor:
             Gives the option to overwrite existing data sub-directories
 
         """
+        # TODO: Copy the code from the script file to the /code subfolder
         #: Path to the directory containing all the simulation data & results
         if not os.path.isabs(path):
             data_path = ROOT_DIR + '/data/' + path + '/'
@@ -691,11 +692,12 @@ class PSpinor:
 
         self.psik = result.psik
         self.psi = result.psi
-        return result
+        return result, prop  # FIXME: prop generally doesn't return
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
              n_samples=1):
         """Perform real-time propagation."""
+        print('Starting real time propagation:')
         prop = tprop.TensorPropagator(self, t_step, n_steps, device,
                                       time='real',
                                       is_sampling=is_sampling,

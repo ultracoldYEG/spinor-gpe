@@ -55,7 +55,7 @@ class PropResult:
         return s
 
     def plot_spins(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
-                   ext='.pdf'):
+                   ext='.pdf', show=True):
         """Plot the densities (real & k) and phases of spin components.
 
         Parameters
@@ -85,11 +85,11 @@ class PropResult:
 
         fig, all_plots = ptools.plot_spins(self.psi, self.psik, extents,
                                            self.paths, cmap=cmap, save=save,
-                                           ext=ext)
+                                           ext=ext, show=show)
         return fig, all_plots
 
     def plot_total(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
-                   ext='.pdf'):
+                   ext='.pdf', show=True):
         """Plot the total real-space density and phase of the wavefunction.
 
         Parameters
@@ -225,7 +225,8 @@ class PropResult:
             # ??? Need to rebin for speed?
         n_samples = len(times)
         writer = animation.writers['ffmpeg'](fps=5, bitrate=-1)
-        fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False)
+        fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False,
+                                         show=False)
 
         def animate(frame, n_total):
             global timelast, timethis
