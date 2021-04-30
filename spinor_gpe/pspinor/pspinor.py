@@ -210,8 +210,7 @@ class PSpinor:
         data_path = f'{os.path.normpath(data_path)}{os.sep}'
         code_data_path = f'{os.path.normpath(code_data_path)}{os.sep}'
         trial_data_path = f'{os.path.normpath(trial_data_path)}{os.sep}'
-        print(data_path)
-        print(trial_data_path)
+
         os.makedirs(data_path, exist_ok=True)
         os.makedirs(code_data_path, exist_ok=True)
         os.makedirs(trial_data_path, exist_ok=True)
@@ -635,6 +634,40 @@ class PSpinor:
         sizes = self.space['r_sizes']
         extent = np.ravel(np.vstack((-sizes, sizes)).T) / scale
         ptools.plot_phase(psi, spin, cmap, scale, extent)
+
+    def plot_spins(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
+                   ext='.pdf'):
+        """Plot the densities (real & k) and phases of spin components.
+
+        Parameters
+        ----------
+        rscale : :obj:`float`, optional
+            Real-space length scale. The default of 1.0 corresponds to the
+            naturatl harmonic length scale along the x-axis.
+        kscale : :obj:`float`, optional
+            Momentum-space length scale. The default of 1.0 corresponds to the
+            inverse harmonic length scale along the x-axis.
+        cmap : :obj:`str`, optional
+            Color map name for the real- and momentum-space density plots.
+        save : :obj:`bool`, optional
+            Saves the figure as a .pdf file (default). The filename has the
+            format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
+        ext : :obj:`str`, optional
+            Saved plot image file extension.
+
+        """
+        r_sizes = self.space['r_sizes']
+        r_extent = np.ravel(np.vstack((-r_sizes, r_sizes)).T) / rscale
+
+        k_sizes = self.space['k_sizes']
+        k_extent = np.ravel(np.vstack((-k_sizes, k_sizes)).T) / kscale
+
+        extents = {'r': r_extent, 'k': k_extent}
+
+        fig, all_plots = ptools.plot_spins(self.psi, self.psik, extents,
+                                           self.paths, cmap=cmap, save=save,
+                                           ext=ext)
+        return fig, all_plots
 
     # pylint: disable=too-many-arguments
     def imaginary(self, t_step, n_steps=1000, device='cpu',

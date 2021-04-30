@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt  # noqa: E402
 
 from spinor_gpe.pspinor import pspinor as spin  # noqa: E402
 from spinor_gpe.pspinor import tensor_tools as ttools  # noqa: E402
+from spinor_gpe.pspinor import prop_result as result  # noqa: E402
 
 
 # BASIC STRUCTURE OF A SIMULATION:
@@ -41,7 +42,7 @@ from spinor_gpe.pspinor import tensor_tools as ttools  # noqa: E402
 # be contained in a PSpinors object, with class methods for propagation
 # (real & imaginary).
 
-DATA_PATH = 'ground_state/Trial_001'
+DATA_PATH = 'ground_state/Trial_000'
 # The directory might look like:
 #     spinor_gpe
 #     ├── pspinors
@@ -88,6 +89,10 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=-1, is_coupling=False,
                   pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(128, 128))
 
+ps.plot_rdens()
+ps.plot_rphase()
+ps.plot_kdens()
+ps.plot_spins()
 # dens = ttools.density(ps.psi)
 # grad_sq = ttools.grad_sq(dens, ps.space['dr'])
 
@@ -106,7 +111,7 @@ print((np.abs(psi[0])**2 - np.abs(psi_prime[0])**2).max())
 
 # --------- 2. RUN (Imaginary) ----
 print('Starting imaginary time.')
-N_STEPS = 1000
+N_STEPS = 100
 DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'
@@ -124,7 +129,7 @@ res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 res0.plot_spins(kscale=ps.kL_recoil)
 # res0.plot_total(kscale=ps.kL_recoil)
 # res0.plot_pops()
-# res0.make_movie(kscale=ps.kL_recoil, play=True)
+res0.make_movie(kscale=ps.kL_recoil, play=True)
 
 # --------- 4. SETUP --------------
 
