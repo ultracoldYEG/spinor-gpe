@@ -11,6 +11,7 @@ A python package simulating the quasi-2D pseudospin-1/2 Gross-Pitaevskii equatio
 * PyTorch        1.8.1
 * tqdm           4.59.0
 * scikit-image   0.18.1
+* ffmpeg         4.3.1
 
 
 ## Getting Started:

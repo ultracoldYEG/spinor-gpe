@@ -41,7 +41,7 @@ from spinor_gpe.pspinor import tensor_tools as ttools  # noqa: E402
 # be contained in a PSpinors object, with class methods for propagation
 # (real & imaginary).
 
-DATA_PATH = 'ground_state/Trial_000'
+DATA_PATH = 'ground_state/Trial_001'
 # The directory might look like:
 #     spinor_gpe
 #     ├── pspinors
@@ -95,9 +95,9 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
 # plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.space['dr']))[0])
 # plt.show()
 
-ps.coupling_setup(wavel=790.1e-9)
-ps.detuning_grad(20, 0)
-ps.shift_momentum()
+# ps.coupling_setup(wavel=790.1e-9)
+# ps.detuning_grad(20, 0)
+# ps.shift_momentum()
 
 psi = ps.psi
 psik = ttools.fft_2d(psi, ps.space['dr'])

@@ -134,7 +134,8 @@ class TensorPropagator:
             expon = 2 * self.kL_recoil * self.space['x_mesh']
         else:
             self.coupling = None
-            self.kL_recoil = 0
+            self.kL_recoil = 1.0
+            expon = torch.tensor(0.0)
 
         # Calculate the sampling and annealing rates, as needed.
         if self.is_sampling:
@@ -297,7 +298,7 @@ class TensorPropagator:
         kin = (sum(ttools.grad_sq(dens_sqrt, delta_r))
                + sum([d * p for d, p in zip(dens, phase_gradsq)])
                + sum([d * p for d, p in zip(dens, phase_gradx)])
-               * 2 * self.kL_recoil) / 2
+               * 2 * self.kL_recoil * self.is_coupling) / 2
 
         pot = sum([d * pot for d, pot in
                    zip(dens, ttools.to_numpy(self.pot_eng))])

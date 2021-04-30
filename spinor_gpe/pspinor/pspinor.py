@@ -206,9 +206,15 @@ class PSpinor:
 
             shutil.rmtree(data_path)  # Deletes the data directory
         # Create the directories and sub-directories
-        os.makedirs(data_path)
-        os.makedirs(code_data_path)
-        os.makedirs(trial_data_path)
+
+        data_path = f'{os.path.normpath(data_path)}{os.sep}'
+        code_data_path = f'{os.path.normpath(code_data_path)}{os.sep}'
+        trial_data_path = f'{os.path.normpath(trial_data_path)}{os.sep}'
+        print(data_path)
+        print(trial_data_path)
+        os.makedirs(data_path, exist_ok=True)
+        os.makedirs(code_data_path, exist_ok=True)
+        os.makedirs(trial_data_path, exist_ok=True)
 
         folder_name = os.path.basename(os.path.normpath(data_path))
 
@@ -378,8 +384,8 @@ class PSpinor:
         self.kin_eng_spin = [self.kin_eng] * 2
         self.pot_eng_spin = [self.pot_eng] * 2
         # pylint: disable=invalid-name
-        self.kL_recoil = None
-        self.EL_recoil = None
+        self.kL_recoil = 1.0
+        self.EL_recoil = 1.0
         # self.coupling = None
         # self.detuning = None
 
@@ -450,7 +456,7 @@ class PSpinor:
     def coupling(self, array):
         """Set the `coupling` attribute."""
         # if not self.is_coupling:
-        #     raise Exception(f"The `is_coupling` option is {self.is_coupling}. \
+        #     raise Exception(f"The `is_coupling` option is {self.is_coupling}.
         #                     Initialize coupling with `coupling_setup()`.")
         self._coupling = array
 
@@ -463,7 +469,7 @@ class PSpinor:
     def detuning(self, array):
         """Set the `detuning` attribute."""
         # if not self.is_coupling:
-        #     raise Exception(f"The `is_coupling` option is {self.is_coupling}. \
+        #     raise Exception(f"The `is_coupling` option is {self.is_coupling}.
         #                     Initialize coupling with `coupling_setup()`.")
         self._detuning = array
         self.pot_eng_spin = [self.pot_eng + self._detuning / 2,
