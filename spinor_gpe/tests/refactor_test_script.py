@@ -87,18 +87,12 @@ g_sc = {'uu': 1.0, 'dd': 1.0, 'ud': 1.04}
 pop_frac = (0.5, 0.5)
 ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=-1, is_coupling=False,
-                  pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(128, 128))
+                  pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(128, 256))
 
-ps.plot_rdens()
-ps.plot_rphase()
-ps.plot_kdens()
+# ps.plot_rdens()
+# ps.plot_rphase()
+# ps.plot_kdens()
 ps.plot_spins()
-# dens = ttools.density(ps.psi)
-# grad_sq = ttools.grad_sq(dens, ps.space['dr'])
-
-# plt.figure()
-# plt.imshow(ttools.density(ttools.fft_2d(ps.psi, ps.space['dr']))[0])
-# plt.show()
 
 # ps.coupling_setup(wavel=790.1e-9)
 # ps.detuning_grad(20, 0)

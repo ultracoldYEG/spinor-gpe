@@ -552,9 +552,9 @@ def coupling_op(t_step, coupling=None, expon=0):
     arg = coupling * t_step / 2
     cosine = torch.cos(arg)
     sine = -1.0j * torch.sin(arg)
-    op = [[cosine, sine * torch.exp(-1.0j * expon)],
-          [sine * torch.exp(1.0j * expon), cosine]]
-    return op
+    coupl_op = [[cosine, sine * torch.exp(-1.0j * expon)],
+                [sine * torch.exp(1.0j * expon), cosine]]
+    return coupl_op
 
 
 def prod(factors):

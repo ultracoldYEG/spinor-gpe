@@ -247,11 +247,13 @@ class TensorPropagator:
             sampled_times = np.linspace(0, self.n_steps * np.abs(self.t_step),
                                         n_samples)
 
+        # Main propagation loop
         for _i in tqdm(range(n_steps)):
-            if (self.is_sampling and (_i % self.sample_rate) == 0):
-                # sampled_psik.append(ttools.to_numpy(self.psik))
-                samp_idx = int(_i / self.sample_rate)
-                sampled_psik[samp_idx] = np.array(ttools.to_numpy(self.psik))
+            if self.is_sampling:
+                if (_i % self.sample_rate == 0):
+                    # sampled_psik.append(ttools.to_numpy(self.psik))
+                    idx = int(_i / self.sample_rate)
+                    sampled_psik[idx] = np.array(ttools.to_numpy(self.psik))
 
             self.full_step()
 

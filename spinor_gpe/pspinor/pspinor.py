@@ -172,8 +172,8 @@ class PSpinor:
 
         self.rand_seed = None
         self.prop = None
-        self.coupling = np.zeros(mesh_points)
-        self.detuning = np.zeros(mesh_points)
+        self.coupling = np.zeros(np.flip(mesh_points))
+        self.detuning = np.zeros(np.flip(mesh_points))
 
     def setup_data_path(self, path, overwrite):
         """Create new data directory to store simulation data & results.

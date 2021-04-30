@@ -109,6 +109,7 @@ class PropResult:
             Saved plot image file extension.
 
         """
+        # TODO: Move this to the ptools module and make it callable from here.
         r_sizes = self.space['r_sizes']
         r_extent = np.ravel(np.vstack((-r_sizes, r_sizes)).T) / rscale
 
