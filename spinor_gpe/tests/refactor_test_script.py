@@ -42,7 +42,7 @@ from spinor_gpe.pspinor import pspinor as spin  # noqa: E402
 # be contained in a PSpinors object, with class methods for propagation
 # (real & imaginary).
 
-DATA_PATH = 'ground_state/Trial_002'
+DATA_PATH = 'ground_state/Trial_003'
 # The directory might look like:
 #     spinor_gpe
 #     ├── pspinors
@@ -83,13 +83,13 @@ ETA = 40.0
 
 ATOM_NUM = 1e4
 omeg = {'x': W, 'y': GAMMA*W, 'z': ETA*W}
-g_sc = {'uu': 1.0, 'dd': 1.0, 'ud': 0.5}
+g_sc = {'uu': 1, 'dd': 1, 'ud': 0.0}
 pop_frac = (0.5, 0.5)
 # pop_frac = (1.0, 0.0)
 ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=-1,
                   pop_frac=pop_frac, r_sizes=(16, 16), mesh_points=(256, 256))
-
+print(ps._calc_atoms(space='k'))
 # ps.plot_rdens()
 # ps.plot_rphase()
 # ps.plot_kdens()
@@ -102,12 +102,12 @@ ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil)
 
 # --------- 2. RUN (Imaginary) ----
 
-N_STEPS = 2000
+N_STEPS = 10
 DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'
 ps.rand_seed = 99999
-N_SAMPLES = 25
+N_SAMPLES = 10
 
 res0, t_prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
                             n_samples=N_SAMPLES)
@@ -115,12 +115,12 @@ res0, t_prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 # `res0` is an object containing the final wavefunctions, the energy exp.
 # values, populations, average positions, and a directory path to sampled
 # wavefunctions. It also has class methods for plotting and analysis.
-
+print(ps._calc_atoms(space='r'))
 # --------- 3. ANALYZE ------------
 res0.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil)
 # res0.plot_total(kscale=ps.kL_recoil)
 res0.plot_pops()
-res0.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=False)
+# res0.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=False)
 
 # --------- 4. SETUP --------------
 

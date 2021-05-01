@@ -163,7 +163,6 @@ class PSpinor:
             assert g_names == g_sc.keys(), ("Keys for `g_sc` must have "
                                             f"the form: {g_names}.")
             self.g_sc = g_sc
-
         self.compute_tf_params()
         self.compute_spatial_grids(mesh_points, r_sizes)
         self.compute_energy_grids()
@@ -230,10 +229,9 @@ class PSpinor:
         assert abs(phase_factor) == 1.0, ("Relative phase factor must have "
                                           "unit magnitude.")
         g_bare = [self.g_sc['uu'], self.g_sc['dd']]
-        profile = np.real(np.sqrt(self.atom_num * (self.chem_pot
-                                                   - self.pot_eng + 0.j)))
+        profile = np.real(np.sqrt((self.chem_pot - self.pot_eng + 0.j)))
         #: Initial Thomas-Fermi wavefunction for the two spin components
-        self.psi = [profile * np.real(np.sqrt(pop / g + 0.j)) for pop, g
+        self.psi = [profile * np.sqrt(pop / abs(g)) for pop, g
                     in zip(self.pop_frac, g_bare)]
         self.psi[1] *= phase_factor
 
@@ -367,12 +365,13 @@ class PSpinor:
         -------
         atom_num : :obj:`float`
         """
-        if psi is None:
-            psi = self.psi
-
         if space == 'r':
+            if psi is None:
+                psi = self.psi
             vol_elem = self.space['dv_r']
         elif space == 'k':
+            if psi is None:
+                psi = self.psik
             vol_elem = self.space['dv_k']
 
         atom_num = ttools.calc_atoms(psi, vol_elem)

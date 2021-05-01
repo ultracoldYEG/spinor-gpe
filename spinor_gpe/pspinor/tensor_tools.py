@@ -270,7 +270,9 @@ def norm_sq(psi_comp):
 
     elif isinstance(psi_comp, torch.Tensor):
         psi_sq = torch.abs(psi_comp)**2
-
+    else:
+        raise TypeError(f"`psi_comp` is of type {type(psi_comp)} and shape "
+                        f"{psi_comp.shape}.")
     return psi_sq
 
 
@@ -292,6 +294,9 @@ def grad_comp(psi_comp, delta_r):
     elif isinstance(psi_comp, torch.Tensor):
         raise NotImplementedError(("Spatial gradients for tensors are not yet "
                                   "implemented."))
+    else:
+        raise TypeError(f"`psi_comp` is of type {type(psi_comp)} and shape "
+                        f"{psi_comp.shape}.")
 
     return g_comp
 
@@ -319,6 +324,9 @@ def conj_comp(psi_comp):
         cconj = np.conj(psi_comp)
     elif isinstance(psi_comp, torch.Tensor):
         cconj = torch.conj(psi_comp)
+    else:
+        raise TypeError(f"`psi_comp` is of type {type(psi_comp)} and shape "
+                        f"{psi_comp.shape}.")
 
     return cconj
 
