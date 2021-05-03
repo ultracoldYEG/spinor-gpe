@@ -178,6 +178,7 @@ class TensorPropagator:
 
         """
         # First half step of the kinetic energy operator
+        # psik = self.psik
         psik = [eng * pk for eng, pk in zip(eng['kin'], self.psik)]
         psi = ttools.ifft_2d(psik, delta_r=self.space['dr'])
         psi, dens = ttools.norm(psi, self.space['dv_r'], self.atom_num)
@@ -211,7 +212,7 @@ class TensorPropagator:
 
         # Second half step of the kintetic energy operator
         psik = ttools.fft_2d(psi, delta_r=self.space['dr'])
-        psik = [eng * pk for eng, pk in zip(eng['kin'], self.psik)]
+        psik = [eng * pk for eng, pk in zip(eng['kin'], psik)]
         self.psik, _ = ttools.norm(psik, self.space['dv_k'], self.atom_num)
 
     def full_step(self):
@@ -251,7 +252,7 @@ class TensorPropagator:
         energy = self.eng_expect(self.psik)
         print('\n', energy)
         # Main propagation loop
-        
+
         for _i in tqdm(range(n_steps)):
             if self.is_sampling:
                 if (_i % self.sample_rate == 0):
@@ -321,4 +322,5 @@ class TensorPropagator:
 
         total_eng = np.real((kin + pot + int_e + coupl_e).sum())
         # print(total_eng)
-        return [total_eng, np.real(kin).sum(), np.real(pot).sum(), np.real(int_e).sum()]
+        return [total_eng, np.real(kin).sum(), np.real(pot).sum(),
+                np.real(int_e).sum()]

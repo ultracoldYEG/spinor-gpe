@@ -168,7 +168,7 @@ def plot_phase(psi=None, spin=None, cmap='twilight_shifted', scale=1,
 
 
 def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
-               ext='.pdf', show=True, zoom=1.0):
+               ext='.pdf', show=True, kzoom=1.0):
     """Plot the densities (real & k) and phases of spin components.
 
     Parameters
@@ -184,6 +184,8 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
         format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
     ext : :obj:`str`, optional
         Saved plot image file extension.
+    kzoom : :obj:`float`, optional
+        A zoom factor for the k-space density plot.
 
     Returns
     -------
@@ -207,15 +209,16 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
 
     # Real-space density plot
     r_plots = [ax.imshow(d, cmap=cmap, origin='lower', extent=extents['r'],
-                         vmin=0)
+                         vmin=0, aspect='equal')
                for ax, d in zip(r_axs, dens)]
     r_cb = [fig.colorbar(plot, ax=ax) for plot, ax in zip(r_plots, r_axs)]
-    any(ax.set_xlabel('$x$') for ax in r_axs)
-    any(ax.set_ylabel('$y$') for ax in r_axs)
+    all(ax.set_xlabel('$x$') for ax in r_axs)
+    all(ax.set_ylabel('$y$') for ax in r_axs)
 
     # Real-space phase plot
     ph_plots = [ax.imshow(phz, cmap='twilight_shifted', origin='lower',
-                          extent=extents['r'], vmin=-np.pi, vmax=np.pi)
+                          extent=extents['r'], vmin=-np.pi, vmax=np.pi,
+                          aspect='equal')
                 for ax, phz in zip(ph_axs, phase)]
     ph_cb = [fig.colorbar(plot, ax=ax)
              for plot, ax in zip(ph_plots, ph_axs)]
@@ -227,11 +230,14 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
 
     # Momentum-space density plot
     k_plots = [ax.imshow(d, cmap=cmap, origin='lower', extent=extents['k'],
-                         vmin=0)
+                         vmin=0, aspect='equal')
                for ax, d in zip(k_axs, densk)]
     k_cb = [fig.colorbar(plot, ax=ax) for plot, ax in zip(k_plots, k_axs)]
-    any(ax.set_xlabel('$k_x$') for ax in k_axs)
-    any(ax.set_ylabel('$k_y$') for ax in k_axs)
+    all(ax.set_xlabel('$k_x$') for ax in k_axs)
+    all(ax.set_ylabel('$k_y$') for ax in k_axs)
+    zoom_kext = extents['k'] / kzoom
+    all(ax.set_xlim(zoom_kext[:2]) for ax in k_axs)
+    all(ax.set_ylim(zoom_kext[2:]) for ax in k_axs)
 
     plt.tight_layout()
 

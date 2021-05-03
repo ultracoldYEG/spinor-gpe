@@ -55,7 +55,7 @@ class PropResult:
         return s
 
     def plot_spins(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
-                   ext='.pdf', show=True):
+                   ext='.pdf', show=True, kzoom=1.0):
         """Plot the densities (real & k) and phases of spin components.
 
         Parameters
@@ -73,6 +73,8 @@ class PropResult:
             format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
         ext : :obj:`str`, optional
             Saved plot image file extension.
+        kzoom : :obj:`float`, optional
+            A zoom factor for the k-space density plot.
 
         """
         r_sizes = self.space['r_sizes']
@@ -85,11 +87,11 @@ class PropResult:
 
         fig, all_plots = ptools.plot_spins(self.psi, self.psik, extents,
                                            self.paths, cmap=cmap, save=save,
-                                           ext=ext, show=show)
+                                           ext=ext, show=show, kzoom=kzoom)
         return fig, all_plots
 
     def plot_total(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
-                   ext='.pdf', show=True):
+                   ext='.pdf', show=True, kzoom=1.0):
         """Plot the total real-space density and phase of the wavefunction.
 
         Parameters
@@ -107,6 +109,8 @@ class PropResult:
             format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
         ext : :obj:`str`, optional
             Saved plot image file extension.
+        kzoom : :obj:`float`, optional
+            A zoom factor for the k-space density plot.
 
         """
         # TODO: Move this to the ptools module and make it callable from here.
@@ -155,6 +159,8 @@ class PropResult:
         fig.colorbar(k_plot, ax=k_ax)
         k_ax.set_xlabel('$k_x$')
         k_ax.set_ylabel('$k_y$')
+        k_ax.set_xlim(k_extent[:2] / kzoom)
+        k_ax.set_ylim(k_extent[2:] / kzoom)
 
         plt.tight_layout()
 
@@ -190,11 +196,25 @@ class PropResult:
         else:
             xlabel = 'Time [$1/\\omega_x$]'
             scale = 1.0
-        plt.figure()
-        plt.plot(self.pops['times'] * scale, self.pops['vals'])
-        plt.ylabel('Population')
-        plt.xlabel(xlabel)
-        plt.grid(alpha=0.25)
+        diff = np.abs(np.diff(self.pops['vals']))
+
+        fig = plt.figure(figsize=(12, 4))
+        ax0 = fig.add_subplot(121)
+        lines = ax0.plot(self.pops['times'] * scale, self.pops['vals'])
+        ax0.set_ylabel('Population')
+        ax0.set_xlabel(xlabel)
+        ax0.grid(alpha=0.25)
+        ax0.legend(lines, ('Pop. $| \\uparrow\\rangle$',
+                           'Pop. $| \\downarrow\\rangle$'))
+
+        ax1 = fig.add_subplot(122)
+        ax1.plot(self.pops['times'] * scale, diff)
+        ax1.set_xlabel(xlabel)
+        ax1.set_ylabel('Abs. Population Difference')
+        ax1.grid(alpha=0.25)
+        ax1.set_yscale('log')
+        ax1.set_ylim(1e-15, None)
+
         if save:
             test_name = self.paths['data'] + 'pop_evolution'
             file_name = ptools.next_available_path(test_name,
@@ -205,7 +225,8 @@ class PropResult:
     def analyze_vortex(self):
         """Compute the total vorticity in each spin component."""
 
-    def make_movie(self, rscale=1.0, kscale=1.0, cmap='viridis', play=False):
+    def make_movie(self, rscale=1.0, kscale=1.0, cmap='viridis', play=False,
+                   kzoom=1.0):
         """Generate a movie of the wavefunctions' densities and phases.
 
         Parameters
@@ -218,6 +239,9 @@ class PropResult:
             inverse harmonic length scale along the x-axis.
         cmap : :obj:`str`, optional
             Color map name for the real- and momentum-space density plots.
+        kzoom : :obj:`float`, optional
+            A zoom factor for the k-space density plot.
+
         """
         with np.load(self.sampled_path) as sampled:
             times = sampled['times']
@@ -226,7 +250,7 @@ class PropResult:
         n_samples = len(times)
         writer = animation.writers['ffmpeg'](fps=5, bitrate=-1)
         fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False,
-                                         show=False)
+                                         show=False, kzoom=kzoom)
 
         def animate(frame, n_total):
             global timelast, timethis
