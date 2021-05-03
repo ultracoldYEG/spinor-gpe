@@ -168,7 +168,7 @@ def plot_phase(psi=None, spin=None, cmap='twilight_shifted', scale=1,
 
 
 def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
-               ext='.pdf', show=True, kzoom=1.0):
+               ext='.pdf', show=True, zoom=1.0):
     """Plot the densities (real & k) and phases of spin components.
 
     Parameters
@@ -184,7 +184,7 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
         format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
     ext : :obj:`str`, optional
         Saved plot image file extension.
-    kzoom : :obj:`float`, optional
+    zoom : :obj:`float`, optional
         A zoom factor for the k-space density plot.
 
     Returns
@@ -235,7 +235,7 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
     k_cb = [fig.colorbar(plot, ax=ax) for plot, ax in zip(k_plots, k_axs)]
     all(ax.set_xlabel('$k_x$') for ax in k_axs)
     all(ax.set_ylabel('$k_y$') for ax in k_axs)
-    zoom_kext = extents['k'] / kzoom
+    zoom_kext = extents['k'] / zoom
     all(ax.set_xlim(zoom_kext[:2]) for ax in k_axs)
     all(ax.set_ylim(zoom_kext[2:]) for ax in k_axs)
 

@@ -636,7 +636,7 @@ class PSpinor:
         ptools.plot_phase(psi, spin, cmap, scale, extent)
 
     def plot_spins(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
-                   ext='.pdf', kzoom=1.0):
+                   ext='.pdf', zoom=1.0):
         """Plot the densities (real & k) and phases of spin components.
 
         Parameters
@@ -654,7 +654,7 @@ class PSpinor:
             format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
         ext : :obj:`str`, optional
             Saved plot image file extension.
-        kzoom : :obj:`float`, optional
+        zoom : :obj:`float`, optional
             A zoom factor for the k-space density plot.
 
         """
@@ -668,7 +668,7 @@ class PSpinor:
 
         fig, all_plots = ptools.plot_spins(self.psi, self.psik, extents,
                                            self.paths, cmap=cmap, save=save,
-                                           ext=ext, kzoom=kzoom)
+                                           ext=ext, zoom=zoom)
         return fig, all_plots
 
     # pylint: disable=too-many-arguments

@@ -55,7 +55,7 @@ class PropResult:
         return s
 
     def plot_spins(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
-                   ext='.pdf', show=True, kzoom=1.0):
+                   ext='.pdf', show=True, zoom=1.0):
         """Plot the densities (real & k) and phases of spin components.
 
         Parameters
@@ -73,7 +73,7 @@ class PropResult:
             format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
         ext : :obj:`str`, optional
             Saved plot image file extension.
-        kzoom : :obj:`float`, optional
+        zoom : :obj:`float`, optional
             A zoom factor for the k-space density plot.
 
         """
@@ -87,11 +87,11 @@ class PropResult:
 
         fig, all_plots = ptools.plot_spins(self.psi, self.psik, extents,
                                            self.paths, cmap=cmap, save=save,
-                                           ext=ext, show=show, kzoom=kzoom)
+                                           ext=ext, show=show, zoom=zoom)
         return fig, all_plots
 
     def plot_total(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
-                   ext='.pdf', show=True, kzoom=1.0):
+                   ext='.pdf', show=True, zoom=1.0):
         """Plot the total real-space density and phase of the wavefunction.
 
         Parameters
@@ -109,7 +109,7 @@ class PropResult:
             format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
         ext : :obj:`str`, optional
             Saved plot image file extension.
-        kzoom : :obj:`float`, optional
+        zoom : :obj:`float`, optional
             A zoom factor for the k-space density plot.
 
         """
@@ -159,8 +159,8 @@ class PropResult:
         fig.colorbar(k_plot, ax=k_ax)
         k_ax.set_xlabel('$k_x$')
         k_ax.set_ylabel('$k_y$')
-        k_ax.set_xlim(k_extent[:2] / kzoom)
-        k_ax.set_ylim(k_extent[2:] / kzoom)
+        k_ax.set_xlim(k_extent[:2] / zoom)
+        k_ax.set_ylim(k_extent[2:] / zoom)
 
         plt.tight_layout()
 
@@ -226,7 +226,7 @@ class PropResult:
         """Compute the total vorticity in each spin component."""
 
     def make_movie(self, rscale=1.0, kscale=1.0, cmap='viridis', play=False,
-                   kzoom=1.0):
+                   zoom=1.0):
         """Generate a movie of the wavefunctions' densities and phases.
 
         Parameters
@@ -250,7 +250,7 @@ class PropResult:
         n_samples = len(times)
         writer = animation.writers['ffmpeg'](fps=5, bitrate=-1)
         fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False,
-                                         show=False, kzoom=kzoom)
+                                         show=False, zoom=zoom)
 
         def animate(frame, n_total):
             global timelast, timethis

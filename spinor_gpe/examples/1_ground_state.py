@@ -35,12 +35,13 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
 # ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, kzoom=2)
 
 ps.coupling_setup(wavel=790.1e-9)
-ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, kzoom=2)
+ZOOM = 4
+ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
 
 # 2. RUN (Imaginary)
 
-N_STEPS = 2000
+N_STEPS = 1000
 DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'
@@ -53,8 +54,8 @@ res, t_prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 
 # 3. ANALYZE
 
-res.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, kzoom=2)
-res.plot_total(kscale=ps.kL_recoil, kzoom=2)
+res.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
+res.plot_total(kscale=ps.kL_recoil, zoom=ZOOM)
 res.plot_pops()
-res.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=False, kzoom=2)
+res.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=False, zoom=ZOOM)
 print(f'Final energy: {res.eng_final[0]} [hbar * omeg]')
