@@ -32,8 +32,6 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=-1,
                   pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(256, 256))
 
-# ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, kzoom=2)
-
 ps.coupling_setup(wavel=790.1e-9)
 ZOOM = 4
 ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
@@ -41,7 +39,7 @@ ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
 # 2. RUN (Imaginary)
 
-N_STEPS = 2000
+N_STEPS = 1000
 DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'

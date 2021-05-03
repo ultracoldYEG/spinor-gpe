@@ -195,7 +195,7 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
     """
     # pylint: disable=unused-variable
     dens = ttools.density(psi)
-    phase = ttools.phase(psi, uwrap=True, dens=dens)
+    phase = ttools.phase(psi, uwrap=False, dens=dens)
     densk = ttools.density(psik)
 
     widths = [1] * 4

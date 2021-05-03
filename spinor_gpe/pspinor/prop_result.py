@@ -1,5 +1,6 @@
 """prop_result.py module."""
 import os
+import warnings
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -43,7 +44,7 @@ class PropResult:
 
         self.dens = ttools.density(self.psi)
         self.densk = ttools.density(self.psik)
-        self.phase = ttools.phase(self.psi, uwrap=True, dens=self.dens)
+        self.phase = ttools.phase(self.psi, uwrap=False, dens=self.dens)
 
         self.paths = dict()
         self.t_scale = None
@@ -123,7 +124,7 @@ class PropResult:
         extents = {'r': r_extent, 'k': k_extent}
 
         dens_tot_r = sum(self.dens)
-        ph_tot_r = ttools.phase(sum(self.psi), uwrap=True, dens=dens_tot_r)
+        ph_tot_r = ttools.phase(sum(self.psi), uwrap=False, dens=dens_tot_r)
         dens_tot_k = sum(self.densk)
 
         widths = [1] * 4
@@ -243,43 +244,53 @@ class PropResult:
             A zoom factor for the k-space density plot.
 
         """
-        with np.load(self.sampled_path) as sampled:
-            times = sampled['times']
-            psiks = sampled['psiks']
-            # ??? Need to rebin for speed?
-        n_samples = len(times)
-        writer = animation.writers['ffmpeg'](fps=5, bitrate=-1)
-        fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False,
-                                         show=False, zoom=zoom)
-
         def animate(frame, n_total):
             global timelast, timethis
             psik = psiks[frame]
             psi = ttools.ifft_2d(psik, self.space['dr'])
 
             dens = ttools.density(psi)
-            phase = ttools.phase(psi, uwrap=True, dens=dens)
+            phase = ttools.phase(psi, uwrap=False, dens=dens)
             densk = ttools.density(psik)
+            max_r = [np.max(d) for d in dens]
+            max_k = [np.max(d) for d in densk]
 
             any(plot.set_data(d) for plot, d in zip(all_plots['r'], dens))
             any(plot.set_data(ph) for plot, ph in zip(all_plots['ph'], phase))
             any(plot.set_data(dk) for plot, dk in zip(all_plots['k'], densk))
 
+            any(plot.set_clim(0, m) for plot, m in zip(all_plots['r'], max_r))
+            any(plot.set_clim(0, m) for plot, m in zip(all_plots['k'], max_k))
+
             ptools.progress_message(frame, n_total)
 
-        # create and then save the animation
-        anim = animation.FuncAnimation(fig, animate, frames=n_samples,
-                                       blit=False, fargs=(n_samples,))
+        if not os.path.exists(str((self.sampled_path))):
+            warnings.warn("Cannot generate propagation movie. No sampled "
+                          "wavefuntion data exists.")
+        else:
+            with np.load(self.sampled_path) as sampled:
+                times = sampled['times']
+                psiks = sampled['psiks']
+                # ??? Need to rebin for speed?
+            n_samples = len(times)
+            writer = animation.writers['ffmpeg'](fps=5, bitrate=-1)
+            fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False,
+                                             show=False, zoom=zoom)
 
-        # Save animation
-        test_name = self.paths['data'] + 'prop_movie'
-        file_name = ptools.next_available_path(test_name,
-                                               self.paths['folder'], '.mp4')
-        anim.save(file_name, writer=writer)
-        plt.close(fig)
+            # create and then save the animation
+            anim = animation.FuncAnimation(fig, animate, frames=n_samples,
+                                           blit=False, fargs=(n_samples,))
 
-        if play:
-            os.startfile(file_name)
+            # Save animation
+            test_name = self.paths['data'] + 'prop_movie'
+            file_name = ptools.next_available_path(test_name,
+                                                   self.paths['folder'],
+                                                   '.mp4')
+            anim.save(file_name, writer=writer)
+            plt.close(fig)
+
+            if play:
+                os.startfile(file_name)
 
 
 def rebin(arr, new_shape=(256, 256)):
