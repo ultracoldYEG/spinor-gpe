@@ -41,7 +41,7 @@ ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
 # 2. RUN (Imaginary)
 
-N_STEPS = 1000
+N_STEPS = 2000
 DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'

@@ -329,6 +329,28 @@ class PSpinor:
         return np.linspace(-sizes[axis], sizes[axis], num=points[axis],
                            endpoint=False)
 
+    @property
+    def pot_eng(self):
+        """Get the `pot_eng` attribute."""
+        return self._pot_eng
+
+    @pot_eng.setter
+    def pot_eng(self, array):
+        """Set the `pot_eng` attribute."""
+        self._pot_eng = array
+        self.pot_eng_spin = [self._pot_eng] * 2
+
+    @property
+    def kin_eng(self):
+        """Get the `kin_eng` attribute."""
+        return self._kin_eng
+
+    @kin_eng.setter
+    def kin_eng(self, array):
+        """Set the `kin_eng` attribute."""
+        self._kin_eng = array
+        self.kin_eng_spin = [self._kin_eng] * 2
+
     def compute_energy_grids(self):
         """Compute basic potential and kinetic energy grids.
 
@@ -378,15 +400,11 @@ class PSpinor:
         return atom_num
 
     def no_coupling_setup(self):
-        """Calculate the kinetic & potential energy grids for no coupling."""
+        """Calculate the default parameters for no coupling."""
         self.is_coupling = False
-        self.kin_eng_spin = [self.kin_eng] * 2
-        self.pot_eng_spin = [self.pot_eng] * 2
         # pylint: disable=invalid-name
         self.kL_recoil = 1.0
         self.EL_recoil = 1.0
-        # self.coupling = None
-        # self.detuning = None
 
     def coupling_setup(self, wavel=790.1e-9, scale=1.0, mom_shift=False):
         """Calculate parameters for the momentum-(in)dependent coupling.
@@ -454,9 +472,6 @@ class PSpinor:
     @coupling.setter
     def coupling(self, array):
         """Set the `coupling` attribute."""
-        # if not self.is_coupling:
-        #     raise Exception(f"The `is_coupling` option is {self.is_coupling}.
-        #                     Initialize coupling with `coupling_setup()`.")
         self._coupling = array
 
     @property
@@ -467,9 +482,6 @@ class PSpinor:
     @detuning.setter
     def detuning(self, array):
         """Set the `detuning` attribute."""
-        # if not self.is_coupling:
-        #     raise Exception(f"The `is_coupling` option is {self.is_coupling}.
-        #                     Initialize coupling with `coupling_setup()`.")
         self._detuning = array
         self.pot_eng_spin = [self.pot_eng + self._detuning / 2,
                              self.pot_eng - self._detuning / 2]
@@ -711,7 +723,7 @@ class PSpinor:
 
         self.psik = result.psik
         self.psi = result.psi
-        return result
+        return result, prop
 
 
 # ----- DOCUMENTATION -----
