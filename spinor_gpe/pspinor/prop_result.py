@@ -204,7 +204,7 @@ class PropResult:
         lines = ax0.plot(self.pops['times'] * scale, self.pops['vals'])
         ax0.set_ylabel('Population')
         ax0.set_xlabel(xlabel)
-        ax0.grid(alpha=0.25)
+        ax0.grid(alpha=0.5)
         ax0.legend(lines, ('Pop. $| \\uparrow\\rangle$',
                            'Pop. $| \\downarrow\\rangle$'))
 
@@ -212,7 +212,7 @@ class PropResult:
         ax1.plot(self.pops['times'] * scale, diff)
         ax1.set_xlabel(xlabel)
         ax1.set_ylabel('Abs. Population Difference')
-        ax1.grid(alpha=0.25)
+        ax1.grid(alpha=0.5)
         ax1.set_yscale('log')
         ax1.set_ylim(1e-15, None)
 

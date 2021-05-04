@@ -58,17 +58,18 @@ res0, t_prop0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 
 res0.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 res0.plot_total(kscale=ps.kL_recoil, zoom=ZOOM)
-# res0.plot_pops()
-res0.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=True, zoom=ZOOM)
+res0.plot_pops()
+# res0.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=True, zoom=ZOOM)
 print(f'\nFinal energy: {res0.eng_final[0]} [hbar * omeg]')
 
 
 # 4. RUN (Real)
+ps.coupling_uniform(1.0 * ps.EL_recoil)
 
-N_STEPS = 1000
-DT = 1/500
+N_STEPS = 2000
+DT = 1/5000
 IS_SAMPLING = True
-N_SAMPLES = 50
+N_SAMPLES = 100
 res1, t_prop0 = ps.real(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
                         n_samples=N_SAMPLES)
 
