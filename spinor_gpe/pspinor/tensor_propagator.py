@@ -43,23 +43,26 @@ class TensorPropagator:
 
     # pylint: disable=too-many-instance-attributes
     def __init__(self, spin, t_step, n_steps, device='cpu', time='imag',
-                 **kwargs):
+                 is_sampling=False, n_samples=1):
         """Begin a propagation.
 
         Parameters
         ----------
-        spin :
-        t_step :
-        n_steps :
-        device :
-        time :
-
-        Other Parameters
-        ----------------
-        is_sampling :
-        n_samples :
-        is_annealing :
-        n_anneals :
+        spin :  :obj:`PSpinor`
+            The energy and spatial grids are taken from this object and
+            converted to PyTorch :obj:`Tensor` objects.
+        t_step : :obj:`float`
+            Propagation time step.
+        n_steps : :obj:`int`
+            Number of steps to propagate in time
+        device : :obj:`str`, optional
+            {'cpu', 'cuda'}
+        time : :obj:`str`, optional
+            {'real', 'imag'}
+        is_sampling : :obj:`bool`, optional
+            Option to sample and save wavefunctions throughout the propagation.
+        n_samples : :obj:`int`, optional
+            The number of samples to save.
 
         """
         # Needs:
@@ -99,17 +102,14 @@ class TensorPropagator:
         elif time == 'real':
             self.t_step = t_step
 
-        magic_gamma = 1/(2 + 2**(1/3))
+        magic_gamma = 1 / (2 + 2**(1 / 3))
         self.dt_out = self.t_step * magic_gamma
-        self.dt_in = self.t_step * (1 - 2*magic_gamma)
+        self.dt_in = self.t_step * (1 - 2 * magic_gamma)
 
-        self.rand_seed = kwargs.get('rand_seed', None)
+        self.rand_seed = spin.rand_seed
         if self.rand_seed is not None:
             torch.manual_seed(self.rand_seed)
-        self.is_sampling = kwargs.get('is_sampling', False)
-        # self.is_annealing = kwargs.get('is_sampling', False)
-        n_samples = kwargs.get('n_samples', 1)
-        # n_anneals = kwargs.get('n_anneals', 1)
+        self.is_sampling = is_sampling
 
         # Load in data from PSpinor object as tensors
         self.atom_num = spin.atom_num
@@ -124,15 +124,14 @@ class TensorPropagator:
         self.space = {k: torch.tensor(spin.space[k], device=self.device)
                       for k in keys_space}
 
-        if self.is_coupling:
-            self.coupling = ttools.to_tensor(spin.coupling, dev=self.device)
-            # pylint: disable=invalid-name
-            self.kL_recoil = spin.kL_recoil
-            self.expon = 2 * self.kL_recoil * self.space['x_mesh']
-        else:
-            self.coupling = None
-            self.kL_recoil = 1.0
+        self.coupling = ttools.to_tensor(spin.coupling, dev=self.device)
+        # pylint: disable=invalid-name
+        self.kL_recoil = spin.kL_recoil
+
+        if spin.rot_coupling:
             self.expon = torch.tensor(0.0)
+        else:
+            self.expon = 2 * self.kL_recoil * self.space['x_mesh']
 
         # Calculate the sampling and annealing rates, as needed.
         if self.is_sampling:
@@ -142,12 +141,6 @@ class TensorPropagator:
                 f"The number of samples requested {n_samples} does not evenly "
                 f"divide the total number of steps {self.n_steps}.")
 
-        # if self.is_annealing:
-        #     assert self.n_steps % n_anneals == 0, (
-        #         f"The number of annealings requested {n_anneals} does not "
-        #         f"evenly divide the total number of steps {self.n_steps}.")
-
-        # self.anneal_rate = self.n_steps / n_anneals
         self.sample_rate = self.n_steps / n_samples
 
         # Pre-compute several evolution operators
@@ -188,7 +181,7 @@ class TensorPropagator:
 
         # First half step of the coupling energy operator
         if self.is_coupling:
-            psi = [sum([r * p for r, p in zip(row, psi)])
+            psi = [sum([elem * p for elem, p in zip(row, psi)])
                    for row in eng['coupl']]
 
         # Full step of the potential energy operator
@@ -196,7 +189,7 @@ class TensorPropagator:
 
         # Second half step of the coupling energy operator
         if self.is_coupling:
-            psi = [sum([r * p for r, p in zip(row, psi)])
+            psi = [sum([elem * p for elem, p in zip(row, psi)])
                    for row in eng['coupl']]
 
         # Second half step of the interaction energy operator
@@ -252,7 +245,7 @@ class TensorPropagator:
 
         for _i in tqdm(range(n_steps)):
             if self.is_sampling:
-                if (_i % self.sample_rate == 0):
+                if _i % self.sample_rate == 0:
                     # sampled_psik.append(ttools.to_numpy(self.psik))
                     idx = int(_i / self.sample_rate)
                     sampled_psik[idx] = np.array(ttools.to_numpy(self.psik))
@@ -311,11 +304,8 @@ class TensorPropagator:
         int_e = (self.g_sc['uu'] * dens[0]**2 + self.g_sc['dd'] * dens[1]**2
                  + self.g_sc['ud'] * dens[0] * dens[1])
 
-        if self.is_coupling:
-            coupl_e = ((np.conj(psi[0]) * psi[1] + np.conj(psi[1]) * psi[0])
-                       * ttools.to_numpy(self.coupling) / 2)
-        else:
-            coupl_e = 0
+        coupl_e = ((np.conj(psi[0]) * psi[1] + np.conj(psi[1]) * psi[0])
+                   * ttools.to_numpy(self.coupling) / 2)
 
         total_eng = np.real((kin + pot + int_e + coupl_e).sum())
         # print(total_eng)

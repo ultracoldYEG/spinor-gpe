@@ -535,7 +535,7 @@ def evolution_op(energy, t_step):
     return ev_op
 
 
-def coupling_op(t_step, coupling=None, expon=0):
+def coupling_op(t_step, coupling=None, expon=torch.tensor(0)):
     """Compute the time-evolution operator for the coupling term.
 
     Parameters
@@ -557,9 +557,6 @@ def coupling_op(t_step, coupling=None, expon=0):
     """
     if coupling is None:
         coupling = torch.tensor(0)
-
-    # if not isinstance(expon, torch.Tensor):
-    #     expon = torch.tensor(expon)
 
     arg = coupling * t_step / 2
     cosine = torch.cos(arg)

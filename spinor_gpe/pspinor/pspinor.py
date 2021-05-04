@@ -173,6 +173,7 @@ class PSpinor:
         self.prop = None
         self.coupling = np.zeros(np.flip(mesh_points))
         self.detuning = np.zeros(np.flip(mesh_points))
+        self.rot_coupling = True
 
     def setup_data_path(self, path, overwrite):
         """Create new data directory to store simulation data & results.
@@ -407,7 +408,7 @@ class PSpinor:
         self.kL_recoil = 1.0
         self.EL_recoil = 1.0
 
-    def coupling_setup(self, wavel=790.1e-9, scale=1.0, mom_shift=False):
+    def coupling_setup(self, wavel=790.1e-9, scale=1.0, kin_shift=False):
         """Calculate parameters for the momentum-(in)dependent coupling.
 
         Parameters
@@ -416,7 +417,7 @@ class PSpinor:
             Wavelength of Raman coupling in [m]
         scale : :obj:`float`
             Relative scale of recoil momentum
-        mom_shift : :obj:`bool`
+        kin_shift : :obj:`bool`
             Option for a momentum-(in)dependent coupling.
         """
         # pass wavelength, relative scaling of k_L, momentum-(in)dependency
@@ -430,7 +431,7 @@ class PSpinor:
         # pylint: disable=invalid-name
         self.EL_recoil = self.kL_recoil**2 / 2
         #: Momentum shift option
-        if mom_shift:
+        if kin_shift:
             shift = self.space['kx_mesh'] * self.kL_recoil
         else:
             shift = 0
@@ -688,8 +689,7 @@ class PSpinor:
 
     # pylint: disable=too-many-arguments
     def imaginary(self, t_step, n_steps=1000, device='cpu',
-                  is_sampling=False, n_samples=1,
-                  is_annealing=False, n_anneals=1):
+                  is_sampling=False, n_samples=1):
         """Perform imaginary-time propagation."""
         # Pass PSpinor object instance `self` as the first parameter of
         # TensorPropagator.__init__.
@@ -697,10 +697,7 @@ class PSpinor:
         prop = tprop.TensorPropagator(self, t_step, n_steps, device,
                                       time='imag',
                                       is_sampling=is_sampling,
-                                      n_samples=n_samples,
-                                      is_annealing=is_annealing,
-                                      n_anneals=n_anneals,
-                                      rand_seed=self.rand_seed)
+                                      n_samples=n_samples)
         result = prop.prop_loop(prop.n_steps)
         result.paths = self.paths
         result.t_scale = self.time_scale
@@ -717,8 +714,7 @@ class PSpinor:
         prop = tprop.TensorPropagator(self, t_step, n_steps, device,
                                       time='real',
                                       is_sampling=is_sampling,
-                                      n_samples=n_samples,
-                                      rand_seed=self.rand_seed)
+                                      n_samples=n_samples)
         result = prop.prop_loop(prop.n_steps)
         result.paths = self.paths
         result.t_scale = self.time_scale

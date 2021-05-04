@@ -214,7 +214,7 @@ class PropResult:
         ax1.set_ylabel('Abs. Population Difference')
         ax1.grid(alpha=0.5)
         ax1.set_yscale('log')
-        ax1.set_ylim(1e-15, None)
+        ax1.set_ylim(2e-16, None)
 
         if save:
             test_name = self.paths['data'] + 'pop_evolution'

@@ -33,10 +33,12 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=1,
                   pop_frac=pop_frac, r_sizes=(16, 16), mesh_points=(256, 256))
 
-ps.coupling_setup(wavel=804e-9, mom_shift=True)
+ps.coupling_setup(wavel=804e-9, kin_shift=True)
 ps.coupling_uniform(5 * ps.EL_recoil)
 ps.detuning_grad(-12)
+
 ps.shift_momentum(kshift_val=0.6, frac=(0.5, 0.5))
+ps.rot_coupling = True
 ZOOM = 2
 ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
@@ -59,5 +61,5 @@ res, t_prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 res.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 res.plot_total(kscale=ps.kL_recoil, zoom=ZOOM)
 res.plot_pops()
-res.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=True, zoom=ZOOM)
+# res.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=True, zoom=ZOOM)
 print(f'\nFinal energy: {res.eng_final[0]} [hbar * omeg]')
