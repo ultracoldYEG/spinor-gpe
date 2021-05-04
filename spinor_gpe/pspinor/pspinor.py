@@ -538,7 +538,7 @@ class PSpinor:
         assert value >= 0, f"Cannot have a negative coupling value: {value}."
         self.coupling = np.ones_like(self.space['x_mesh']) * value
 
-    def detuning_grad(self, slope, offset, axis=1):
+    def detuning_grad(self, slope, offset=0.0, axis=1):
         """Generate a linear gradient of the interspin coupling strength.
 
         Convenience function for generating linear gradients of the coupling.
@@ -548,7 +548,7 @@ class PSpinor:
         >>> ps.coupling_setup()
         >>> ps.detuning = np.sin(2 * np.pi * ps.x_mesh)  # Sin function
 
-        **Note**: when working with Raman recoil units [E_L], they will first
+        .. note:: when working with Raman recoil units [E_L], they will first
         need to be converted to [hbar*omeg_x] units.
 
         Parameters

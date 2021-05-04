@@ -6,7 +6,6 @@ from tqdm import tqdm
 from spinor_gpe.pspinor import tensor_tools as ttools
 from spinor_gpe.pspinor.plotting_tools import next_available_path
 from spinor_gpe.pspinor import prop_result
-from skimage.restoration import unwrap_phase
 
 
 class TensorPropagator:
@@ -101,9 +100,8 @@ class TensorPropagator:
             self.t_step = t_step
 
         magic_gamma = 1/(2 + 2**(1/3))
-        magic_gamma_diff = 1 - 2*magic_gamma
         self.dt_out = self.t_step * magic_gamma
-        self.dt_in = self.t_step * magic_gamma_diff
+        self.dt_in = self.t_step * (1 - 2*magic_gamma)
 
         self.rand_seed = kwargs.get('rand_seed', None)
         if self.rand_seed is not None:
@@ -120,7 +118,6 @@ class TensorPropagator:
         self.kin_eng = ttools.to_tensor(spin.kin_eng_spin, dev=self.device)
         self.pot_eng = ttools.to_tensor(spin.pot_eng_spin, dev=self.device)
 
-        # self.psi = ttools.to_tensor(spin.psi, dev=self.device, dtype=128)
         self.psik = ttools.to_tensor(spin.psik, dev=self.device, dtype=128)
 
         keys_space = ['dr', 'dk', 'x_mesh', 'y_mesh', 'dv_r', 'dv_k']
@@ -131,11 +128,11 @@ class TensorPropagator:
             self.coupling = ttools.to_tensor(spin.coupling, dev=self.device)
             # pylint: disable=invalid-name
             self.kL_recoil = spin.kL_recoil
-            expon = 2 * self.kL_recoil * self.space['x_mesh']
+            self.expon = 2 * self.kL_recoil * self.space['x_mesh']
         else:
             self.coupling = None
             self.kL_recoil = 1.0
-            expon = torch.tensor(0.0)
+            self.expon = torch.tensor(0.0)
 
         # Calculate the sampling and annealing rates, as needed.
         if self.is_sampling:
@@ -158,12 +155,12 @@ class TensorPropagator:
                                                    self.dt_out / 2),
                         'pot': ttools.evolution_op(self.pot_eng, self.dt_out),
                         'coupl': ttools.coupling_op(self.dt_out / 2,
-                                                    self.coupling, expon)}
+                                                    self.coupling, self.expon)}
         self.eng_in = {'kin': ttools.evolution_op(self.kin_eng,
                                                   self.dt_in / 2),
                        'pot': ttools.evolution_op(self.pot_eng, self.dt_in),
                        'coupl': ttools.coupling_op(self.dt_in / 2,
-                                                   self.coupling, expon)}
+                                                   self.coupling, self.expon)}
 
     def single_step(self, t_step, eng):
         """Single step forward in real or imaginary time.

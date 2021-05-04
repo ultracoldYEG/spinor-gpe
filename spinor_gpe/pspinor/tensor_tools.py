@@ -557,9 +557,9 @@ def coupling_op(t_step, coupling=None, expon=0):
     """
     if coupling is None:
         coupling = torch.tensor(0)
-        
-    if not isinstance(expon, torch.Tensor):
-        expon = torch.tensor(expon)
+
+    # if not isinstance(expon, torch.Tensor):
+    #     expon = torch.tensor(expon)
 
     arg = coupling * t_step / 2
     cosine = torch.cos(arg)

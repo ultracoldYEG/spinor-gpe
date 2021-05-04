@@ -34,7 +34,7 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   pop_frac=pop_frac, r_sizes=(16, 16), mesh_points=(256, 256))
 
 ps.coupling_setup(wavel=790.1e-9, mom_shift=True)
-# ps.coupling_uniform(0)
+# ps.coupling_uniform(0 * ps.EL_recoil)
 # ps.detuning_uniform(0)
 ps.shift_momentum(kshift_val=1, frac=(0, 1.0))
 ZOOM = 2
