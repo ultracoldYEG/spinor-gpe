@@ -233,7 +233,7 @@ class PSpinor:
         #: Initial Thomas-Fermi wavefunction for the two spin components
         self.psi = [profile * np.sqrt(pop / abs(g)) for pop, g
                     in zip(self.pop_frac, g_bare)]
-        self.psi[1] *= phase_factor
+        self.psi[1] = self.psi[1] * phase_factor
 
         self.psi, _ = ttools.norm(self.psi, self.space['dv_r'], self.atom_num)
         self.psik = ttools.fft_2d(self.psi, self.space['dr'])
@@ -286,15 +286,15 @@ class PSpinor:
         #: Spacing between real-space mesh points [a_x]
         self.space['dr'] = 2 * r_sizes / mesh_points
         #: Half size of the grid along the kx- and ky- axes [1/a_x]
-        self.space['k_sizes'] = np.pi / self.space['dr']
+        k_sizes = np.pi / self.space['dr']
         #: Spacing between momentum-space mesh points [1/a_x]
         self.space['dk'] = np.pi / r_sizes
 
         #: Linear arrays for real- [a_x] and k-space [1/a_x], x- and y-axes
         self.space['x'] = self._compute_lin(r_sizes, mesh_points, axis=0)
         self.space['y'] = self._compute_lin(r_sizes, mesh_points, axis=1)
-        self.space['kx'] = self._compute_lin(r_sizes, mesh_points, axis=0)
-        self.space['ky'] = self._compute_lin(r_sizes, mesh_points, axis=1)
+        self.space['kx'] = self._compute_lin(k_sizes, mesh_points, axis=0)
+        self.space['ky'] = self._compute_lin(k_sizes, mesh_points, axis=1)
 
         #: 2D meshes for computing the energy grids [a_x] and [1/a_x]
         x_mesh, y_mesh = np.meshgrid(self.space['x'], self.space['y'])
@@ -311,6 +311,7 @@ class PSpinor:
 
         self.space['mesh_points'] = mesh_points
         self.space['r_sizes'] = r_sizes
+        self.space['k_sizes'] = k_sizes
 
     @classmethod
     def _compute_lin(cls, sizes, points, axis=0):
@@ -455,14 +456,16 @@ class PSpinor:
         shift = kshift_val * self.kL_recoil / self.space['dk'][0]
         input_ = ttools.fft_2d(psik, self.space['dr'])
         result = [np.zeros_like(pk) for pk in psik]
+
         for i in range(len(psik)):
             positive = fourier_shift(input_[i], shift=[0, shift], axis=1)
             negative = fourier_shift(input_[i], shift=[0, -shift], axis=1)
             result[i] = frac[0]*positive + frac[1]*negative
             frac = np.flip(frac)
-        psik_shift = ttools.ifft_2d(result, self.space['dr'])
+        self.psik = ttools.ifft_2d(result, self.space['dr'])
+        self.psi = ttools.ifft_2d(self.psik, self.space['dr'])
 
-        return psik_shift
+        return
 
     @property
     def coupling(self):

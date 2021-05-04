@@ -29,10 +29,10 @@ omeg = {'x': W, 'y': GAMMA*W, 'z': ETA*W}
 g_sc = {'uu': 1, 'dd': 1, 'ud': 1.04}
 pop_frac = (0.5, 0.5)
 ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
-                  g_sc=g_sc, phase_factor=-1,
+                  g_sc=g_sc, phase_factor=1,  # np.exp(-1.j * np.pi/2),
                   pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(256, 256))
 
-ps.coupling_setup(wavel=790.1e-9)
+ps.coupling_setup(wavel=790.1e-9, mom_shift=False)
 ZOOM = 4
 ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
@@ -44,7 +44,7 @@ DT = 1/50
 IS_SAMPLING = True
 DEVICE = 'cuda'
 ps.rand_seed = 99999
-N_SAMPLES = 100
+N_SAMPLES = 50
 
 res, t_prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
                            n_samples=N_SAMPLES)
@@ -55,5 +55,5 @@ res, t_prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 res.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 res.plot_total(kscale=ps.kL_recoil, zoom=ZOOM)
 res.plot_pops()
-res.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=False, zoom=ZOOM)
+res.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=True, zoom=ZOOM)
 print(f'Final energy: {res.eng_final[0]} [hbar * omeg]')
