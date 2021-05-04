@@ -16,8 +16,10 @@ def next_available_path(file_name, trial_name, ext=''):
 
     Parameters
     ----------
-    path_pattern : TYPE
-        DESCRIPTION.
+    file_name : :obj:`str`
+        The base file path to test.
+    triak_name : :obj:`str`
+    
 
     Returns
     -------

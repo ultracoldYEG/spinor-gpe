@@ -75,5 +75,6 @@ res1, t_prop0 = ps.real(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 res1.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM/2)
 res1.plot_total(kscale=ps.kL_recoil, zoom=ZOOM/2)
 res1.plot_pops()
-res1.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=True, zoom=ZOOM/2)
+res1.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=True, zoom=ZOOM/2,
+                norm_type='half')
 print(f'\nFinal energy: {res1.eng_final[0]} [hbar * omeg]')

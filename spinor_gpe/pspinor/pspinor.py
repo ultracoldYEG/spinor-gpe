@@ -690,15 +690,29 @@ class PSpinor:
     # pylint: disable=too-many-arguments
     def imaginary(self, t_step, n_steps=1000, device='cpu',
                   is_sampling=False, n_samples=1):
-        """Perform imaginary-time propagation."""
-        # Pass PSpinor object instance `self` as the first parameter of
-        # TensorPropagator.__init__.
-        print('Starting imaginary time propagation:')
+        """Perform imaginary-time propagation.
+
+        Parameters
+        ----------
+        t_step : :obj:`float`
+            The propagation time step.
+        n_steps : :obj:`int`, optional
+            The total number of propagation steps.
+        device : :obj:`str`, optional
+            {'cpu', 'cuda'}
+        is_sampling : :obj:`bool`, optional
+            Option to sample wavefunctions throughout the propagation.
+        n_samples : :obj:`int`, optional
+            The number of samples to collect.
+
+        """
         prop = tprop.TensorPropagator(self, t_step, n_steps, device,
                                       time='imag',
                                       is_sampling=is_sampling,
                                       n_samples=n_samples)
         result = prop.prop_loop(prop.n_steps)
+
+        # Include PSpinor attributes with the result object
         result.paths = self.paths
         result.t_scale = self.time_scale
         result.space = self.space
@@ -709,13 +723,29 @@ class PSpinor:
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
              n_samples=1):
-        """Perform real-time propagation."""
-        print('Starting real time propagation:')
+        """Perform real-time propagation.
+
+        Parameters
+        ----------
+        t_step : :obj:`float`
+            The propagation time step.
+        n_steps : :obj:`int`, optional
+            The total number of propagation steps.
+        device : :obj:`str`, optional
+            {'cpu', 'cuda'}
+        is_sampling : :obj:`bool`, optional
+            Option to sample wavefunctions throughout the propagation.
+        n_samples : :obj:`int`, optional
+            The number of samples to collect.
+
+        """
         prop = tprop.TensorPropagator(self, t_step, n_steps, device,
                                       time='real',
                                       is_sampling=is_sampling,
                                       n_samples=n_samples)
         result = prop.prop_loop(prop.n_steps)
+
+        # Include PSpinor attributes with the result object
         result.paths = self.paths
         result.t_scale = self.time_scale
         result.space = self.space

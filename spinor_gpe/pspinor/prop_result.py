@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
-import matplotlib.animation as animation
+import matplotlib.animation as ani
 
 from spinor_gpe.pspinor import tensor_tools as ttools
 from spinor_gpe.pspinor import plotting_tools as ptools
@@ -171,7 +171,8 @@ class PropResult:
             file_name = ptools.next_available_path(test_name,
                                                    self.paths['folder'], ext)
             plt.savefig(file_name)
-        plt.show()
+        if show:
+            plt.show()
 
     # def plot_eng(self):
     #     """Plot the sampled energy expectation values."""
@@ -227,7 +228,7 @@ class PropResult:
         """Compute the total vorticity in each spin component."""
 
     def make_movie(self, rscale=1.0, kscale=1.0, cmap='viridis', play=False,
-                   zoom=1.0):
+                   zoom=1.0, norm_type='all'):
         """Generate a movie of the wavefunctions' densities and phases.
 
         Parameters
@@ -242,9 +243,12 @@ class PropResult:
             Color map name for the real- and momentum-space density plots.
         kzoom : :obj:`float`, optional
             A zoom factor for the k-space density plot.
+        norm_type : :obj:`str`, optional
+            {'all', 'half'} Normalizes the colormaps to the full or half sum
+            of the max densites.
 
         """
-        def animate(frame, n_total):
+        def animate(frame, n_total, val):
             global timelast, timethis
             psik = psiks[frame]
             psi = ttools.ifft_2d(psik, self.space['dr'])
@@ -259,38 +263,45 @@ class PropResult:
             any(plot.set_data(ph) for plot, ph in zip(all_plots['ph'], phase))
             any(plot.set_data(dk) for plot, dk in zip(all_plots['k'], densk))
 
-            any(plot.set_clim(0, m) for plot, m in zip(all_plots['r'], max_r))
-            any(plot.set_clim(0, m) for plot, m in zip(all_plots['k'], max_k))
+            any(plot.set_clim(0, sum(max_r) / val) for plot in all_plots['r'])
+            any(plot.set_clim(0, sum(max_k) / val) for plot in all_plots['k'])
 
             ptools.progress_message(frame, n_total)
 
         if not os.path.exists(str((self.sampled_path))):
             warnings.warn("Cannot generate propagation movie. No sampled "
                           "wavefuntion data exists.")
-        else:
-            with np.load(self.sampled_path) as sampled:
-                times = sampled['times']
-                psiks = sampled['psiks']
-                # ??? Need to rebin for speed?
-            n_samples = len(times)
-            writer = animation.writers['ffmpeg'](fps=5, bitrate=-1)
-            fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False,
-                                             show=False, zoom=zoom)
+            return
 
-            # create and then save the animation
-            anim = animation.FuncAnimation(fig, animate, frames=n_samples,
-                                           blit=False, fargs=(n_samples,))
+        if norm_type == 'all':
+            norm_val = 1.0
+        elif norm_type == 'half':
+            norm_val = 2.0
 
-            # Save animation
-            test_name = self.paths['data'] + 'prop_movie'
-            file_name = ptools.next_available_path(test_name,
-                                                   self.paths['folder'],
-                                                   '.mp4')
-            anim.save(file_name, writer=writer)
-            plt.close(fig)
+        with np.load(self.sampled_path) as sampled:
+            times = sampled['times']
+            psiks = sampled['psiks']
+            # ??? Need to rebin for speed?
 
-            if play:
-                os.startfile(file_name)
+        n_samples = len(times)
+        writer = ani.writers['ffmpeg'](fps=5, bitrate=-1)
+        fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False,
+                                         show=False, zoom=zoom)
+
+        # create and then save the animation
+        anim = ani.FuncAnimation(fig, animate, frames=n_samples, blit=False,
+                                 fargs=(n_samples, norm_val,))
+
+        # Save animation
+        test_name = self.paths['data'] + 'prop_movie'
+        file_name = ptools.next_available_path(test_name,
+                                               self.paths['folder'],
+                                               '.mp4')
+        anim.save(file_name, writer=writer)
+        plt.close(fig)
+
+        if play:
+            os.startfile(file_name)
 
 
 def rebin(arr, new_shape=(256, 256)):

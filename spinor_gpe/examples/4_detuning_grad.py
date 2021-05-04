@@ -61,5 +61,6 @@ res, t_prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
 res.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 res.plot_total(kscale=ps.kL_recoil, zoom=ZOOM)
 res.plot_pops()
-# res.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=True, zoom=ZOOM)
+res.make_movie(rscale=ps.rad_tf, kscale=ps.kL_recoil, play=True, zoom=ZOOM,
+               norm_type='half')
 print(f'\nFinal energy: {res.eng_final[0]} [hbar * omeg]')
