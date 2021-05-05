@@ -1,3 +1,6 @@
+.. image:: docs/_static/test_logo.png
+   :align: right
+
 A python package simulating the quasi-2D pseudospin-1/2 Gross-Pitaevskii equation with NVIDIA GPU acceleration.
 
 Dependencies
