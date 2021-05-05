@@ -3,11 +3,7 @@
 
 A python package simulating the quasi-2D pseudospin-1/2 Gross-Pitaevskii equation with NVIDIA GPU acceleration.
 
-Introduction
-############
-``spinor-gpe`` is high-level, object-oriented Python package for numerically solving the psuedospinor (two component) Gross-Piteavskii equation (GPE) for ground state solutions, or real-time dynamics. While this package is built on NumPy, the actual computations take place using PyTorch, a deep-neural network library commonly used in machine learning applications. This implementation provides significant hardware acceleration of the computations using NVIDIA(R) graphics processing units (GPUs).
-
-This project grew out of a desire to make high-performance GPU acceleration more accessible for the entering GPE researcher.
+.. include:: docs/source/intro.rst
 
 Dependencies
 ############
@@ -23,8 +19,8 @@ Dependencies
 * ffmpeg         4.3.1
 
 
-PyTorch & CUDA Installation
-###########################
+CUDA Installation
+#################
 
 #. Install the NVIDIA CUDA Toolkit.
    `Here <https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html>`_ is their installation guide. If you know that the NVIDIA device on your computer is already CUDA-compatible, then you can go directly to the [download page](https://developer.nvidia.com/cuda-downloads) for the most recent version of CUDA. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This part may take a while.
@@ -34,6 +30,11 @@ PyTorch & CUDA Installation
     #. Move all the folders in the unzipped sub-directory ``/cuda`` to the ``C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3`` directory (for Windows).
 
 #. (May be optional) Download the correct drivers for your NVIDIA device. These can be accessed at `this site <https://www.nvidia.com/Download/index.aspx>`_. Once the driver is installed, you will have on your computer the NVIDIA Control Panel.
+
+
+PyTorch Installation & Getting Started
+######################################
+
 #. With ``conda`` or `pip`, create a Python environment with the above-listed dependencies.
 
     #. Install the version of PyTorch corresponding to your CUDA installation. `This page <https://pytorch.org/get-started/locally/>`_ gives installation instructions for PyTorch.
