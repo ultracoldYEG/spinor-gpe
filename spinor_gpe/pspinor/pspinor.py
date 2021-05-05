@@ -1,13 +1,5 @@
 """Base class for pseudospinor GPE propagation."""
 
-# Classes & Modules:
-#  - Spinors
-#  - PropResult
-#  - TensorPropagator
-#  - tensor_tools
-#  - plotting_tools
-#  - constants
-
 import os
 import shutil
 
@@ -38,52 +30,7 @@ class PSpinor:
     along the x-direction `a_x`. The dominant energy scale is the harmonic
     trapping energy along the x-direction [hbar * `omeg['x']`].
 
-    Attributes
-    ----------
-    paths : :obj:`dict`
-        data :
-        trial :
-        code :
-
-    atom_num : :obj:`int`
-    pop_frac : :obj:`tuple`
-    omeg : :obj:`dict`
-    g_sc : :obj:`dict`
-    a_x :
-    chem_pot :
-    rad_tf :
-    time_scale :
-
-    space :
-        mesh_points :
-        r_sizes :
-        delta_r :
-        k_sizes :
-        delta_k :
-        x_lin :
-        y_lin :
-        kx_lin :
-        ky_lin :
-        x_mesh :
-        y_mesh :
-        kx_mesh :
-        ky_mesh :
-        dv_r :
-        dv_k :
-
-    pot_eng :
-    kin_eng :
-    kin_eng_spin :
-    pot_eng_spin :
-
-    psi :
-    psik :
-
-    is_coupling :
-    kL_recoil :
-    EL_recoil :
-
-    rand_seed :
+    # TODO: Need to list the object attributes
 
     """
 
@@ -500,8 +447,9 @@ class PSpinor:
         >>> ps.coupling_setup()
         >>> ps.coupling = np.exp(-ps.x_mesh**2 / 2)  # Gaussian function
 
+
         .. note:: When working with Raman recoil units [E_L], they will first
-        need to be converted to [hbar*omeg_x] units before.
+          need to be converted to [hbar*omeg_x] units before.
 
         Parameters
         ----------
@@ -549,8 +497,9 @@ class PSpinor:
         >>> ps.coupling_setup()
         >>> ps.detuning = np.sin(2 * np.pi * ps.x_mesh)  # Sin function
 
+
         .. note:: when working with Raman recoil units [E_L], they will first
-        need to be converted to [hbar*omeg_x] units.
+          need to be converted to [hbar*omeg_x] units.
 
         Parameters
         ----------

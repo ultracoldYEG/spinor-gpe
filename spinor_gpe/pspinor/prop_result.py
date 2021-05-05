@@ -303,17 +303,16 @@ class PropResult:
         if play:
             os.startfile(file_name)
 
-
-def rebin(arr, new_shape=(256, 256)):
-    """Rebin 2D array arr to shape new_shape by averaging."""
-    assert arr[0].shape == arr[1].shape
-    new_arr = [0, 0]
-    curr_shape = arr[0].shape
-    if new_shape < curr_shape:
-        for i, a in enumerate(arr):
-            shape = (new_shape[0], a.shape[0] // new_shape[0],
-                     new_shape[1], a.shape[1] // new_shape[1])
-            new_arr[i] = a.reshape(shape).mean(-1).mean(1)
-    else:
-        new_arr = arr
-    return new_arr
+    def rebin(self, arr, new_shape=(256, 256)):
+        """Rebin 2D array arr to shape new_shape by averaging."""
+        assert arr[0].shape == arr[1].shape
+        new_arr = [0, 0]
+        curr_shape = arr[0].shape
+        if new_shape < curr_shape:
+            for i, a in enumerate(arr):
+                shape = (new_shape[0], a.shape[0] // new_shape[0],
+                         new_shape[1], a.shape[1] // new_shape[1])
+                new_arr[i] = a.reshape(shape).mean(-1).mean(1)
+        else:
+            new_arr = arr
+        return new_arr

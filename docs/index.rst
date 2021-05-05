@@ -1,17 +1,15 @@
-Documentation for pseudospinors
-=========================================
+.. image:: _static/test_logo.png
+   :alt: alternate text
+   :align: right
 
-.. autoclass:: spinors.Spinors
-    :members:
-
-.. automodule:: spinors.spinors
-    :members:
+.. include:: source.readme
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-
+   source/intro
+   source/pspinor
 
 Indices and tables
 ==================
