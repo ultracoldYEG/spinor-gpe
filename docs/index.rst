@@ -2,8 +2,7 @@
    :alt: alternate text
    :align: right
 
-.. include:: ../README.rst
-   :start-line: 4
+.. include:: source/intro.rst
 
 .. toctree::
    :maxdepth: 4

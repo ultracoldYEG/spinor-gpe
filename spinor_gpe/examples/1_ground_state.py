@@ -17,7 +17,7 @@ from spinor_gpe.pspinor import pspinor as spin  # noqa: E402
 
 # 1. SETUP
 
-DATA_PATH = 'examples/Trial_000'
+DATA_PATH = 'examples/Trial_005'
 
 FREQ = 50
 W = 2*np.pi*FREQ
@@ -32,7 +32,7 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
                   g_sc=g_sc, phase_factor=1,  # np.exp(-1.j * np.pi/2),
                   pop_frac=pop_frac, r_sizes=(8, 8), mesh_points=(256, 256))
 
-ps.coupling_setup(wavel=790.1e-9, mom_shift=False)
+ps.coupling_setup(wavel=790.1e-9, kin_shift=False)
 ZOOM = 4
 ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
