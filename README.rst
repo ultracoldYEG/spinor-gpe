@@ -29,6 +29,7 @@ Getting Started
 
     #. Install the version of PyTorch corresponding to your CUDA installation. `This page <https://pytorch.org/get-started/locally/>`_ gives installation instructions for PyTorch.
     #. Verify that Pytorch was installed correctly. You should be able to import it:
+
         >>>import torch
         >>>x = torch.rand(5, 3)
         >>>print(x)
@@ -40,6 +41,7 @@ Getting Started
 
 
        Also, if you have an NVIDIA GPU, you can test that it is available for GPU computing:
+
         >>>torch.cuda.is_available()
         True
 
