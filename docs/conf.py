@@ -20,8 +20,8 @@ sys.path.insert(0, path)
 # -- Project information -----------------------------------------------------
 
 project = 'spinor-gpe'
-copyright = '2021, BDS'
-author = 'BDS'
+copyright = '2021, Benjamin D. Smith'
+author = 'Benjamin D. Smith'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'

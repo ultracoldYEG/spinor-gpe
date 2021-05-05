@@ -2,10 +2,11 @@
    :alt: alternate text
    :align: right
 
-.. include:: source.readme
+.. include:: ../README.rst
+   :start-line: 4
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
 
    source/intro

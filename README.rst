@@ -23,8 +23,8 @@ Dependencies
 * ffmpeg         4.3.1
 
 
-Getting Started
-###############
+PyTorch & CUDA Installation
+###########################
 
 #. Install the NVIDIA CUDA Toolkit.
    `Here <https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html>`_ is their installation guide. If you know that the NVIDIA device on your computer is already CUDA-compatible, then you can go directly to the [download page](https://developer.nvidia.com/cuda-downloads) for the most recent version of CUDA. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This part may take a while.
