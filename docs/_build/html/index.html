@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Introduction &mdash; spinor-gpe 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction" href="source/intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> spinor-gpe
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/pspinor.html">pspinor package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">spinor-gpe</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <img alt="alternate text" class="align-right" src="_images/test_logo.png" />
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">spinor-gpe</span></code> is high-level, object-oriented Python package for numerically solving the psuedospinor (two component) Gross-Piteavskii equation (GPE) for ground state solutions, or real-time dynamics. While this package is built on NumPy, the actual computations take place using PyTorch, a deep-neural network library commonly used in machine learning applications. This implementation provides significant hardware acceleration of the computations using NVIDIA(R) graphics processing units (GPUs).</p>
+<p>This project grew out of a desire to make high-performance GPU acceleration more accessible for the entering GPE researcher.</p>
+</div>
+<div class="section" id="dependencies">
+<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Python         3.8.8</p></li>
+<li><p>CUDA           11.3</p></li>
+<li><p>cuDNN          8.1.1</p></li>
+<li><p>NumPy          1.19.2</p></li>
+<li><p>Matplotlib     3.3.4</p></li>
+<li><p>PyTorch        1.8.1</p></li>
+<li><p>tqdm           4.59.0</p></li>
+<li><p>scikit-image   0.18.1</p></li>
+<li><p>ffmpeg         4.3.1</p></li>
+</ul>
+</div>
+<div class="section" id="pytorch-cuda-installation">
+<h1>PyTorch &amp; CUDA Installation<a class="headerlink" href="#pytorch-cuda-installation" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic">
+<li><p>Install the NVIDIA CUDA Toolkit.
+<a class="reference external" href="https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html">Here</a> is their installation guide. If you know that the NVIDIA device on your computer is already CUDA-compatible, then you can go directly to the [download page](<a class="reference external" href="https://developer.nvidia.com/cuda-downloads">https://developer.nvidia.com/cuda-downloads</a>) for the most recent version of CUDA. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This part may take a while.</p></li>
+<li><p>(Optional?) Download the <a class="reference external" href="https://developer.nvidia.com/cudnn">cuDNN library</a> corresponding to your CUDA installation. To do this you will need to create an account with NVIDIA and - for ethical purposes - specify for what you will be using the deep neural network library.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Unzip the download file</p></li>
+<li><p>Move all the folders in the unzipped sub-directory <code class="docutils literal notranslate"><span class="pre">/cuda</span></code> to the <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\NVIDIA</span> <span class="pre">GPU</span> <span class="pre">Computing</span> <span class="pre">Toolkit\CUDA\v11.3</span></code> directory (for Windows).</p></li>
+</ol>
+</div></blockquote>
+</li>
+<li><p>(May be optional) Download the correct drivers for your NVIDIA device. These can be accessed at <a class="reference external" href="https://www.nvidia.com/Download/index.aspx">this site</a>. Once the driver is installed, you will have on your computer the NVIDIA Control Panel.</p></li>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">conda</span></code> or <cite>pip</cite>, create a Python environment with the above-listed dependencies.</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Install the version of PyTorch corresponding to your CUDA installation. <a class="reference external" href="https://pytorch.org/get-started/locally/">This page</a> gives installation instructions for PyTorch.</p></li>
+<li><p>Verify that Pytorch was installed correctly. You should be able to import it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;import torch</span>
+<span class="go">&gt;&gt;&gt;x = torch.rand(5, 3)</span>
+<span class="go">&gt;&gt;&gt;print(x)</span>
+<span class="go">tensor([[0.2757, 0.3957, 0.9074],</span>
+<span class="go">        [0.6304, 0.1279, 0.7565],</span>
+<span class="go">        [0.0946, 0.7667, 0.2934],</span>
+<span class="go">        [0.9395, 0.4782, 0.9530],</span>
+<span class="go">        [0.2400, 0.0020, 0.9569]])</span>
+</pre></div>
+</div>
+<p>Also, if you have an NVIDIA GPU, you can test that it is available for GPU computing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;torch.cuda.is_available()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</li>
+<li><p>Clone the <code class="docutils literal notranslate"><span class="pre">spinor-gpe</span></code> repository, and navigate to the directory.</p></li>
+<li><p>Start playing around with some of the test files. Sit back, have fun, and enjoy the GPU acceleration!</p></li>
+</ol>
+<p>Further documentation is available &lt;in the docstrings&gt;</p>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/intro.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/intro.html#conditions">Conditions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/pspinor.html">pspinor package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/pspinor.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/pspinor.html#pspinor-pspinor-module">pspinor.pspinor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/pspinor.html#pspinor-tensor-propagator-module">pspinor.tensor_propagator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/pspinor.html#pspinor-prop-result-module">pspinor.prop_result module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/pspinor.html#module-spinor_gpe.pspinor.tensor_tools">pspinor.tensor_tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/pspinor.html#module-spinor_gpe.pspinor.plotting_tools">pspinor.plotting_tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/pspinor.html#module-spinor_gpe.pspinor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="source/intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Benjamin D. Smith.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
