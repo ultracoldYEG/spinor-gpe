@@ -24,26 +24,26 @@ Getting Started
     #. Unzip the download file
     #. Move all the folders in the unzipped sub-directory ``/cuda`` to the ``C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3`` directory (for Windows).
 
-#. (May be optional) Download the correct drivers for your NVIDIA device. These can be accessed at this site <https://www.nvidia.com/Download/index.aspx>`_. Once the driver is installed, you will have on your computer the NVIDIA Control Panel.
+#. (May be optional) Download the correct drivers for your NVIDIA device. These can be accessed at `this site <https://www.nvidia.com/Download/index.aspx>`_. Once the driver is installed, you will have on your computer the NVIDIA Control Panel.
 #. With ``conda`` or `pip`, create a Python environment with the above-listed dependencies.
 
     #. Install the version of PyTorch corresponding to your CUDA installation. `This page <https://pytorch.org/get-started/locally/>`_ gives installation instructions for PyTorch.
     #. Verify that Pytorch was installed correctly. You should be able to import it:
 
-        >>>import torch
-        >>>x = torch.rand(5, 3)
-        >>>print(x)
-        tensor([[0.2757, 0.3957, 0.9074],
-                [0.6304, 0.1279, 0.7565],
-                [0.0946, 0.7667, 0.2934],
-                [0.9395, 0.4782, 0.9530],
-                [0.2400, 0.0020, 0.9569]])
+>>>import torch
+>>>x = torch.rand(5, 3)
+>>>print(x)
+tensor([[0.2757, 0.3957, 0.9074],
+        [0.6304, 0.1279, 0.7565],
+        [0.0946, 0.7667, 0.2934],
+        [0.9395, 0.4782, 0.9530],
+        [0.2400, 0.0020, 0.9569]])
 
 
        Also, if you have an NVIDIA GPU, you can test that it is available for GPU computing:
 
-        >>>torch.cuda.is_available()
-        True
+>>>torch.cuda.is_available()
+True
 
 #. Clone the ``spinor-gpe`` repository, and navigate to the directory.
 #. Start playing around with some of the test files. Sit back, have fun, and enjoy the GPU acceleration!
