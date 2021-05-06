@@ -24,7 +24,7 @@ PyWavelets==1.1.1
 PyYAML==5.4.1
 scikit-image==0.16.2
 scipy==1.6.2
-setuptools==52.0.0.post20210125
+setuptools==52.0.0
 sip==4.19.13
 six==1.15.0
 toolz==0.11.1
