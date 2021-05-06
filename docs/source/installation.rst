@@ -16,7 +16,7 @@ Other packages:
 
 * matplotlib (visualizing results)
 * tqdm (progress messages)
-* scikit-image (matrix processing)
+* scikit-image (matrix signal processing)
 * ffmpeg (animation generation)
 
 Installing Dependencies
