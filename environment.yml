@@ -1,6 +1,7 @@
 name: spinor
 channels:
   - pytorch
+  - nvidia
   - conda-forge
   - defaults
 dependencies:
