@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Installation &mdash; spinor-gpe 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Examples" href="auto_examples/index.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> spinor-gpe
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#primary-packages">Primary packages:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-packages">Other packages:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-dependencies">Installing Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cuda-installation">CUDA Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pspinor.html">pspinor package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">spinor-gpe</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/source/installation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<section id="primary-packages">
+<h3>Primary packages:<a class="headerlink" href="#primary-packages" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>PyTorch &gt;= 1.8.0</p></li>
+<li><p>cudatoolkit &gt;= 11.1</p></li>
+<li><p>NumPy</p></li>
+</ul>
+</section>
+<section id="other-packages">
+<h3>Other packages:<a class="headerlink" href="#other-packages" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>matplotlib (visualizing results)</p></li>
+<li><p>tqdm (progress messages)</p></li>
+<li><p>scikit-image (matrix signal processing)</p></li>
+<li><p>ffmpeg (animation generation)</p></li>
+</ul>
+</section>
+</section>
+<section id="installing-dependencies">
+<h2>Installing Dependencies<a class="headerlink" href="#installing-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>The dependencies for <code class="docutils literal notranslate"><span class="pre">spinor-gpe</span></code> can be installed directly into the new <code class="docutils literal notranslate"><span class="pre">conda</span></code> virtual environment <code class="docutils literal notranslate"><span class="pre">spinor</span></code> using the <cite>environment.yml</cite> file included with the package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">env</span> <span class="n">create</span> <span class="o">--</span><span class="n">file</span> <span class="n">environment</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>The dependencies can also be installed manually using <code class="docutils literal notranslate"><span class="pre">conda</span></code> into a virtual environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">new_virt_env_name</span><span class="o">&gt;</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">pytorch</span> <span class="n">torchvision</span> <span class="n">torchaudio</span> <span class="n">cudatoolkit</span><span class="o">=</span><span class="mf">11.1</span> <span class="o">-</span><span class="n">c</span> <span class="n">pytorch</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">numpy</span> <span class="n">matplotlib</span> <span class="n">tqdm</span> <span class="n">scikit</span><span class="o">-</span><span class="n">image</span> <span class="n">ffmpeg</span> <span class="n">spyder</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information on installing PyTorch, see its <a class="reference external" href="https://pytorch.org/get-started/locally/">installation instructions page</a>.</p>
+</div>
+<p>To verify that Pytorch was installed correctly, you should be able to import it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;import torch</span>
+<span class="go">&gt;&gt;&gt;x = torch.rand(5, 3)</span>
+<span class="go">&gt;&gt;&gt;print(x)</span>
+<span class="go">tensor([[0.2757, 0.3957, 0.9074],</span>
+<span class="go">        [0.6304, 0.1279, 0.7565],</span>
+<span class="go">        [0.0946, 0.7667, 0.2934],</span>
+<span class="go">        [0.9395, 0.4782, 0.9530],</span>
+<span class="go">        [0.2400, 0.0020, 0.9569]])</span>
+</pre></div>
+</div>
+<p>Also, if you have an NVIDIA GPU, you can test that it is available for GPU computing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;torch.cuda.is_available()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</section>
+<section id="cuda-installation">
+<h2>CUDA Installation<a class="headerlink" href="#cuda-installation" title="Permalink to this headline">¶</a></h2>
+<p>CUDA is the API that interfaces with the computing resources on NVIDIA graphics cards, and it can be accessed through the PyTorch package. If your computer has an NVIDIA graphics card, start by verifying that it is CUDA-compatible. <a class="reference external" href="https://developer.nvidia.com/cuda-gpus#compute">This page</a> lists out the compute capability of many NVIDIA devices. (Note: yours may still be CUDA-compatible even if it is not listed here.)</p>
+<p>Given that your graphics card can run CUDA, the following are the steps to install CUDA on a Windows computer:</p>
+<ol class="arabic">
+<li><p>Install the NVIDIA CUDA Toolkit.
+Go to the <a class="reference external" href="https://developer.nvidia.com/cuda-downloads">CUDA download page</a> for the most recent version. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This may take a while. For reference, here is the CUDA Toolkit <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html">installation guide</a>.</p></li>
+<li><p><a class="reference external" href="https://www.nvidia.com/Download/index.aspx">Download</a> the correct drivers for your NVIDIA device. Once the driver is installed, you will have the NVIDIA Control Panel installed on your computer.</p></li>
+<li><p>(Optional) Download the <a class="reference external" href="https://developer.nvidia.com/cudnn">cuDNN library</a> corresponding to your CUDA installation version. To do this you will need to create an account with NVIDIA and - for ethical purposes - specify for what you will be using the deep neural network library. To install:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Unzip the download file</p></li>
+<li><p>Move all the folders in the unzipped sub-directory <code class="docutils literal notranslate"><span class="pre">/cuda</span></code> to the <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\NVIDIA</span> <span class="pre">GPU</span> <span class="pre">Computing</span> <span class="pre">Toolkit\CUDA\v11.3</span></code> directory.</p></li>
+</ol>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Clone the repository.</p></li>
+<li><p>Navigate to the <code class="docutils literal notranslate"><span class="pre">spinor_gpe/examples/</span></code> directory, and start to experiment with the examples there.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="auto_examples/index.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Benjamin D. Smith.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

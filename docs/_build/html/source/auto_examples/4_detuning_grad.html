@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Example 4: Raman Detuning Gradient Ground State &mdash; spinor-gpe 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Example 2: Anisotropic Time-of-Flight" href="2_anisotropic_tof.html" />
+    <link rel="prev" title="Example 1: Ground State" href="1_ground_state.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> spinor-gpe
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="1_ground_state.html">Example 1: Ground State</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Example 4: Raman Detuning Gradient Ground State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_anisotropic_tof.html">Example 2: Anisotropic Time-of-Flight</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_raman_rabi.html">Example 3: Raman Rabi Flopping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pspinor.html">pspinor package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">spinor-gpe</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Examples</a> &raquo;</li>
+        
+      <li>Example 4: Raman Detuning Gradient Ground State</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/source/auto_examples/4_detuning_grad.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-source-auto-examples-4-detuning-grad-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="example-4-raman-detuning-gradient-ground-state">
+<span id="sphx-glr-source-auto-examples-4-detuning-grad-py"></span><h1>Example 4: Raman Detuning Gradient Ground State<a class="headerlink" href="#example-4-raman-detuning-gradient-ground-state" title="Permalink to this headline">¶</a></h1>
+<p>Starts with the Thomas-Fermi solution. Configures a uniform Raman coupling
+and a linear gradient in the Raman detuning. Propagates in imaginary time,
+before reaching the ground state of this configuration. The detuning
+gradient separates the two components vertically, and the line where they
+interfere is a row of vortices.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># pylint: disable=wrong-import-position</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../..&#39;</span><span class="p">))</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># noqa: E402</span>
+
+<span class="kn">from</span> <span class="nn">spinor_gpe.pspinor</span> <span class="kn">import</span> <span class="n">pspinor</span> <span class="k">as</span> <span class="n">spin</span>  <span class="c1"># noqa: E402</span>
+
+
+<span class="c1"># 1. SETUP</span>
+
+<span class="n">DATA_PATH</span> <span class="o">=</span> <span class="s1">&#39;examples/Trial_004&#39;</span>
+
+<span class="n">FREQ</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">W</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">FREQ</span>
+<span class="n">Y_SCALE</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">Z_SCALE</span> <span class="o">=</span> <span class="mf">40.0</span>
+
+<span class="n">ATOM_NUM</span> <span class="o">=</span> <span class="mf">1e4</span>
+<span class="n">OMEG</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">W</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">Y_SCALE</span> <span class="o">*</span> <span class="n">W</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">Z_SCALE</span> <span class="o">*</span> <span class="n">W</span><span class="p">}</span>
+<span class="n">G_SC</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;uu&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;dd&#39;</span><span class="p">:</span> <span class="mf">0.995</span><span class="p">,</span> <span class="s1">&#39;ud&#39;</span><span class="p">:</span> <span class="mf">0.995</span><span class="p">}</span>
+
+<span class="n">ps</span> <span class="o">=</span> <span class="n">spin</span><span class="o">.</span><span class="n">PSpinor</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Initialize PSpinor object</span>
+                  <span class="n">atom_num</span><span class="o">=</span><span class="n">ATOM_NUM</span><span class="p">,</span>
+                  <span class="n">omeg</span><span class="o">=</span><span class="n">OMEG</span><span class="p">,</span>
+                  <span class="n">g_sc</span><span class="o">=</span><span class="n">G_SC</span><span class="p">,</span>
+                  <span class="n">pop_frac</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+                  <span class="n">r_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+                  <span class="n">mesh_points</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span>
+
+<span class="n">ps</span><span class="o">.</span><span class="n">coupling_setup</span><span class="p">(</span><span class="n">wavel</span><span class="o">=</span><span class="mf">804e-9</span><span class="p">,</span> <span class="n">kin_shift</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Shifts the k-space density momentum peaks by `kshift_val` [`kL_recoil` units]</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">shift_momentum</span><span class="p">(</span><span class="n">kshift_val</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">frac</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">coupling_uniform</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">ps</span><span class="o">.</span><span class="n">EL_recoil</span><span class="p">)</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">detuning_grad</span><span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="c1"># Selects the form of the coupling operator in the rotated reference frame</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">rot_coupling</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">ZOOM</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># Zooms the momentum-space density plots by a constant factor</span>
+
+<span class="n">ps</span><span class="o">.</span><span class="n">plot_spins</span><span class="p">(</span><span class="n">rscale</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">rad_tf</span><span class="p">,</span> <span class="n">kscale</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">kL_recoil</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="n">ZOOM</span><span class="p">)</span>
+
+
+<span class="c1"># 2. RUN (Imaginary-time)</span>
+
+<span class="n">N_STEPS</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">DT</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">50</span>
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">rand_seed</span> <span class="o">=</span> <span class="mi">99999</span>
+
+<span class="n">res</span><span class="p">,</span> <span class="n">t_prop</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">imaginary</span><span class="p">(</span><span class="n">DT</span><span class="p">,</span> <span class="n">N_STEPS</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">is_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                           <span class="n">n_samples</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+
+<span class="c1"># 3. ANALYZE</span>
+
+<span class="n">res</span><span class="o">.</span><span class="n">plot_spins</span><span class="p">(</span><span class="n">rscale</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">rad_tf</span><span class="p">,</span> <span class="n">kscale</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">kL_recoil</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="n">ZOOM</span><span class="p">)</span>
+<span class="n">res</span><span class="o">.</span><span class="n">plot_total</span><span class="p">(</span><span class="n">kscale</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">kL_recoil</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="n">ZOOM</span><span class="p">)</span>
+<span class="n">res</span><span class="o">.</span><span class="n">plot_pops</span><span class="p">()</span>
+<span class="n">res</span><span class="o">.</span><span class="n">make_movie</span><span class="p">(</span><span class="n">rscale</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">rad_tf</span><span class="p">,</span> <span class="n">kscale</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">kL_recoil</span><span class="p">,</span> <span class="n">play</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="n">ZOOM</span><span class="p">,</span>
+               <span class="n">norm_type</span><span class="o">=</span><span class="s1">&#39;half&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Final energy: </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">eng_final</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> [hbar * omeg]&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-source-auto-examples-4-detuning-grad-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/8bd18f4ad1381933bf7679f11d83b43d/4_detuning_grad.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">4_detuning_grad.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/88bf266341f7efb992ff1a740cbf488f/4_detuning_grad.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">4_detuning_grad.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="2_anisotropic_tof.html" class="btn btn-neutral float-right" title="Example 2: Anisotropic Time-of-Flight" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="1_ground_state.html" class="btn btn-neutral float-left" title="Example 1: Ground State" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Benjamin D. Smith.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
