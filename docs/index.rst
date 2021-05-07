@@ -1,4 +1,4 @@
-.. image:: _static/test_logo.png
+.. image:: _static/final_logo.png
    :alt: alternate text
    :align: right
 
@@ -9,7 +9,9 @@
    :caption: Contents:
 
    source/intro
+   source/auto_examples/index
    source/pspinor
+
 
 Indices and tables
 ==================

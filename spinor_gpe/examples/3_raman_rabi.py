@@ -1,58 +1,66 @@
-"""Example script for 2D spinor GPE propagation on a GPU.
+"""
+Example 3: Raman Rabi Flopping
+==============================
 
-Example 1: Ground State
-    Starting with the Thomas-Fermi solution, propagate in imaginary time,
-    before reaching the true ground state.
+Starts with the Thomas-Fermi solution with all the population in one spin
+component. Propagates in imaginary time to the ground state. From here,
+configures a uniform Raman coupling which drives the population on resonance
+between the two components.
 
 """
-# pylint: disable=wrong-import-position
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../..'))  # Adds project root to the PATH
 
-import numpy as np  # noqa: E402
-from matplotlib import pyplot as plt
+import numpy as np
 
-from spinor_gpe.pspinor import pspinor as spin  # noqa: E402
+from spinor_gpe.pspinor import pspinor as spin
 
 
 # 1. SETUP
 
-DATA_PATH = 'examples/Trial_003'
+DATA_PATH = 'examples/Trial_003'  # Default data path is in the /data/ folder
 
 FREQ = 50
 W = 2*np.pi*FREQ
-GAMMA = 1
-ETA = 40.0
+Y_SCALE = 1
+Z_SCALE = 40.0
 
 ATOM_NUM = 1e4
-omeg = {'x': W, 'y': GAMMA*W, 'z': ETA*W}
-g_sc = {'uu': 1, 'dd': 1, 'ud': 0.0}
-pop_frac = (1.0, 0.0)
-ps = spin.PSpinor(DATA_PATH, overwrite=True, atom_num=ATOM_NUM, omeg=omeg,
-                  g_sc=g_sc, phase_factor=1,
-                  pop_frac=pop_frac, r_sizes=(16, 16), mesh_points=(256, 256))
+OMEG = {'x': W, 'y': Y_SCALE * W, 'z': Z_SCALE * W}
+G_SC = {'uu': 1, 'dd': 1, 'ud': 0.0}
+POP_FRAC = (1.0, 0.0)
+
+ps = spin.PSpinor(DATA_PATH, overwrite=True,
+                  atom_num=ATOM_NUM,
+                  omeg=OMEG,
+                  g_sc=G_SC,
+                  pop_frac=POP_FRAC,
+                  r_sizes=(16, 16),
+                  mesh_points=(256, 256))
 
 ps.coupling_setup(wavel=790.1e-9, kin_shift=True)
-# ps.coupling_uniform(1.0 * ps.EL_recoil)
-# ps.detuning_uniform(0)
+
+# Shifts the k-space density momentum peaks by `kshift_val` [`kL_recoil` units]
 ps.shift_momentum(kshift_val=1.0, frac=(0, 1.0))
-ZOOM = 2
+
+# Selects the form of the coupling operator in the non-rotated reference frame
 ps.rot_coupling = False
+
+ZOOM = 2  # Zooms the momentum-space density plots by a constant factor
+
 ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
-# %%
-# 2. RUN (Imaginary)
+
+# 2. RUN (Imaginary-time)
 
 N_STEPS = 1000
 DT = 1/50
-IS_SAMPLING = True
 DEVICE = 'cuda'
 ps.rand_seed = 99999
-N_SAMPLES = 50
 
-res0, t_prop0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
-                             n_samples=N_SAMPLES)
+res0, t_prop0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True,
+                             n_samples=50)
 
 
 # 3. ANALYZE
@@ -64,15 +72,14 @@ res0.plot_pops()
 print(f'\nFinal energy: {res0.eng_final[0]} [hbar * omeg]')
 
 
-# 4. RUN (Real)
+# 4. RUN (Real-time)
+
+# Initializes a uniform Raman coupling (scaled in `EL_recoil` units)
 ps.coupling_uniform(1.0 * ps.EL_recoil)
 
 N_STEPS = 2000
 DT = 1/5000
-IS_SAMPLING = True
-N_SAMPLES = 100
-res1, t_prop0 = ps.real(DT, N_STEPS, DEVICE, is_sampling=IS_SAMPLING,
-                        n_samples=N_SAMPLES)
+res1, t_prop0 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=100)
 
 
 # 5. ANALYZE

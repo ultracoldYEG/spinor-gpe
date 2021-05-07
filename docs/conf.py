@@ -33,7 +33,7 @@ release = '0.0.1'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage',
-              'sphinx.ext.napoleon']
+              'sphinx.ext.napoleon', 'sphinx_gallery.gen_gallery']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -43,6 +43,11 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+sphinx_gallery_conf = {
+     'examples_dirs': '../spinor_gpe/examples',   # path to your example scripts
+     'gallery_dirs': 'source/auto_examples',  # path to where to save gallery generated output
+     'download_all_examples': False,
+}
 
 # -- Options for HTML output -------------------------------------------------
 
