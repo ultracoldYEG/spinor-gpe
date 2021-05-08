@@ -9,19 +9,18 @@ gradient separates the two components vertically, and the line where they
 interfere is a row of vortices.
 
 """
-# pylint: disable=wrong-import-position
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../..'))  # Adds project root to the PATH
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-from spinor_gpe.pspinor import pspinor as spin  # noqa: E402
+from spinor_gpe.pspinor import pspinor as spin
 
 
 # 1. SETUP
 
-DATA_PATH = 'examples/Trial_004'
+DATA_PATH = 'examples/Trial_004'  # Default data path is in the /data/ folder
 
 FREQ = 50
 W = 2*np.pi*FREQ
