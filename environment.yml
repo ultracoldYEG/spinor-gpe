@@ -1,4 +1,4 @@
-name: spinor
+name: spinor_test
 channels:
   - pytorch
   - nvidia
@@ -9,7 +9,7 @@ dependencies:
   - torchaudio
   - torchvision
   - cudatoolkit=11.1
-  - ffmpeg
+  - ffmpeg=4.3.1
   - scikit-image
   - tqdm
   - matplotlib

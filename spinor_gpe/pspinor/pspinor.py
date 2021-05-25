@@ -56,14 +56,14 @@ class PSpinor:
             Relative coupling strengths for scattering interactions,
             {uu, dd, ud}. Intercomponent interaction are assummed to be
             symmetric, i.e. ud == du.
-        mesh_points : :obj:`iterable` of :obj:`int`, optional
+        mesh_points : :obj:`iterable` of :obj:`int`, default=(256, 256)
             The number of grid points along the x- and y-axes, respectively.
-        r_sizes : :obj:`iterable` of :obj:`int`, optional
+        r_sizes : :obj:`iterable` of :obj:`int`, default=(16, 16)
             The half size of the real space grid along the x- and y-axes,
             respectively, in units of [a_x].
-        atom_num : :obj:`int`, optional
+        atom_num : :obj:`int`, default=1e4
             Total atom number.
-        pop_frac : :obj:`array_like` of :obj:`float`, optional
+        pop_frac : :obj:`array_like` of :obj:`float`, default=(0.5, 0.5)
             Starting population fraction in each spin component.
 
         Other Parameters
@@ -168,10 +168,19 @@ class PSpinor:
         self.paths = {'data': data_path, 'trial': trial_data_path,
                       'code': code_data_path, 'folder': folder_name}
 
-    def compute_tf_psi(self, phase_factor):
+    def compute_tf_psi(self, phase_factor=1.0):
         """Compute the intial pseudospinor wavefunction `psi` and FFT `psik`.
 
-        `psi` is a list of 2D NumPy arrays.
+        The psuedospinor wavefunction `psi` that is generated is a :obj:`list`
+        of 2D NumPy arrays. The Thomas-Fermi solution is real and has the
+        form of an inverted parabaloid. `psik` is a :obj:`list` of the 2D FFT
+        of `psi`'s components.
+
+        Parameters
+        ----------
+        phase_factor : :obj:`complex`, default=1.0
+            Unit complex number; initial relative phase factor between the two
+            spin components.
 
         """
         assert abs(phase_factor) == 1.0, ("Relative phase factor must have "
@@ -191,7 +200,15 @@ class PSpinor:
                  psi=self.psi, psik=self.psik)
 
     def compute_tf_params(self, species='Rb87'):
-        """Compute parameters and scales for the Thomas-Fermi solution."""
+        """Compute parameters and scales for the Thomas-Fermi solution.
+
+        Parameters
+        ----------
+        sepecies : :obj:`str`, default='Rb87'
+            Designates the atomic species and corresponding physical data
+            used in the simulations.
+
+        """
         #: Relative size of y-axis trapping frequency relative to x-axis.
         y_trap = self.omeg['y'] / self.omeg['x']
         #: Relative size of z-axis trapping frequency relative to x-axis.
@@ -214,14 +231,18 @@ class PSpinor:
 
         self.time_scale = 1 / self.omeg['x']  #: Time scale [1/omeg_x]
 
-    def compute_spatial_grids(self, mesh_points, r_sizes):
+    def compute_spatial_grids(self, mesh_points=(256, 256), r_sizes=(16, 16)):
         """Compute the real and momentum space grids.
+
+        Stored in the :obj:`dict` `space` are the real- and momentum-space
+        mesh grids, mesh sizes, mesh spacings, volume elements, and the
+        corresponding linear arrays.
 
         Parameters
         ----------
-        mesh_points : :obj:`list` of :obj:`int`
+        mesh_points : :obj:`iterable` of :obj:`int`, default=(256, 256)
             The number of grid points along the x- and y-axes, respectively.
-        r_sizes : :obj:`list` of :obj:`int`, optional
+        r_sizes : :obj:`iterable` of :obj:`int`, default=(16, 16)
             The half size of the grid along the real x- and y-axes,
             respectively,in units of [a_x].
 
@@ -301,14 +322,14 @@ class PSpinor:
         self.kin_eng_spin = [self._kin_eng] * 2
 
     def compute_energy_grids(self):
-        """Compute basic potential and kinetic energy grids.
+        """Compute the initial potential and kinetic energy grids.
 
         Assumes that the BEC is in a harmonic trap. This harmonic potential
         determines the initial 'Thomas-Fermi' density profile of the BEC.
         `pot_eng` can be modified prior to progation to have any arbitrary
         potential energy landscape.
 
-        Assumes that the BEC has a simple free-particle kinetic energy
+        Also assumes that the BEC has a simple free-particle kinetic energy
         dispersion. If using a momentum-dependent spin coupling, this grid
         will be modified later.
 
@@ -324,17 +345,20 @@ class PSpinor:
     def _calc_atoms(self, psi=None, space='r'):
         """Given a list of wavefunctions, calculates the total atom number.
 
-        May need to consider the difference between NumPy and tensor versions.
-
         Parameters
         ----------
         psi : :obj:`list` of NumPy :obj:`array`, optional.
-            The pseudospinor wavefunction.
-        space : {'r', 'k'}, optional
+            The pseudospinor wavefunction. If `psi` is not supplied, and
+            depending on `space`, calculates based on the current instance
+            attributes `self.psi` or `self.psik`.
+        space : {'r', 'k'}, default='r'
+            Specifies if the passed wavefunction is in real-space ('r') or
+            momentum-space ('k').
 
         Returns
         -------
         atom_num : :obj:`float`
+            The cumulative atom number in both spin components.
         """
         if space == 'r':
             if psi is None:
@@ -349,7 +373,7 @@ class PSpinor:
         return atom_num
 
     def no_coupling_setup(self):
-        """Calculate the default parameters for no coupling."""
+        """Provide the default parameters for no coupling."""
         self.is_coupling = False
         # pylint: disable=invalid-name
         self.kL_recoil = 1.0
@@ -358,16 +382,23 @@ class PSpinor:
     def coupling_setup(self, wavel=790.1e-9, scale=1.0, kin_shift=False):
         """Calculate parameters for the momentum-(in)dependent coupling.
 
+        If `kin_shift`=True, the kinetic energy grid receives a spin-dependent
+        shift in momentum.
+
         Parameters
         ----------
-        wavel : :obj:`float`
-            Wavelength of Raman coupling in [m]
-        scale : :obj:`float`
-            Relative scale of recoil momentum
-        kin_shift : :obj:`bool`
+        wavel : :obj:`float`,d efault=790.1e-9
+            Wavelength of Raman coupling. Note that you must specify the
+            wavelength in meters.
+        scale : :obj:`float`, default=1.0
+            The relative scale of recoil momentum. Interesting physics may be
+            simulated by considering a recoil momentum that is hypothetically
+            much larger or much smaller than the native wavelength recoil
+            momentum.
+        kin_shift : :obj:`bool`, default=False
             Option for a momentum-(in)dependent coupling.
+
         """
-        # pass wavelength, relative scaling of k_L, momentum-(in)dependency
         # pylint: disable=attribute-defined-outside-init
         #: Designator attribute for the presence of coupling
         self.is_coupling = True
@@ -386,14 +417,31 @@ class PSpinor:
         self.kin_eng_spin = [self.kin_eng + shift, self.kin_eng - shift]
         self.kin_eng_spin = [k - np.min(k) for k in self.kin_eng_spin]
 
-    def shift_momentum(self, psik=None, kshift_val=1, frac=(0.5, 0.5)):
-        """Shifts the momentum components pf `psi` by +/- kL_recoil.
+    def shift_momentum(self, psik=None, scale=1.0, frac=(0.5, 0.5)):
+        """Shifts momentum components of `psi` by a fracion of +/- kL_recoil.
+
+        The ground-state solutions of Raman-coupled spinor systems in general
+        have spinor components with both left- and right-moving momentum
+        peaks. Providing a manual shift on the momentum-space wavefunction
+        components better approximates these solutions, i.e. faster convergence
+        in imaginary time propagation.
 
         Parameters
         ----------
-        psik :
-        kshift_val :
-        frac :
+        psik : :obj:`list` of NumPy :obj:`array`, optional.
+            The momentum-space pseudospinor wavefunction. If `psik` is not
+            provided, then this function uses the current class attribute
+            `self.psik`.
+        scale : :obj:`float`, default=1.0
+            By default, the function shifts the momentum peaks by a single
+            unit of recoil momenta `kL_recoil`. `scale` gives the option of
+            scaling the shift larger or smaller for faster convergence.
+        frac : :obj:`iterable`, default=(0.5, 0.5)
+            The fraction of each spinor component's momentum peak to shift in
+            either direction. frac=(0.5, 0.5) splits into two equal peaks,
+            while (0.0, 1.0) and (1.0, 0.0) move the entire peak one
+            direction or the other.
+
         """
         assert self.is_coupling, ("The `is_coupling` option is "
                                   f"{self.is_coupling}. Initialize coupling "
@@ -401,7 +449,7 @@ class PSpinor:
         if psik is None:
             psik = self.psik
 
-        shift = kshift_val * self.kL_recoil / self.space['dk'][0]
+        shift = scale * self.kL_recoil / self.space['dk'][0]
         input_ = ttools.fft_2d(psik, self.space['dr'])
         result = [np.zeros_like(pk) for pk in psik]
 
@@ -412,8 +460,6 @@ class PSpinor:
             frac = np.flip(frac)
         self.psik = ttools.ifft_2d(result, self.space['dr'])
         self.psi = ttools.ifft_2d(self.psik, self.space['dr'])
-
-        return
 
     @property
     def coupling(self):
@@ -449,7 +495,7 @@ class PSpinor:
 
 
         .. note:: When working with Raman recoil units [E_L], they will first
-          need to be converted to [hbar*omeg_x] units before.
+          need to be converted to [hbar*omeg_x] units.
 
         Parameters
         ----------
@@ -510,6 +556,10 @@ class PSpinor:
         axis : :obj:`int`, optional
             The axis along which the detuning gradient runs.
 
+        See Also
+        --------
+        coupling_grad : Coupling gradient
+
         """
         if axis == 0:
             mesh = self.space['x_mesh']
@@ -531,7 +581,7 @@ class PSpinor:
 
         See Also
         --------
-        PSpinor.detuning_grad : Detuning gradient
+        coupling_grad : Coupling gradient
 
         """
         self.detuning = np.ones_like(self.space['x_mesh']) * value
@@ -541,16 +591,31 @@ class PSpinor:
 
         These seed-vortex functions might be moved to the ttools module.
         """
+        raise NotImplementedError()
 
     def seed_random_vortices(self):
         """Seed randomly-arranged vortices into the wavefunction."""
+        raise NotImplementedError()
 
-    def plot_rdens(self, psi=None, spin=None, cmap='viridis', scale=1.):
+    def plot_rdens(self, psi=None, spin=None, cmap='viridis', scale=1.0):
         """Plot the real-space density of the wavefunction.
 
-        Plots either the up (`spin=0`), down (`spin=1`), or both (`spin=None`)
-        spin components. If no `psi` is supplied, then it uses the
-        object attribute `self.psi`.
+        Shows the real-space density of either the up (`spin=0`),
+        down (`spin=1`), or both (`spin=None`) spin components.
+
+        Parameters
+        ----------
+        psi : :obj:`list` of Numpy :obj:`array`, optional.
+            The wavefunction to plot. If no `psi` is supplied, then it uses the
+            object attribute `self.psi`.
+        spin : :obj:`int` or `None`, optional
+            Which spin to plot. `None` plots both spins. 0 or 1 plots only the
+            up or down spin, respectively.
+        cmap : :obj:`str`, default='viridis'
+            The matplotlib colormap to use for the plots.
+        scale : :obj:`float`, default=1.0
+            A factor by which to scale the spatial dimensions, e.g. Thomas-
+            Fermi radius.
 
         See Also
         --------
@@ -563,12 +628,25 @@ class PSpinor:
         extent = np.ravel(np.vstack((-sizes, sizes)).T) / scale
         ptools.plot_dens(psi, spin, cmap, scale, extent=extent)
 
-    def plot_kdens(self, psik=None, spin=None, cmap='viridis', scale=1.):
-        """Plot the k-space density of the wavefunction.
+    def plot_kdens(self, psik=None, spin=None, cmap='viridis', scale=1.0):
+        """Plot the momentum-space density of the wavefunction.
 
-        Plots either the up (`spin=0`), down (`spin=1`), or both (`spin=None`)
-        spin components. If no `psik` is supplied, then it uses the
-        object attribute `self.psik`.
+        Shows the momentum-space density of either the up (`spin=0`),
+        down (`spin=1`), or both (`spin=None`) spin components.
+
+        Parameters
+        ----------
+        psik : :obj:`list` of Numpy :obj:`array`, optional.
+            The wavefunction to plot. If no `psik` is supplied, then it uses
+            the object attribute `self.psik`.
+        spin : :obj:`int` or `None`, optional
+            Which spin to plot. `None` plots both spins. 0 or 1 plots only the
+            up or down spin, respectively.
+        cmap : :obj:`str`, default='viridis'
+            The matplotlib colormap to use for the plots.
+        scale : :obj:`float`, default=1.0
+            A factor by which to scale the spatial dimensions, e.g. Thomas-
+            Fermi radius.
 
         See Also
         --------
@@ -582,12 +660,25 @@ class PSpinor:
         ptools.plot_dens(psik, spin, cmap, scale, extent)
 
     def plot_rphase(self, psi=None, spin=None, cmap='twilight_shifted',
-                    scale=1.):
+                    scale=1.0):
         """Plot the real-space phase of the wavefunction.
 
-        Plots either the up (`spin=0`), down (`spin=1`), or both (`spin=None`)
-        spin components. If no `psi` is supplied, then it uses the
-        object attribute `self.psi`.
+        Shows the real-space phase of either the up (`spin=0`),
+        down (`spin=1`), or both (`spin=None`) spin components.
+
+        Parameters
+        ----------
+        psi : :obj:`list` of Numpy :obj:`array`, optional.
+            The wavefunction to plot. If no `psi` is supplied, then it uses
+            the object attribute `self.psi`.
+        spin : :obj:`int` or `None`, optional
+            Which spin to plot. `None` plots both spins. 0 or 1 plots only the
+            up or down spin, respectively.
+        cmap : :obj:`str`, default='twilight_shifted'
+            The matplotlib colormap to use for the plots.
+        scale : :obj:`float`, default=1.0
+            A factor by which to scale the spatial dimensions, e.g. Thomas-
+            Fermi radius.
 
         See Also
         --------
@@ -600,9 +691,10 @@ class PSpinor:
         extent = np.ravel(np.vstack((-sizes, sizes)).T) / scale
         ptools.plot_phase(psi, spin, cmap, scale, extent)
 
+    # pylint: disable=too-many-arguments
     def plot_spins(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
                    ext='.pdf', zoom=1.0):
-        """Plot the densities (real & k) and phases of spin components.
+        """Plot the densities (both real & k) and phases of spin components.
 
         Parameters
         ----------
@@ -641,6 +733,10 @@ class PSpinor:
                   is_sampling=False, n_samples=1):
         """Perform imaginary-time propagation.
 
+        Propagation is carried out in a `TensorPropagator` object. The
+        results are stored and returned in the `PropResult` object for further
+        analysis.
+
         Parameters
         ----------
         t_step : :obj:`float`
@@ -673,6 +769,10 @@ class PSpinor:
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
              n_samples=1):
         """Perform real-time propagation.
+
+        Propagation is carried out in a `TensorPropagator` object. The
+        results are stored and returned in the `PropResult` object for further
+        analysis.
 
         Parameters
         ----------

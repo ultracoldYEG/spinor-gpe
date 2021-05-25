@@ -25,6 +25,8 @@ The dependencies for ``spinor-gpe`` can be installed directly into the new ``con
 
    conda env create --file environment.yml
 
+Note, this installation may take a while.
+
 The dependencies can also be installed manually using ``conda`` into a virtual environment: ::
 
    conda activate <new_virt_env_name>

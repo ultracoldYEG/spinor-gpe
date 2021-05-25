@@ -37,7 +37,11 @@ for source in glob.glob('./**/*.rst.src', recursive=True):
     with open(source, 'r') as f:
         text = f.read()
     text = re.sub(
-        '(?::lines: (?P<start>.*)-(?P<end>.*))'
+        '^\\.\\. literalinclude:: (?P<filename>.*)$'
+        '(?:\\s^(?:'
+        '(?:    :language: (?P<language>.*))|'
+        '(?:    (?P<linenos>:linenos:))|'
+        '(?:    :lines: (?P<start>.*)-(?P<end>.*))'
         ')$)*',
         literalinclude,
         text,

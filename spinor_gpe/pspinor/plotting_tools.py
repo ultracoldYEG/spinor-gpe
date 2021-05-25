@@ -91,8 +91,8 @@ def plot_dens(psi, spin=None, cmap='viridis', scale=1.,
     spin : :obj:`int` or `None`, optional
         Which spin to plot. `None` plots both spins. 0 or 1 plots only the
         up or down spin, respectively.
-    cmap : :obj:`str`, optional
-        The colormap to use for the plots.
+    cmap : :obj:`str`, default='viridis'
+        The matplotlib colormap to use for the plots.
     scale : :obj:`float`, optional
         A factor to scale the spatial dimensions by, e.g. Thomas-Fermi radius.
     extent : iterable
