@@ -33,27 +33,6 @@ These four examples showcase different features and capabilities of the ``spinor
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Starts with the Thomas-Fermi solution. Configures a uniform Raman coupling and a linear gradien...">
-
-.. only:: html
-
- .. figure:: /source/auto_examples/images/thumb/sphx_glr_4_detuning_grad_thumb.png
-     :alt: Example 4: Raman Detuning Gradient Ground State
-
-     :ref:`sphx_glr_source_auto_examples_4_detuning_grad.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /source/auto_examples/4_detuning_grad
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Starts with the Thomas-Fermi solution for a highly anisotropic trap. Propagates in imaginary ti...">
 
 .. only:: html
@@ -93,6 +72,27 @@ These four examples showcase different features and capabilities of the ``spinor
    :hidden:
 
    /source/auto_examples/3_raman_rabi
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Starts with the Thomas-Fermi solution. Configures a uniform Raman coupling and a linear gradien...">
+
+.. only:: html
+
+ .. figure:: /source/auto_examples/images/thumb/sphx_glr_4_detuning_grad_thumb.png
+     :alt: Example 4: Raman Detuning Gradient Ground State
+
+     :ref:`sphx_glr_source_auto_examples_4_detuning_grad.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /source/auto_examples/4_detuning_grad
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

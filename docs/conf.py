@@ -16,6 +16,7 @@ path = os.path.abspath('..')
 print(f'Path: {path}')
 sys.path.insert(0, path)
 
+from sphinx_gallery.sorting import FileNameSortKey
 
 # -- Project information -----------------------------------------------------
 
@@ -47,6 +48,8 @@ sphinx_gallery_conf = {
      'examples_dirs': '../spinor_gpe/examples',   # path to your example scripts
      'gallery_dirs': 'source/auto_examples',  # path to where to save gallery generated output
      'download_all_examples': False,
+     'remove_config_comments': True,
+     'within_subsection_order': FileNameSortKey,
 }
 
 # -- Options for HTML output -------------------------------------------------

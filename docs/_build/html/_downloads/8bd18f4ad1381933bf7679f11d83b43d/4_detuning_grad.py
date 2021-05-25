@@ -9,19 +9,18 @@ gradient separates the two components vertically, and the line where they
 interfere is a row of vortices.
 
 """
-# pylint: disable=wrong-import-position
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../..'))  # Adds project root to the PATH
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-from spinor_gpe.pspinor import pspinor as spin  # noqa: E402
-
+from spinor_gpe.pspinor import pspinor as spin
+# sphinx_gallery_thumbnail_path = '_static/4_dgrad.png'
 
 # 1. SETUP
 
-DATA_PATH = 'examples/Trial_004'
+DATA_PATH = 'examples/Trial_004'  # Default data path is in the /data/ folder
 
 FREQ = 50
 W = 2*np.pi*FREQ
@@ -43,7 +42,7 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True,  # Initialize PSpinor object
 ps.coupling_setup(wavel=804e-9, kin_shift=True)
 
 # Shifts the k-space density momentum peaks by `kshift_val` [`kL_recoil` units]
-ps.shift_momentum(kshift_val=0.6, frac=(0.5, 0.5))
+ps.shift_momentum(scale=0.6, frac=(0.5, 0.5))
 ps.coupling_uniform(5 * ps.EL_recoil)
 ps.detuning_grad(-12)
 

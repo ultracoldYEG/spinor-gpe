@@ -43,7 +43,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Example 3: Raman Rabi Flopping" href="auto_examples/3_raman_rabi.html" /> 
+    <link rel="prev" title="Example 4: Raman Detuning Gradient Ground State" href="auto_examples/4_detuning_grad.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -194,25 +194,28 @@ trapping energy along the x-direction [hbar * <cite>omeg[‘x’]</cite>].</p>
 <dl class="py method">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.compute_energy_grids">
 <code class="sig-name descname"><span class="pre">compute_energy_grids</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.compute_energy_grids" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute basic potential and kinetic energy grids.</p>
+<dd><p>Compute the initial potential and kinetic energy grids.</p>
 <p>Assumes that the BEC is in a harmonic trap. This harmonic potential
 determines the initial ‘Thomas-Fermi’ density profile of the BEC.
 <cite>pot_eng</cite> can be modified prior to progation to have any arbitrary
 potential energy landscape.</p>
-<p>Assumes that the BEC has a simple free-particle kinetic energy
+<p>Also assumes that the BEC has a simple free-particle kinetic energy
 dispersion. If using a momentum-dependent spin coupling, this grid
 will be modified later.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.compute_spatial_grids">
-<code class="sig-name descname"><span class="pre">compute_spatial_grids</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_sizes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.compute_spatial_grids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">compute_spatial_grids</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(256,</span> <span class="pre">256)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_sizes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">16)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.compute_spatial_grids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the real and momentum space grids.</p>
+<p>Stored in the <code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> <cite>space</cite> are the real- and momentum-space
+mesh grids, mesh sizes, mesh spacings, volume elements, and the
+corresponding linear arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mesh_points</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>) – The number of grid points along the x- and y-axes, respectively.</p></li>
-<li><p><strong>r_sizes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>, optional) – The half size of the grid along the real x- and y-axes,
+<li><p><strong>mesh_points</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">iterable</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>, default=(256, 256)) – The number of grid points along the x- and y-axes, respectively.</p></li>
+<li><p><strong>r_sizes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">iterable</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>, default=(16, 16)) – The half size of the grid along the real x- and y-axes,
 respectively,in units of [a_x].</p></li>
 </ul>
 </dd>
@@ -223,13 +226,28 @@ respectively,in units of [a_x].</p></li>
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.compute_tf_params">
 <code class="sig-name descname"><span class="pre">compute_tf_params</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Rb87'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.compute_tf_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute parameters and scales for the Thomas-Fermi solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sepecies</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, default=’Rb87’) – Designates the atomic species and corresponding physical data
+used in the simulations.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.compute_tf_psi">
-<code class="sig-name descname"><span class="pre">compute_tf_psi</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_factor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.compute_tf_psi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">compute_tf_psi</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.compute_tf_psi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the intial pseudospinor wavefunction <cite>psi</cite> and FFT <cite>psik</cite>.</p>
-<p><cite>psi</cite> is a list of 2D NumPy arrays.</p>
+<p>The psuedospinor wavefunction <cite>psi</cite> that is generated is a <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>
+of 2D NumPy arrays. The Thomas-Fermi solution is real and has the
+form of an inverted parabaloid. <cite>psik</cite> is a <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of the 2D FFT
+of <cite>psi</cite>’s components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>phase_factor</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">complex</span></code>, default=1.0) – Unit complex number; initial relative phase factor between the two
+spin components.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -252,7 +270,7 @@ respectively,in units of [a_x].</p></li>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When working with Raman recoil units [E_L], they will first
-need to be converted to [hbar*omeg_x] units before.</p>
+need to be converted to [hbar*omeg_x] units.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -269,12 +287,18 @@ need to be converted to [hbar*omeg_x] units before.</p>
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.coupling_setup">
 <code class="sig-name descname"><span class="pre">coupling_setup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7.901e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kin_shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.coupling_setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate parameters for the momentum-(in)dependent coupling.</p>
+<p>If <a href="#id1"><span class="problematic" id="id2">`</span></a>kin_shift`=True, the kinetic energy grid receives a spin-dependent
+shift in momentum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>wavel</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>) – Wavelength of Raman coupling in [m]</p></li>
-<li><p><strong>scale</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>) – Relative scale of recoil momentum</p></li>
-<li><p><strong>kin_shift</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>) – Option for a momentum-(in)dependent coupling.</p></li>
+<li><p><strong>wavel</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>, default=790.1e-9) – Wavelength of Raman coupling. Note that you must specify the
+wavelength in meters.</p></li>
+<li><p><strong>scale</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>, default=1.0) – The relative scale of recoil momentum. Interesting physics may be
+simulated by considering a recoil momentum that is hypothetically
+much larger or much smaller than the native wavelength recoil
+momentum.</p></li>
+<li><p><strong>kin_shift</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>, default=False) – Option for a momentum-(in)dependent coupling.</p></li>
 </ul>
 </dd>
 </dl>
@@ -331,6 +355,13 @@ need to be converted to [hbar*omeg_x] units.</p>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#spinor_gpe.pspinor.pspinor.PSpinor.coupling_grad" title="spinor_gpe.pspinor.pspinor.PSpinor.coupling_grad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coupling_grad</span></code></a></dt><dd><p>Coupling gradient</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -347,7 +378,7 @@ need to be converted to [hbar*omeg_x] units.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#spinor_gpe.pspinor.pspinor.PSpinor.detuning_grad" title="spinor_gpe.pspinor.pspinor.PSpinor.detuning_grad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PSpinor.detuning_grad</span></code></a></dt><dd><p>Detuning gradient</p>
+<dt><a class="reference internal" href="#spinor_gpe.pspinor.pspinor.PSpinor.coupling_grad" title="spinor_gpe.pspinor.pspinor.PSpinor.coupling_grad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coupling_grad</span></code></a></dt><dd><p>Coupling gradient</p>
 </dd>
 </dl>
 </div>
@@ -368,6 +399,9 @@ need to be converted to [hbar*omeg_x] units.</p>
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.imaginary">
 <code class="sig-name descname"><span class="pre">imaginary</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.imaginary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform imaginary-time propagation.</p>
+<p>Propagation is carried out in a <cite>TensorPropagator</cite> object. The
+results are stored and returned in the <cite>PropResult</cite> object for further
+analysis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -390,7 +424,7 @@ need to be converted to [hbar*omeg_x] units.</p>
 <dl class="py method">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.no_coupling_setup">
 <code class="sig-name descname"><span class="pre">no_coupling_setup</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.no_coupling_setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the default parameters for no coupling.</p>
+<dd><p>Provide the default parameters for no coupling.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -407,10 +441,22 @@ need to be converted to [hbar*omeg_x] units.</p>
 <dl class="py method">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.plot_kdens">
 <code class="sig-name descname"><span class="pre">plot_kdens</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psik</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.plot_kdens" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the k-space density of the wavefunction.</p>
-<p>Plots either the up (<cite>spin=0</cite>), down (<cite>spin=1</cite>), or both (<cite>spin=None</cite>)
-spin components. If no <cite>psik</cite> is supplied, then it uses the
-object attribute <cite>self.psik</cite>.</p>
+<dd><p>Plot the momentum-space density of the wavefunction.</p>
+<p>Shows the momentum-space density of either the up (<cite>spin=0</cite>),
+down (<cite>spin=1</cite>), or both (<cite>spin=None</cite>) spin components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psik</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of Numpy <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, optional.) – The wavefunction to plot. If no <cite>psik</cite> is supplied, then it uses
+the object attribute <cite>self.psik</cite>.</p></li>
+<li><p><strong>spin</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> or <cite>None</cite>, optional) – Which spin to plot. <cite>None</cite> plots both spins. 0 or 1 plots only the
+up or down spin, respectively.</p></li>
+<li><p><strong>cmap</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, default=’viridis’) – The matplotlib colormap to use for the plots.</p></li>
+<li><p><strong>scale</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>, default=1.0) – A factor by which to scale the spatial dimensions, e.g. Thomas-
+Fermi radius.</p></li>
+</ul>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -424,9 +470,21 @@ object attribute <cite>self.psik</cite>.</p>
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.plot_rdens">
 <code class="sig-name descname"><span class="pre">plot_rdens</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.plot_rdens" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the real-space density of the wavefunction.</p>
-<p>Plots either the up (<cite>spin=0</cite>), down (<cite>spin=1</cite>), or both (<cite>spin=None</cite>)
-spin components. If no <cite>psi</cite> is supplied, then it uses the
-object attribute <cite>self.psi</cite>.</p>
+<p>Shows the real-space density of either the up (<cite>spin=0</cite>),
+down (<cite>spin=1</cite>), or both (<cite>spin=None</cite>) spin components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psi</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of Numpy <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, optional.) – The wavefunction to plot. If no <cite>psi</cite> is supplied, then it uses the
+object attribute <cite>self.psi</cite>.</p></li>
+<li><p><strong>spin</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> or <cite>None</cite>, optional) – Which spin to plot. <cite>None</cite> plots both spins. 0 or 1 plots only the
+up or down spin, respectively.</p></li>
+<li><p><strong>cmap</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, default=’viridis’) – The matplotlib colormap to use for the plots.</p></li>
+<li><p><strong>scale</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>, default=1.0) – A factor by which to scale the spatial dimensions, e.g. Thomas-
+Fermi radius.</p></li>
+</ul>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -440,9 +498,21 @@ object attribute <cite>self.psi</cite>.</p>
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.plot_rphase">
 <code class="sig-name descname"><span class="pre">plot_rphase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'twilight_shifted'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.plot_rphase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the real-space phase of the wavefunction.</p>
-<p>Plots either the up (<cite>spin=0</cite>), down (<cite>spin=1</cite>), or both (<cite>spin=None</cite>)
-spin components. If no <cite>psi</cite> is supplied, then it uses the
-object attribute <cite>self.psi</cite>.</p>
+<p>Shows the real-space phase of either the up (<cite>spin=0</cite>),
+down (<cite>spin=1</cite>), or both (<cite>spin=None</cite>) spin components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psi</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of Numpy <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, optional.) – The wavefunction to plot. If no <cite>psi</cite> is supplied, then it uses
+the object attribute <cite>self.psi</cite>.</p></li>
+<li><p><strong>spin</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> or <cite>None</cite>, optional) – Which spin to plot. <cite>None</cite> plots both spins. 0 or 1 plots only the
+up or down spin, respectively.</p></li>
+<li><p><strong>cmap</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, default=’twilight_shifted’) – The matplotlib colormap to use for the plots.</p></li>
+<li><p><strong>scale</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>, default=1.0) – A factor by which to scale the spatial dimensions, e.g. Thomas-
+Fermi radius.</p></li>
+</ul>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -455,7 +525,7 @@ object attribute <cite>self.psi</cite>.</p>
 <dl class="py method">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.plot_spins">
 <code class="sig-name descname"><span class="pre">plot_spins</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.pdf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.plot_spins" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the densities (real &amp; k) and phases of spin components.</p>
+<dd><p>Plot the densities (both real &amp; k) and phases of spin components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -489,6 +559,9 @@ format “/<cite>data_path</cite>/pop_evolution%s-<cite>trial_name</cite>.pdf”
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.real">
 <code class="sig-name descname"><span class="pre">real</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.real" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform real-time propagation.</p>
+<p>Propagation is carried out in a <cite>TensorPropagator</cite> object. The
+results are stored and returned in the <cite>PropResult</cite> object for further
+analysis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -533,14 +606,26 @@ in spinor-gpe/data/<cite>path</cite>.</p></li>
 
 <dl class="py method">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.shift_momentum">
-<code class="sig-name descname"><span class="pre">shift_momentum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psik</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kshift_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.5,</span> <span class="pre">0.5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.shift_momentum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Shifts the momentum components pf <cite>psi</cite> by +/- kL_recoil.</p>
+<code class="sig-name descname"><span class="pre">shift_momentum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psik</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.5,</span> <span class="pre">0.5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.shift_momentum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shifts momentum components of <cite>psi</cite> by a fracion of +/- kL_recoil.</p>
+<p>The ground-state solutions of Raman-coupled spinor systems in general
+have spinor components with both left- and right-moving momentum
+peaks. Providing a manual shift on the momentum-space wavefunction
+components better approximates these solutions, i.e. faster convergence
+in imaginary time propagation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>psik</strong> – </p></li>
-<li><p><strong>kshift_val</strong> – </p></li>
-<li><p><strong>frac</strong> – </p></li>
+<li><p><strong>psik</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of NumPy <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, optional.) – The momentum-space pseudospinor wavefunction. If <cite>psik</cite> is not
+provided, then this function uses the current class attribute
+<cite>self.psik</cite>.</p></li>
+<li><p><strong>scale</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>, default=1.0) – By default, the function shifts the momentum peaks by a single
+unit of recoil momenta <cite>kL_recoil</cite>. <cite>scale</cite> gives the option of
+scaling the shift larger or smaller for faster convergence.</p></li>
+<li><p><strong>frac</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">iterable</span></code>, default=(0.5, 0.5)) – The fraction of each spinor component’s momentum peak to shift in
+either direction. frac=(0.5, 0.5) splits into two equal peaks,
+while (0.0, 1.0) and (1.0, 0.0) move the entire peak one
+direction or the other.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1161,7 +1246,7 @@ wavefunction.</p>
 object attribute <cite>self.psi</cite>.</p></li>
 <li><p><strong>spin</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> or <cite>None</cite>, optional) – Which spin to plot. <cite>None</cite> plots both spins. 0 or 1 plots only the
 up or down spin, respectively.</p></li>
-<li><p><strong>cmap</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, optional) – The colormap to use for the plots.</p></li>
+<li><p><strong>cmap</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, default=’viridis’) – The matplotlib colormap to use for the plots.</p></li>
 <li><p><strong>scale</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>, optional) – A factor to scale the spatial dimensions by, e.g. Thomas-Fermi radius.</p></li>
 <li><p><strong>extent</strong> (<em>iterable</em>) – The spatial extent of the wavefunction components, in the format
 np.array([x_min, x_max, y_min, y_max]). Determines the natural spatial
@@ -1255,7 +1340,7 @@ format “/<cite>data_path</cite>/pop_evolution%s-<cite>trial_name</cite>.pdf”
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="auto_examples/3_raman_rabi.html" class="btn btn-neutral float-left" title="Example 3: Raman Rabi Flopping" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="auto_examples/4_detuning_grad.html" class="btn btn-neutral float-left" title="Example 4: Raman Detuning Gradient Ground State" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

@@ -64,7 +64,7 @@ between the two components.
     ps.coupling_setup(wavel=790.1e-9, kin_shift=True)
 
     # Shifts the k-space density momentum peaks by `kshift_val` [`kL_recoil` units]
-    ps.shift_momentum(kshift_val=1.0, frac=(0, 1.0))
+    ps.shift_momentum(scale=1.0, frac=(0, 1.0))
 
     # Selects the form of the coupling operator in the non-rotated reference frame
     ps.rot_coupling = False

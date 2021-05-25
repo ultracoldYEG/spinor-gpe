@@ -1,4 +1,4 @@
-name: spinor_test
+name: spinor
 channels:
   - pytorch
   - nvidia

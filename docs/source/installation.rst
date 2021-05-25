@@ -7,17 +7,17 @@ Dependencies
 Primary packages:
 -----------------
 
-* PyTorch >= 1.8.0
-* cudatoolkit >= 11.1
-* NumPy
+1. PyTorch >= 1.8.0
+2. cudatoolkit >= 11.1
+3. NumPy
 
 Other packages:
 ---------------
 
-* matplotlib (visualizing results)
-* tqdm (progress messages)
-* scikit-image (matrix signal processing)
-* ffmpeg (animation generation)
+4. matplotlib (visualizing results)
+5. tqdm (progress messages)
+6. scikit-image (matrix signal processing)
+7. ffmpeg = 4.3.1 (animation generation)
 
 Installing Dependencies
 #######################

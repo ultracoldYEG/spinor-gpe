@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.abspath('../..'))  # Adds project root to the PATH
 import numpy as np
 
 from spinor_gpe.pspinor import pspinor as spin
+# sphinx_gallery_thumbnail_path = '_static/2_tof.png'
 
 
 # 1. SETUP

@@ -387,7 +387,7 @@ class PSpinor:
 
         Parameters
         ----------
-        wavel : :obj:`float`,d efault=790.1e-9
+        wavel : :obj:`float`, default=790.1e-9
             Wavelength of Raman coupling. Note that you must specify the
             wavelength in meters.
         scale : :obj:`float`, default=1.0

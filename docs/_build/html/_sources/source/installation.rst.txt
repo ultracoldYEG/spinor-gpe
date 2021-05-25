@@ -7,23 +7,25 @@ Dependencies
 Primary packages:
 -----------------
 
-* PyTorch >= 1.8.0
-* cudatoolkit >= 11.1
-* NumPy
+1. PyTorch >= 1.8.0
+2. cudatoolkit >= 11.1
+3. NumPy
 
 Other packages:
 ---------------
 
-* matplotlib (visualizing results)
-* tqdm (progress messages)
-* scikit-image (matrix signal processing)
-* ffmpeg (animation generation)
+4. matplotlib (visualizing results)
+5. tqdm (progress messages)
+6. scikit-image (matrix signal processing)
+7. ffmpeg = 4.3.1 (animation generation)
 
 Installing Dependencies
 #######################
 The dependencies for ``spinor-gpe`` can be installed directly into the new ``conda`` virtual environment ``spinor`` using the `environment.yml` file included with the package: ::
 
    conda env create --file environment.yml
+
+Note, this installation may take a while.
 
 The dependencies can also be installed manually using ``conda`` into a virtual environment: ::
 
