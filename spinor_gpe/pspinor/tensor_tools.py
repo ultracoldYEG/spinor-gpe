@@ -18,9 +18,10 @@ def fft_1d(psi, delta_r=(1, 1), axis=0) -> list:
     ----------
     psi : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
-    delta_r : NumPy :obj:`array`
-        A two-element list of the x- and y-mesh spacings, respectively.
-    axis : :obj:`int`, optional
+    delta_r : NumPy :obj:`array`, default=(1,1)
+        A two-element list of the real-sapce x- and y-mesh spacings,
+        respectively.
+    axis : :obj:`int`, default=0
         The axis along which to transform; note that 0 -> y-axis, and
         1 -> x-axis.
 
@@ -54,9 +55,10 @@ def ifft_1d(psik, delta_r=(1, 1), axis=0) -> list:
     ----------
     psik : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
-    delta_r : NumPy :obj:`array`
-        A two-element list of the x- and y-mesh spacings, respectively.
-    axis : :obj:`int`, optional
+    delta_r : NumPy :obj:`array`, default=(1,1)
+        A two-element list of the real-sapce x- and y-mesh spacings,
+        respectively.
+    axis : :obj:`int`, default=0
         The axis along which to transform; note that 0 -> x-axis, and
         1 -> y-axis.
 
@@ -87,8 +89,9 @@ def fft_2d(psi, delta_r=(1, 1)) -> list:
     ----------
     psi : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
-    delta_r : NumPy :obj:`array`
-        A two-element list of the x- and y-mesh spacings, respectively.
+    delta_r : NumPy :obj:`array`, default=(1,1)
+        A two-element list of the real-sapce x- and y-mesh spacings,
+        respectively.
 
     Returns
     -------
@@ -116,8 +119,9 @@ def ifft_2d(psik, delta_r=(1, 1)) -> list:
     ----------
     psik : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
-    delta_r : NumPy :obj:`array`
-        A two-element list of the x- and y-mesh spacings, respectively.
+    delta_r : NumPy :obj:`array`, default=(1,1)
+        A two-element list of the real-sapce x- and y-mesh spacings,
+        respectively.
 
     Returns
     -------
@@ -139,7 +143,7 @@ def ifft_2d(psik, delta_r=(1, 1)) -> list:
 
 
 def to_numpy(input_tens):
-    """Convert from PyTorch Tensor to Nunmpy arrays.
+    """Convert from PyTorch Tensor to NumPy arrays.
 
     Accepts a single PyTorch Tensor, or a :obj:`list` of PyTorch Tensor,
     as in the wavefunction objects.
@@ -154,6 +158,7 @@ def to_numpy(input_tens):
     -------
     output_arr : NumPy :obj:`array` or :obj:`list` of NumPy :obj:`array`
         Output array stored on CPU memory.
+
     """
     if isinstance(input_tens, list):
         output_tens = [inp.cpu().numpy() for inp in input_tens]
@@ -175,18 +180,21 @@ def to_tensor(input_arr, dev='cpu', dtype=64):
     input_arr : NumPy :obj:`array`,  or :obj:`list` of NumPy :obj:`array`
         Input array, or list of arrays, to be converted to a :obj:`Tensor`,
         on either CPU or GPU memory.
-    dev : :obj:`str`, optional
-        The name of the input device, e.g. {'cpu', 'cuda', 'cuda:0'}
-    dtype : :obj:`int`, optional
+    dev : :obj:`str`, default='cpu'
+        The name of the device on which to store the tensor,
+        e.g. {'cpu', 'cuda', 'cuda:0'}
+    dtype : :obj:`int`, default=64
         Designator for the torch dtype -
-        32  : :obj:`float32`;
-        64  : :obj:`float64`;
-        128 : :obj:`complex128`
+
+        * 32  : :obj:`torch.float32`;
+        * 64  : :obj:`torch.float64`;
+        * 128 : :obj:`torch.complex128`
 
     Returns
     -------
     output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
         Output tensor of `dtype` stored on `dev` memory.
+
     """
     all_dtypes = {32: torch.float32, 64: torch.float64, 128: torch.complex128}
     if isinstance(input_arr, list):
@@ -212,6 +220,7 @@ def to_cpu(input_tens):
     -------
     output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
         Output tensor stored on CPU memory.
+
     """
     if isinstance(input_tens, list):
         output_tens = [inp.cpu() for inp in input_tens]
@@ -223,12 +232,15 @@ def to_cpu(input_tens):
 
 
 def to_gpu(input_tens, dev='cuda'):
-    """Transfers `input_tens` from gpu to cpu memory.
+    """Transfers `input_tens` from cpu to gpu memory.
 
     Parameters
     ----------
     input_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
         Input tensor stored on GPU memory.
+    dev : :obj:`str`, default='cuda'
+        The name of the device on which to store the tensor,
+        e.g. {'cuda', 'cuda:0'}
 
     Returns
     -------
@@ -246,11 +258,6 @@ def to_gpu(input_tens, dev='cuda'):
     return output_tens
 
 
-def mult(input_tens, psi):
-    """Elementwise multiplication of `input` onto the elements of `psi`."""
-    return input_tens * psi
-
-
 def norm_sq(psi_comp):
     """Compute the density (norm-squared) of a single wavefunction component.
 
@@ -264,6 +271,11 @@ def norm_sq(psi_comp):
     psi_sq : NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The norm-square of the wavefunction.
 
+    Raises
+    ------
+    TypeError
+        If `psi_comp` is neither an :obj:`array` or a :obj:`Tensor` of the
+        correct shape.
     """
     if isinstance(psi_comp, np.ndarray):
         psi_sq = np.abs(psi_comp)**2
@@ -277,7 +289,14 @@ def norm_sq(psi_comp):
 
 
 def grad(psi, delta_r):
-    """Take a list of tensors or np arrays; checks type."""
+    """Compute the spatial gradient of a wavefunction :obj:`list`.
+
+    Parameters
+    ----------
+    psi :
+    delta_r :
+
+    """
     if isinstance(psi, list):
         gradient = [grad_comp(p, delta_r) for p in psi]
     else:
@@ -287,7 +306,14 @@ def grad(psi, delta_r):
 
 
 def grad_comp(psi_comp, delta_r):
-    """Spatial gradient of a single wavefunction component."""
+    """Spatial gradient of a single wavefunction component.
+
+    Raises
+    ------
+    TypeError
+        If `psi_comp` is neither an :obj:`array` or a :obj:`Tensor` of the
+        correct shape.
+    """
     if isinstance(psi_comp, np.ndarray):
         delta_r = np.array(delta_r)
         g_comp = np.gradient(psi_comp, *delta_r)

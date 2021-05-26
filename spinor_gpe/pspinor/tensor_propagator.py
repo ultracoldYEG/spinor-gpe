@@ -17,34 +17,13 @@ class TensorPropagator:
 
     """
 
-    # Object that sucks in the needed energy grids and parameters for
-    # propagation, converts them to tensors, & performs the propagation.
-    #  - It means that two copies of the grids aren't carried in the main class
-    #  - However, it restricts access to the tensor form of the grids; unless
-    #    I keep the Propagation object as a class "attribute".
-    #  - I can directly pass `self` to this class and access class attributes,
-    #    methods, esp. energy grids. Only do this in the __init__ function
-    #    so as to not store the main Spinor object in the class
-
-    # --> Should it be a class or just a pure function??
-    #      - Maybe a class because then it can store the grids it needs, and
-    #        then access them from the different functions for free.
-    #      - It would allow these operations to reside in a separate module.
-    # BUT, then I have two classes who are attributes of each other, and
-    #     THAT's a weird structure.
-    #    - Maybe this class doesn't have to attribute the other one; it just
-    #      sucks in the data it needs.
-
-    # Will need to calculate certain data throughout the loop, and then
-    #     create and populate the PropResult object.
-
     # Ideally it would be great to keep this class agnostic as to the
     # wavefunction structure, i.e. pseudospinors vs. scalars vs. spin-1.
 
     # pylint: disable=too-many-instance-attributes
     def __init__(self, spin, t_step, n_steps, device='cpu', time='imag',
                  is_sampling=False, n_samples=1):
-        """Begin a propagation.
+        """Begin a propagation loop.
 
         Parameters
         ----------
@@ -54,44 +33,18 @@ class TensorPropagator:
         t_step : :obj:`float`
             Propagation time step.
         n_steps : :obj:`int`
-            Number of steps to propagate in time
-        device : :obj:`str`, optional
-            {'cpu', 'cuda'}
+            The number of steps to propagate in time.
+        device : :obj:`str`, default='cpu'
+            The device on which to compute: {'cpu', 'cuda'}.
         time : :obj:`str`, optional
-            {'real', 'imag'}
-        is_sampling : :obj:`bool`, optional
+            Whether propagation occurs in real or imaginary time:
+            {'real', 'imag'}.
+        is_sampling : :obj:`bool`, default=False
             Option to sample and save wavefunctions throughout the propagation.
-        n_samples : :obj:`int`, optional
+        n_samples : :obj:`int`, default=1
             The number of samples to save.
 
         """
-        # Needs:
-        #  spin
-        #   - Energy grids -> tensor
-        #     - Kinetic spinor
-        #     - Potential + detuning spinor
-        #   - Raman grids -> tensor
-        #     - coupling
-        #   - Interaction parameters -> dict
-
-        #   - Atom number
-        #   - space parameters -> tensor [maybe ok as dict of tensors]
-        #     - delta_r
-        #     - delta_k
-        #     - x_mesh
-        #     - y_mesh
-        #     - volume elements
-        #   - psi
-        #   - psik
-        #
-        #  imaginary/real:
-        #   + Number of steps
-        #   + dt
-        #   + is_sampling (bool)
-        #   + wavefunction sample frequency
-        #   + wavefunction anneal frequency (imaginary time)
-        #   + device (cpu vs. gpu)
-
         self.n_steps = n_steps
         self.device = device
         self.paths = spin.paths

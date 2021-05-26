@@ -121,7 +121,7 @@ def plot_dens(psi, spin=None, cmap='viridis', scale=1.,
     plt.show()
 
 
-def plot_phase(psi=None, spin=None, cmap='twilight_shifted', scale=1,
+def plot_phase(psi, spin=None, cmap='twilight_shifted', scale=1,
                extent=None):
     """Plot the phase of the real wavefunction.
 
@@ -132,8 +132,7 @@ def plot_phase(psi=None, spin=None, cmap='twilight_shifted', scale=1,
     Parameters
     ----------
     psi : :obj:`list` of Numpy :obj:`array`, optional.
-        The wavefunction to plot. If no `psi` is supplied, then it uses the
-        object attribute `self.psi`.
+        The wavefunction to plot.
     spin : :obj:`int` or `None`, optional
         Which spin to plot. `None` plots both spins. 0 or 1 plots only the
         up or down spin, respectively.
@@ -173,26 +172,40 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
                ext='.pdf', show=True, zoom=1.0):
     """Plot the densities (real & k) and phases of spin components.
 
+    In total, six subplots are generated. Each pair of axes are stored together
+    in a list, which is returned in `all_plots`.
+
     Parameters
     ----------
-    psi :
-    psik :
-    extents :
-    paths :
-    cmap : :obj:`str`, optional
-        Color map name for the real- and momentum-space density plots.
-    save : :obj:`bool`, optional
+    psi : :obj:`list` of Numpy :obj:`array`, optional.
+        The real-space wavefunction to plot.
+    psik : :obj:`list` of Numpy :obj:`array`, optional.
+        The momentum-space wavefunction to plot.
+    extents : :obj:`dict` of :obj:`iterable`
+        The dictionary keys are {'r', 'k'}, and each value is a 4-element
+        iterables giving the x- (kx-) and y- (ky-) spatial extents of the plot
+        area, e.g. [x_min, x_max, y_min, y_max]
+    paths : :obj:`dict` of :obj:`str`
+        The dictionary keys contain {'data', 'folder'}, and the values are
+        absolute paths to the saved data path and its containing folder.
+    cmap : :obj:`str`, default='viridis'
+        Matplotlib color map name for the real- and momentum-space density
+        plots.
+    save : :obj:`bool`, default=True
         Saves the figure as a .pdf file (default). The filename has the
-        format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
-    ext : :obj:`str`, optional
-        Saved plot image file extension.
-    zoom : :obj:`float`, optional
+        format "/`data_path`/spin_dens_phase%s-`trial_name`.pdf".
+    ext : :obj:`str`, default='.pdf'
+        File extension for the saved density plots.
+    zoom : :obj:`float`, default=1.0
         A zoom factor for the k-space density plot.
 
     Returns
     -------
-    fig :
-    all_plots :
+    fig : :obj:`plt.Figure`
+        The matplotlib figure for the plot.
+    all_plots : :obj:`dict` of :obj:`list`
+        The keys are {'r', 'ph', 'k'}. Each value is a pair of :obj:`plt.Axes`
+        for both spins.
 
     """
     # pylint: disable=unused-variable

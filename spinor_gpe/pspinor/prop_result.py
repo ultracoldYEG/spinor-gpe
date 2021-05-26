@@ -15,7 +15,7 @@ from spinor_gpe.pspinor import plotting_tools as ptools
 
 
 class PropResult:
-    """Results of propagation, along with plotting and analysis tools."""
+    """The result of propagation, with plotting and analysis tools."""
 
     def __init__(self, psi_final, psik_final, eng_final, pops,
                  sampled_path=None):
@@ -35,6 +35,7 @@ class PropResult:
         sampled_path : :obj:`str`, optional
             The path to the .npz file where the sampled wavefunctions and
             times are stored for this result.
+
         """
         self.psi = psi_final
         self.psik = psik_final
@@ -52,7 +53,9 @@ class PropResult:
 
     def calc_separation(self):
         """Calculate the phase separation of the two spin components."""
-        s = 1 - np.sum(ttools.prod(self.dens))  # FIXME
+        #  FIXME
+        s = 1 - (np.sum(ttools.prod(self.dens))
+                 / np.sqrt(np.sum(self.dens[0]**2) * np.sum(self.dens[1])**2))
         return s
 
     def plot_spins(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
@@ -61,20 +64,21 @@ class PropResult:
 
         Parameters
         ----------
-        rscale : :obj:`float`, optional
+        rscale : :obj:`float`, default=1.0
             Real-space length scale. The default of 1.0 corresponds to the
             naturatl harmonic length scale along the x-axis.
-        kscale : :obj:`float`, optional
+        kscale : :obj:`float`, default=1.0
             Momentum-space length scale. The default of 1.0 corresponds to the
             inverse harmonic length scale along the x-axis.
-        cmap : :obj:`str`, optional
-            Color map name for the real- and momentum-space density plots.
-        save : :obj:`bool`, optional
+        cmap : :obj:`str`, default='viridis'
+            Matplotlib color map name for the real- and momentum-space
+            density plots.
+        save : :obj:`bool`, default=True
             Saves the figure as a .pdf file (default). The filename has the
-            format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
-        ext : :obj:`str`, optional
-            Saved plot image file extension.
-        zoom : :obj:`float`, optional
+            format "/`data_path`/spin_dens_phase%s-`trial_name`.pdf".
+        ext : :obj:`str`, default='.pdf'
+            File extension for the saved plot image.
+        zoom : :obj:`float`, default=1.0
             A zoom factor for the k-space density plot.
 
         """
