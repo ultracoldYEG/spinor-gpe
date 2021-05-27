@@ -111,6 +111,9 @@ class PSpinor:
         2D coupling array [\\hbar * omeg['x']].
     detuning : :obj:`array`
         2D detuning array [\\hbar * omeg['x']].
+    rot_coupling : :obj:`bool`, default=True
+        Option to place coupling in a rotating reference frame, i.e. no
+        momentum shift on the coupling operation.
 
     """
 
@@ -198,6 +201,7 @@ class PSpinor:
         self.prop = None
         self.coupling = np.zeros(np.flip(mesh_points))
         self.detuning = np.zeros(np.flip(mesh_points))
+        self.rot_coupling = True
 
     def setup_data_path(self, path, overwrite):
         """Create new data directory to store simulation data & results.

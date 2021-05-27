@@ -13,7 +13,50 @@ class TensorPropagator:
 
     Attributes
     ----------
-    t_step :
+    n_steps : :obj:`int`
+        The total number of full time steps in propagation.
+    device : :obj:`str`
+        The computing device on which propagation is performed
+    paths : :obj:`dict`
+        See `pspinor.Pspinor`.
+    t_step : :obj:`float` or :obj:`complex`
+        Duration of the full time step.
+    dt_out : :obj:`float` or :obj:`complex`
+        Duration of the outer time sub-step.
+    dt_in : :obj:`float` or :obj:`complex`
+        Duration of the inner time sub-step.
+    rand_seed : :obj:``
+        See `pspinor.Pspinor`.
+    is_sampling : :obj:`bool`
+        Option to sample the wavefunction periodically throughout propagation.
+    atom_num : :obj:`float`
+        See `pspinor.Pspinor`.
+    is_coupling : :obj:`bool`
+        See `pspinor.Pspinor`.
+    g_sc : :obj:`dict` of :obj:`Tensor`
+        See `pspinor.Pspinor`.
+    kin_eng_spin : :obj:`list` of :obj:`Tensor`
+        See `pspinor.Pspinor`.
+    pot_eng_spin : :obj:`list` of :obj:`Tensor`
+        See `pspinor.Pspinor`.
+    psik : :obj:`list` of :obj:`Tensor`
+        See `pspinor.Pspinor`.
+    space : :obj:`dict` of :obj:`Tensor`
+        See `pspinor.Pspinor`. Contains only keys:
+            {'dr', 'dk', 'x_mesh', 'y_mesh', 'dv_r', 'dv_k'}
+    coupling : :obj:`Tensor`
+        See `pspinor.Pspinor`.
+    kL_recoil : :obj:`float`
+        See `pspinor.Pspinor`.
+    expon : :obj:`Tensor`
+        The exponential argument on the coupling operator off-diagonals. If
+        the coupling is in a rotated reference frame, then `expon`=0.0.
+    sample_rate : :obj:`int`
+        How often wavefunctions are sampled.
+    eng_out : :obj:`dict` of :obj:`Tensor`
+        Pre-computed energy evolution operators for the outer time sub-step.
+    eng_in : :obj:`dict` of :obj:`Tensor`
+        Pre-computed energy evolution operators for the inner time sub-step.
 
     """
 
@@ -68,8 +111,10 @@ class TensorPropagator:
         self.atom_num = spin.atom_num
         self.is_coupling = spin.is_coupling
         self.g_sc = spin.g_sc
-        self.kin_eng = ttools.to_tensor(spin.kin_eng_spin, dev=self.device)
-        self.pot_eng = ttools.to_tensor(spin.pot_eng_spin, dev=self.device)
+        self.kin_eng_spin = ttools.to_tensor(spin.kin_eng_spin,
+                                             dev=self.device)
+        self.pot_eng_spin = ttools.to_tensor(spin.pot_eng_spin,
+                                             dev=self.device)
 
         self.psik = ttools.to_tensor(spin.psik, dev=self.device, dtype=128)
 
@@ -96,13 +141,16 @@ class TensorPropagator:
 
         # Pre-compute several evolution operators
         self.eng_out = {'kin': ttools.evolution_op(self.dt_out / 2,
-                                                   self.kin_eng),
-                        'pot': ttools.evolution_op(self.dt_out, self.pot_eng),
+                                                   self.kin_eng_spin),
+                        'pot': ttools.evolution_op(self.dt_out,
+                                                   self.pot_eng_spin),
                         'coupl': ttools.coupling_op(self.dt_out / 2,
                                                     self.coupling, self.expon)}
+
         self.eng_in = {'kin': ttools.evolution_op(self.dt_in / 2,
-                                                  self.kin_eng),
-                       'pot': ttools.evolution_op(self.dt_in, self.pot_eng),
+                                                  self.kin_eng_spin),
+                       'pot': ttools.evolution_op(self.dt_in,
+                                                  self.pot_eng_spin),
                        'coupl': ttools.coupling_op(self.dt_in / 2,
                                                    self.coupling, self.expon)}
 
