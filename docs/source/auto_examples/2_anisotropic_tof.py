@@ -28,7 +28,7 @@ Y_SCALE = 4
 Z_SCALE = 40.0
 
 ATOM_NUM = 1e4
-OMEG = {'x': W, 'y': Y_SCALE * W, 'z':  Z_SCALE * W}
+OMEG = {'x': W, 'y': Y_SCALE * W, 'z': Z_SCALE * W}
 G_SC = {'uu': 1, 'dd': 1, 'ud': 0.5}
 
 ps = spin.PSpinor(DATA_PATH, overwrite=True,

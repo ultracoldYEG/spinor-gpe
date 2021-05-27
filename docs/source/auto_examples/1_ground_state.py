@@ -19,7 +19,7 @@ from spinor_gpe.pspinor import pspinor as spin
 
 # 1. SETUP
 
-DATA_PATH = 'examples/Trial_001'  # Default data path is in the /data/ folder
+DATA_PATH = 'examples/Trial_011'  # Default data path is in the /data/ folder
 
 FREQ = 50
 W = 2*np.pi*FREQ

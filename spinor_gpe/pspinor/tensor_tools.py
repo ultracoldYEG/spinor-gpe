@@ -593,10 +593,10 @@ def coupling_op(t_step, coupling=None, expon=torch.tensor(0)):
 
 
 def prod(factors):
-    """General function for multiplying the elements of a data structure.
+    """General function for multiplying the elements of a 1D data structure.
 
-    Unlike the `sum` function, this one is not built in to the standard
-    library.
+    Operates similar to the `sum` function from the standard library.
+
     """
     return reduce(operator.mul, factors, 1)
 

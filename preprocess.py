@@ -1,7 +1,12 @@
-#!/usr/bin/env python3
-# AUTHOR: rendaw
-# LICENSE: https://opensource.org/licenses/BSD-2-Clause
-# https://github.com/github/markup/issues/1104
+"""Modification of code generating a README.rst file from other .rst files.
+
+Run this script before pushing documentation changes.
+
+ORIGINAL AUTHOR: rendaw
+YEAR: 2017
+LICENSE: https://opensource.org/licenses/BSD-2-Clause
+SOURCE: https://github.com/github/markup/issues/1104
+"""
 import glob
 import re
 import os.path
@@ -9,7 +14,14 @@ import os.path
 for source in glob.glob('./**/*.rst.src', recursive=True):
     dirname = os.path.dirname(source)
 
+    def include(match):
+        # Reads a .rst file and returns its contents as a string
+        with open(os.path.join(dirname, match.group('filename')), 'r') as f:
+            body = f.read()
+        return body
+
     def literalinclude(match):
+        # Reads a .rst file and returns its contents as a code block directive
         with open(os.path.join(dirname, match.group('filename')), 'r') as f:
             body = f.read()
 
@@ -36,6 +48,17 @@ for source in glob.glob('./**/*.rst.src', recursive=True):
     dest = re.sub('\\.src', '', source)
     with open(source, 'r') as f:
         text = f.read()
+
+    # Substitude contents of file for every '.. include' directive
+    text = re.sub(
+        '^\\.\\. include:: (?P<filename>.*)$',
+        include,
+        text,
+        flags=re.M,
+        )
+
+    # Substitude contents of file for every '.. literalinclude' directive
+    # Replace it with a code block
     text = re.sub(
         '^\\.\\. literalinclude:: (?P<filename>.*)$'
         '(?:\\s^(?:'

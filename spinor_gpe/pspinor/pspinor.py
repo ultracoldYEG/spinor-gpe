@@ -19,7 +19,7 @@ from spinor_gpe.pspinor import tensor_propagator as tprop
 
 # pylint: disable=too-many-public-methods
 class PSpinor:
-    """A GPU-compatible simulator of the pseudospin-1/2 GPE.
+    r"""A GPU-compatible simulator of the pseudospin-1/2 GPE.
 
     Contains the functionality to run a real- or imaginary-time propataion of
     the pseudospin-1/2 Gross-Pitaevskii equation. Contains methods to generate
@@ -31,7 +31,86 @@ class PSpinor:
     along the x-direction `a_x`. The dominant energy scale is the harmonic
     trapping energy along the x-direction [hbar * `omeg['x']`].
 
-    # TODO: Need to list the object attributes
+    Attributes
+    ----------
+    paths : :obj:`dict`
+        Essential paths and directory names for a given trial.
+
+        - 'folder' : The name of the topmost trial directory.
+        - 'data' : Path to the simulation data & results.
+        - 'code' : Path to the subdirectory containing the trial code.
+        - 'trial' : Path to the subdirectory containing raw trial data.
+
+    atom_num : :obj:`float`
+        Total atom number.
+    space : :obj:`dict`
+        Spatial arrays, meshes, spacings, volume elements, and sizes:
+
+        +--------------------+----------+----------+-----------+-----------+
+        | **KEYS**                                                         |
+        +====================+==========+==========+===========+===========+
+        | Arrays:            |    'x'   |   'y'    |    'kx'   |    'ky'   |
+        +--------------------+----------+----------+-----------+-----------+
+        | Meshes:            | 'x_mesh' | 'y_mesh' | 'kx_mesh' | 'ky_mesh' |
+        +--------------------+----------+----------+-----------+-----------+
+        | Spacings:          |        'dr'         |          'dk'         |
+        +--------------------+----------+----------+-----------+-----------+
+        | Vol. elem.:        |       'dv_r'        |         'dv_k'        |
+        +--------------------+----------+----------+-----------+-----------+
+        | Sizes:             |      'r_sizes'      |       'k_sizes'       |
+        +--------------------+----------+----------+-----------+-----------+
+        | Other:             |                'mesh_points'                |
+        +--------------------+----------+----------+-----------+-----------+
+
+    pop_frac : :obj:`iterable`
+        The initial population fraction in each spin component.
+    omeg : :obj:`dict`
+        Angular trapping frequencies, {'x', 'y', 'z'}. omeg['x'] multiplied
+        by \\hbar is the characteristic energy scale.
+    g_sc : :obj:`dict`
+        Relative scattering interaction strengths, {'uu', 'dd', 'ud'}.
+    a_x : :obj:`float`
+        Harmonic oscillator length along the x-axis; this is the
+        characteristic length scale.
+    chem_pot : :obj:`float`
+        Chemical potential, [\\hbar * omeg['x']].
+    rad_tf : :obj:`float`
+        Thomas-Fermi radius along the x-axis, [a_x].
+    time_scale : :obj:`float`
+        Inverse x-axis trapping frequency - the characteristic time scale,
+        [1 / omeg['x']].
+    pot_eng : :obj:`array`
+        2D potential energy grid, [\\hbar * omeg['x']].
+    pot_eng_spin : :obj:`list` of :obj:`array`
+        A :obj:`list` of 2D potential energy grids for each spin component,
+        [\\hbar * omeg['x']].
+    kin_eng : :obj:`array`
+        2D kinetic energy grid, [\\hbar * omeg['x']].
+    kin_eng_spin : :obj:`list` of :obj:`array`
+        A :obj:`list` of 2D kinetic energy grids for each spin component,
+        [\\hbar * omeg['x']].
+    psi : :obj:`list` of :obj:`array`
+        A :obj:`list` of 2D real-space spin component wavefunctions; generally
+        complex.
+    psik : :obj:`list` of :obj:`array`
+        A :obj:`list` of 2D momentum-space spin component wavefunctions;
+        generally complex.
+    is_coupling : :obj:`bool`
+        Signals the presence of direct coupling between spin components.
+    kL_recoil : :obj:`float`
+        The value of the single-photon recoil momentum, [1 / a_x].
+    EL_recoil : :obj:`float`
+        The energy scale corresponding to the single-photon recoil momentum,
+        [1 / omeg['x']].
+    rand_seed : :obj:`int`
+        Value to seed the pseudorandom number generator.
+    prop : :obj:`PropResult`
+        Object containing the results of propagation, along with analysis
+        methods.
+    coupling : :obj:`array`
+        2D coupling array [\\hbar * omeg['x']].
+    detuning : :obj:`array`
+        2D detuning array [\\hbar * omeg['x']].
 
     """
 
@@ -89,11 +168,10 @@ class PSpinor:
         self.space = {}
 
         assert sum(pop_frac) == 1.0, "Total population must equal 1."
-        self.pop_frac = pop_frac  #: Spins' initial population fraction
+        self.pop_frac = pop_frac
 
         if omeg is None:
             omeg0 = 2*np.pi*50
-            #: dict: Angular trapping frequencies
             self.omeg = {'x': omeg0, 'y': omeg0, 'z': 40 * omeg0}
             # ??? Maybe make self.omeg (& g_sc) object @properties with methods
             # for dynamic updating.
@@ -104,7 +182,6 @@ class PSpinor:
             self.omeg = omeg
 
         if g_sc is None:
-            #: dict: Relative scattering interaction strengths
             self.g_sc = {'uu': 1.0, 'dd': 0.995, 'ud': 0.995}
         else:
             g_names = {'uu', 'dd', 'ud'}
@@ -121,7 +198,6 @@ class PSpinor:
         self.prop = None
         self.coupling = np.zeros(np.flip(mesh_points))
         self.detuning = np.zeros(np.flip(mesh_points))
-        self.rot_coupling = True
 
     def setup_data_path(self, path, overwrite):
         """Create new data directory to store simulation data & results.
@@ -137,15 +213,15 @@ class PSpinor:
 
         """
         # TODO: Copy the code from the script file to the /code subfolder
-        #: Path to the directory containing all the simulation data & results
+        # Path to the directory containing all the simulation data & results
         if not os.path.isabs(path):
             data_path = ROOT_DIR + '/data/' + path + '/'
         else:
             data_path = path
-        #: Path to the subdirectory containing the raw trial data
+        # Path to the subdirectory containing the raw trial data
         trial_data_path = data_path + 'trial_data/'
 
-        #: Path to the subdirectory containing the trial code.
+        # Path to the subdirectory containing the trial code.
         code_data_path = data_path + 'code/'
 
         if os.path.isdir(data_path):
@@ -192,7 +268,8 @@ class PSpinor:
                                           "unit magnitude.")
         g_bare = [self.g_sc['uu'], self.g_sc['dd']]
         profile = np.real(np.sqrt((self.chem_pot - self.pot_eng + 0.j)))
-        #: Initial Thomas-Fermi wavefunction for the two spin components
+
+        # Initial Thomas-Fermi wavefunction for the two spin components
         self.psi = [profile * np.sqrt(pop / abs(g)) for pop, g
                     in zip(self.pop_frac, g_bare)]
         self.psi[1] = self.psi[1] * phase_factor
@@ -214,27 +291,27 @@ class PSpinor:
             used in the simulations.
 
         """
-        #: Relative size of y-axis trapping frequency relative to x-axis.
+        # Relative size of y-axis trapping frequency relative to x-axis.
         y_trap = self.omeg['y'] / self.omeg['x']
-        #: Relative size of z-axis trapping frequency relative to x-axis.
+        # Relative size of z-axis trapping frequency relative to x-axis.
         z_trap = self.omeg['z'] / self.omeg['x']
-        #: float: Harmonic oscillator length scale [m].
+
         self.a_x = np.sqrt(const.hbar / (const.Rb87['m'] * self.omeg['x']))
 
-        #: Dimensionless scattering length, [a_x]
+        # Dimensionless scattering length, [a_x]
         if species == 'Rb87':
             a_sc = const.Rb87['a_sc'] / self.a_x
         else:
             a_sc = 1
-        #: Chemical potential for an asymmetric harmonic BEC, [hbar*omeg_x].
+
         self.chem_pot = ((4 * self.atom_num * a_sc * y_trap
                           * np.sqrt(z_trap / (2 * np.pi)))**(1/2))
 
         g_scale = np.sqrt(8 * z_trap * np.pi) * a_sc
         self.g_sc.update({k: g_scale * self.g_sc[k] for k in self.g_sc.keys()})
-        self.rad_tf = np.sqrt(2 * self.chem_pot)  #: Thomas-Fermi radius [a_x].
+        self.rad_tf = np.sqrt(2 * self.chem_pot)
 
-        self.time_scale = 1 / self.omeg['x']  #: Time scale [1/omeg_x]
+        self.time_scale = 1 / self.omeg['x']
 
     def compute_spatial_grids(self, mesh_points=(256, 256), r_sizes=(16, 16)):
         """Compute the real and momentum space grids.
@@ -257,20 +334,20 @@ class PSpinor:
         mesh_points = np.array(mesh_points)
         r_sizes = np.array(r_sizes)
 
-        #: Spacing between real-space mesh points [a_x]
+        # Spacing between real-space mesh points [a_x]
         self.space['dr'] = 2 * r_sizes / mesh_points
-        #: Half size of the grid along the kx- and ky- axes [1/a_x]
+        # Half size of the grid along the kx- and ky- axes [1/a_x]
         k_sizes = np.pi / self.space['dr']
-        #: Spacing between momentum-space mesh points [1/a_x]
+        # Spacing between momentum-space mesh points [1/a_x]
         self.space['dk'] = np.pi / r_sizes
 
-        #: Linear arrays for real- [a_x] and k-space [1/a_x], x- and y-axes
+        # Linear arrays for real- [a_x] and k-space [1/a_x], x- and y-axes
         self.space['x'] = self._compute_lin(r_sizes, mesh_points, axis=0)
         self.space['y'] = self._compute_lin(r_sizes, mesh_points, axis=1)
         self.space['kx'] = self._compute_lin(k_sizes, mesh_points, axis=0)
         self.space['ky'] = self._compute_lin(k_sizes, mesh_points, axis=1)
 
-        #: 2D meshes for computing the energy grids [a_x] and [1/a_x]
+        # 2D meshes for computing the energy grids [a_x] and [1/a_x]
         x_mesh, y_mesh = np.meshgrid(self.space['x'], self.space['y'])
         kx_mesh, ky_mesh = np.meshgrid(self.space['kx'], self.space['ky'])
         self.space.update({'x_mesh': x_mesh, 'y_mesh': y_mesh})
@@ -278,9 +355,9 @@ class PSpinor:
 
         # ??? Add functionality for Tukey filter window?
 
-        #: Real-space volume element used for normalization [a_x^2]
+        # Real-space volume element used for normalization [a_x^2]
         self.space['dv_r'] = np.prod(self.space['dr'])
-        #: k-space volume element used for normalization [1/a_x^2]
+        # k-space volume element used for normalization [1/a_x^2]
         self.space['dv_k'] = np.prod(self.space['dk'])
 
         self.space['mesh_points'] = mesh_points
@@ -340,10 +417,8 @@ class PSpinor:
 
         """
         y_trap = self.omeg['y'] / self.omeg['x']
-        #: Potential energy grid [hbar*omeg_x]
         self.pot_eng = (self.space['x_mesh']**2
                         + (y_trap * self.space['y_mesh'])**2) / 2
-        #: Kinetic energy grid [hbar*omeg_x]
         self.kin_eng = (self.space['kx_mesh']**2
                         + self.space['ky_mesh']**2) / 2
 
@@ -405,15 +480,12 @@ class PSpinor:
 
         """
         # pylint: disable=attribute-defined-outside-init
-        #: Designator attribute for the presence of coupling
         self.is_coupling = True
-        #: Recoil momentum of the coupling interaction [a_x].
         # pylint: disable=invalid-name
         self.kL_recoil = scale * (np.sqrt(2) * np.pi / wavel * self.a_x)
-        #: Recoil energy of the coupling interaction [hbar*omeg_x]
         # pylint: disable=invalid-name
         self.EL_recoil = self.kL_recoil**2 / 2
-        #: Momentum shift option
+        # Momentum shift option
         if kin_shift:
             shift = self.space['kx_mesh'] * self.kL_recoil
         else:
