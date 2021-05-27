@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import warnings
 
 import numpy as np
 from scipy.ndimage import fourier_shift
@@ -143,8 +144,10 @@ class PSpinor:
             data_path = path
         #: Path to the subdirectory containing the raw trial data
         trial_data_path = data_path + 'trial_data/'
+
         #: Path to the subdirectory containing the trial code.
         code_data_path = data_path + 'code/'
+
         if os.path.isdir(data_path):
             if not overwrite:
                 raise FileExistsError(
@@ -152,9 +155,11 @@ class PSpinor:
                     "To overwrite this directory, supply the parameter "
                     "`overwrite=True`.")
 
+            warnings.warn(f"The directory {data_path} is being deleted and "
+                          "all containing data will be lost.")
             shutil.rmtree(data_path)  # Deletes the data directory
-        # Create the directories and sub-directories
 
+        # Create the directories and sub-directories
         data_path = f'{os.path.normpath(data_path)}{os.sep}'
         code_data_path = f'{os.path.normpath(code_data_path)}{os.sep}'
         trial_data_path = f'{os.path.normpath(trial_data_path)}{os.sep}'

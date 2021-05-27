@@ -53,9 +53,8 @@ class PropResult:
 
     def calc_separation(self):
         """Calculate the phase separation of the two spin components."""
-        #  FIXME
         s = 1 - (np.sum(ttools.prod(self.dens))
-                 / np.sqrt(np.sum(self.dens[0]**2) * np.sum(self.dens[1])**2))
+                 / np.sqrt(np.sum(self.dens[0]**2) * np.sum(self.dens[1]**2)))
         return s
 
     def plot_spins(self, rscale=1.0, kscale=1.0, cmap='viridis', save=True,
@@ -101,24 +100,25 @@ class PropResult:
 
         Parameters
         ----------
-        rscale : :obj:`float`, optional
+        rscale : :obj:`float`, default=1.0
             Real-space length scale. The default of 1.0 corresponds to the
             naturatl harmonic length scale along the x-axis.
-        kscale : :obj:`float`, optional
+        kscale : :obj:`float`, default=1.0
             Momentum-space length scale. The default of 1.0 corresponds to the
             inverse harmonic length scale along the x-axis.
-        cmap : :obj:`str`, optional
+        cmap : :obj:`str`, default='viridis'
             Color map name for the real- and momentum-space density plots.
-        save : :obj:`bool`, optional
+        save : :obj:`bool`, default=True
             Saves the figure as a .pdf file (default). The filename has the
             format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
-        ext : :obj:`str`, optional
-            Saved plot image file extension.
-        zoom : :obj:`float`, optional
+        ext : :obj:`str`, default='.pdf'
+            File extension for the saved plot image.
+        show : :obj:`bool`, default=True
+            Option to display the generated image.
+        zoom : :obj:`float`, default = 1.0
             A zoom factor for the k-space density plot.
 
         """
-        # TODO: Move this to the ptools module and make it callable from here.
         r_sizes = self.space['r_sizes']
         r_extent = np.ravel(np.vstack((-r_sizes, r_sizes)).T) / rscale
 
@@ -127,59 +127,14 @@ class PropResult:
 
         extents = {'r': r_extent, 'k': k_extent}
 
-        dens_tot_r = sum(self.dens)
-        ph_tot_r = ttools.phase(sum(self.psi), uwrap=False, dens=dens_tot_r)
-        dens_tot_k = sum(self.densk)
+        fig, all_plots = ptools.plot_total(self.psi, self.psik, extents,
+                                           self.paths, cmap=cmap, save=save,
+                                           ext=ext, show=show, zoom=zoom)
+        return fig, all_plots
 
-        widths = [1] * 4
-        heights = [1] * 4
-        fig = plt.figure()
-        gsp = gridspec.GridSpec(4, 4, width_ratios=widths,
-                                height_ratios=heights)
-        r_ax = fig.add_subplot(gsp[0:2, 0:2])
-        ph_ax = fig.add_subplot(gsp[0:2, 2:])
-        k_ax = fig.add_subplot(gsp[2:, 1:3])
-
-        # Real-space density plot
-        r_plot = r_ax.imshow(dens_tot_r, cmap=cmap, origin='lower',
-                             extent=r_extent, vmin=0)
-        fig.colorbar(r_plot, ax=r_ax)
-        r_ax.set_xlabel('$x$')
-        r_ax.set_ylabel('$y$')
-
-        # Real-space phase plot
-        ph_plot = ph_ax.imshow(ph_tot_r, cmap='twilight_shifted',
-                               origin='lower', extent=r_extent,
-                               vmin=-np.pi, vmax=np.pi)
-
-        ph_cb = fig.colorbar(ph_plot, ax=ph_ax)
-        ph_cb.set_ticks(np.linspace(-np.pi, np.pi, 5))
-        ph_cb.set_ticklabels(['$-\\pi$', '', '$0$', '', '$\\pi$'])
-        ph_ax.set_xlabel('$x$')
-        ph_ax.set_ylabel('$y$')
-
-        # Momentum-space density plot
-        k_plot = k_ax.imshow(dens_tot_k, cmap=cmap, origin='lower',
-                             extent=k_extent, vmin=0)
-        fig.colorbar(k_plot, ax=k_ax)
-        k_ax.set_xlabel('$k_x$')
-        k_ax.set_ylabel('$k_y$')
-        k_ax.set_xlim(k_extent[:2] / zoom)
-        k_ax.set_ylim(k_extent[2:] / zoom)
-
-        plt.tight_layout()
-
-        # Save figure
-        if save:
-            test_name = self.paths['data'] + 'total_dens_phase'
-            file_name = ptools.next_available_path(test_name,
-                                                   self.paths['folder'], ext)
-            plt.savefig(file_name)
-        if show:
-            plt.show()
-
-    # def plot_eng(self):
-    #     """Plot the sampled energy expectation values."""
+    def plot_eng(self):
+        """Plot the sampled energy expectation values."""
+        raise NotImplementedError()
 
     def plot_pops(self, scaled=True, save=True, ext='.pdf'):
         """Plot the spin populations as a function of propagation time.
@@ -194,7 +149,7 @@ class PropResult:
             Saves the figure as a .pdf file (default). The filename has the
             format "/`data_path`/pop_evolution%s-`trial_name`.pdf".
         ext : :obj:`str`, optional
-            Saved plot image file extension.
+            File extension for the saved plot image.
         """
         if scaled:
             xlabel = 'Time [s]'
@@ -230,6 +185,7 @@ class PropResult:
 
     def analyze_vortex(self):
         """Compute the total vorticity in each spin component."""
+        raise NotImplementedError()
 
     def make_movie(self, rscale=1.0, kscale=1.0, cmap='viridis', play=False,
                    zoom=1.0, norm_type='all'):
@@ -245,11 +201,15 @@ class PropResult:
             inverse harmonic length scale along the x-axis.
         cmap : :obj:`str`, optional
             Color map name for the real- and momentum-space density plots.
+        play : :obj:`bool`, default=False
+            If True, the movie is opened in the computer's default media
+            player after it is saved.
         kzoom : :obj:`float`, optional
             A zoom factor for the k-space density plot.
         norm_type : :obj:`str`, optional
             {'all', 'half'} Normalizes the colormaps to the full or half sum
-            of the max densites.
+            of the max densites. 'half' is useful for visualizing situations
+            where the population is equally divided between the two spins.
 
         """
         def animate(frame, n_total, val):
@@ -285,14 +245,14 @@ class PropResult:
         with np.load(self.sampled_path) as sampled:
             times = sampled['times']
             psiks = sampled['psiks']
-            # ??? Need to rebin for speed?
+            # ??? Need to rebin grids for speed?
 
         n_samples = len(times)
         writer = ani.writers['ffmpeg'](fps=5, bitrate=-1)
         fig, all_plots = self.plot_spins(rscale, kscale, cmap, save=False,
                                          show=False, zoom=zoom)
 
-        # create and then save the animation
+        # Create and then save the animation
         anim = ani.FuncAnimation(fig, animate, frames=n_samples, blit=False,
                                  fargs=(n_samples, norm_val,))
 
@@ -308,7 +268,19 @@ class PropResult:
             os.startfile(file_name)
 
     def rebin(self, arr, new_shape=(256, 256)):
-        """Rebin 2D array arr to shape new_shape by averaging."""
+        """Rebin a 2D `arr` to shape `new_shape` by averaging.
+
+        This may be used when generating movies of sampled wavefunctions.
+        By down-sampling the density grids, the movie is generated much faster.
+
+        Parameters
+        ----------
+        arr : 2D :obj:`list` or NumPy :obj:`array`
+            The input 2D array to rebin.
+        new_shape : :obj:`iterable`, default=(256, 256)
+            The target rebinned shape.
+
+        """
         assert arr[0].shape == arr[1].shape
         new_arr = [0, 0]
         curr_shape = arr[0].shape

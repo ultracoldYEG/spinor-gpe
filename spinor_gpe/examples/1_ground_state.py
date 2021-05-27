@@ -19,7 +19,7 @@ from spinor_gpe.pspinor import pspinor as spin
 
 # 1. SETUP
 
-DATA_PATH = 'examples/Trial_001'  # Default data path is in the /data/ folder
+DATA_PATH = 'examples/Trial_011'  # Default data path is in the /data/ folder
 
 FREQ = 50
 W = 2*np.pi*FREQ
@@ -30,7 +30,7 @@ ATOM_NUM = 1e2
 OMEG = {'x': W, 'y': Y_SCALE * W, 'z': Z_SCALE * W}
 G_SC = {'uu': 1, 'dd': 1, 'ud': 1.04}
 
-ps = spin.PSpinor(DATA_PATH, overwrite=True,  # Initialize PSpinor object
+ps = spin.PSpinor(DATA_PATH, overwrite=False,  # Initialize PSpinor object
                   atom_num=ATOM_NUM,
                   omeg=OMEG,
                   g_sc=G_SC,

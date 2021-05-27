@@ -204,8 +204,8 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
     fig : :obj:`plt.Figure`
         The matplotlib figure for the plot.
     all_plots : :obj:`dict` of :obj:`list`
-        The keys are {'r', 'ph', 'k'}. Each value is a pair of :obj:`plt.Axes`
-        for both spins.
+        The keys are {'r', 'ph', 'k'}. Each value is a pair of
+        :obj:`matplotlib.image.AxesImage` for both spins.
 
     """
     # pylint: disable=unused-variable
@@ -268,6 +268,93 @@ def plot_spins(psi, psik, extents, paths, cmap='viridis', save=True,
     return fig, all_plots
 
 
-def plot_total():
-    """Plot the total densities and phase of the wavefunction."""
-    pass
+def plot_total(psi, psik, extents, paths, cmap='viridis', save=True,
+               ext='.pdf', show=True, zoom=1.0):
+    """Plot the total densities and phase of the wavefunction.
+
+    Parameters
+    ----------
+    psi : :obj:`list` of Numpy :obj:`array`, optional.
+        The real-space wavefunction to plot.
+    psik : :obj:`list` of Numpy :obj:`array`, optional.
+        The momentum-space wavefunction to plot.
+    extents : :obj:`dict` of :obj:`iterable`
+        The dictionary keys are {'r', 'k'}, and each value is a 4-element
+        iterables giving the x- (kx-) and y- (ky-) spatial extents of the plot
+        area, e.g. [x_min, x_max, y_min, y_max]
+    paths : :obj:`dict` of :obj:`str`
+        The dictionary keys contain {'data', 'folder'}, and the values are
+        absolute paths to the saved data path and its containing folder.
+    cmap : :obj:`str`, default='viridis'
+        Matplotlib color map name for the real- and momentum-space density
+        plots.
+    save : :obj:`bool`, default=True
+        Saves the figure as a .pdf file (default). The filename has the
+        format "/`data_path`/spin_dens_phase%s-`trial_name`.pdf".
+    ext : :obj:`str`, default='.pdf'
+        File extension for the saved density plots.
+    zoom : :obj:`float`, default=1.0
+        A zoom factor for the k-space density plot.
+
+    Returns
+    -------
+    fig : :obj:`plt.Figure`
+        The matplotlib figure for the plot.
+    all_plots : :obj:`dict` of :obj:`matplotlib.image.AxesImage`
+        The keys are {'r', 'ph', 'k'}. Each value is a separate
+        :obj:`matplotlib.image.AxesImage`.
+
+    """
+    dens_tot_r = sum(ttools.density(psi))
+    ph_tot_r = ttools.phase(sum(psi), uwrap=False, dens=dens_tot_r)
+    dens_tot_k = sum(ttools.density(psik))
+
+    widths = [1] * 4
+    heights = [1] * 4
+    fig = plt.figure()
+    gsp = gridspec.GridSpec(4, 4, width_ratios=widths,
+                            height_ratios=heights)
+    r_ax = fig.add_subplot(gsp[0:2, 0:2])
+    ph_ax = fig.add_subplot(gsp[0:2, 2:])
+    k_ax = fig.add_subplot(gsp[2:, 1:3])
+
+    # Real-space density plot
+    r_plot = r_ax.imshow(dens_tot_r, cmap=cmap, origin='lower',
+                         extent=extents['r'], vmin=0)
+    fig.colorbar(r_plot, ax=r_ax)
+    r_ax.set_xlabel('$x$')
+    r_ax.set_ylabel('$y$')
+
+    # Real-space phase plot
+    ph_plot = ph_ax.imshow(ph_tot_r, cmap='twilight_shifted',
+                           origin='lower', extent=extents['r'],
+                           vmin=-np.pi, vmax=np.pi)
+
+    ph_cb = fig.colorbar(ph_plot, ax=ph_ax)
+    ph_cb.set_ticks(np.linspace(-np.pi, np.pi, 5))
+    ph_cb.set_ticklabels(['$-\\pi$', '', '$0$', '', '$\\pi$'])
+    ph_ax.set_xlabel('$x$')
+    ph_ax.set_ylabel('$y$')
+
+    # Momentum-space density plot
+    k_plot = k_ax.imshow(dens_tot_k, cmap=cmap, origin='lower',
+                         extent=extents['k'], vmin=0)
+    fig.colorbar(k_plot, ax=k_ax)
+    k_ax.set_xlabel('$k_x$')
+    k_ax.set_ylabel('$k_y$')
+    k_ax.set_xlim(extents['k'][:2] / zoom)
+    k_ax.set_ylim(extents['k'][2:] / zoom)
+
+    plt.tight_layout()
+
+    # Save figure
+    if save:
+        test_name = paths['data'] + 'total_dens_phase'
+        file_name = next_available_path(test_name,
+                                        paths['folder'], ext)
+        plt.savefig(file_name)
+    if show:
+        plt.show()
+
+    all_plots = {'r': r_plot, 'ph': ph_plot, 'k': k_plot}
+    return fig, all_plots
