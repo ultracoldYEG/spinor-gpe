@@ -88,8 +88,6 @@ class TensorPropagator:
 
         # Calculate the sampling and annealing rates, as needed.
         if self.is_sampling:
-            # if n_samples == 1:
-            #     n_samples = 100
             assert self.n_steps % n_samples == 0, (
                 f"The number of samples requested {n_samples} does not evenly "
                 f"divide the total number of steps {self.n_steps}.")
@@ -97,19 +95,96 @@ class TensorPropagator:
         self.sample_rate = self.n_steps / n_samples
 
         # Pre-compute several evolution operators
-        self.eng_out = {'kin': ttools.evolution_op(self.kin_eng,
-                                                   self.dt_out / 2),
-                        'pot': ttools.evolution_op(self.pot_eng, self.dt_out),
+        self.eng_out = {'kin': ttools.evolution_op(self.dt_out / 2,
+                                                   self.kin_eng),
+                        'pot': ttools.evolution_op(self.dt_out, self.pot_eng),
                         'coupl': ttools.coupling_op(self.dt_out / 2,
                                                     self.coupling, self.expon)}
-        self.eng_in = {'kin': ttools.evolution_op(self.kin_eng,
-                                                  self.dt_in / 2),
-                       'pot': ttools.evolution_op(self.pot_eng, self.dt_in),
+        self.eng_in = {'kin': ttools.evolution_op(self.dt_in / 2,
+                                                  self.kin_eng),
+                       'pot': ttools.evolution_op(self.dt_in, self.pot_eng),
                        'coupl': ttools.coupling_op(self.dt_in / 2,
                                                    self.coupling, self.expon)}
 
+    def prop_loop(self, n_steps):
+        """Evaluate the propagation steps in a for-loop.
+
+        Saves the spin populations at every time step. If wavefunctions are
+        sampled throughout the propagation, they are saved with the associated
+        sampled times in `trial_data/psik_sampled%s_`folder_name`.npz.
+
+        Parameters
+        ----------
+        n_steps : :obj:`int`
+            The number of propagation steps.
+
+        Returns
+        -------
+        result : :obj:`PropResult`
+            Contains the propagation results and analysis methods.
+
+        See Also
+        --------
+        spinor_gpe.prop_results : Propagation results
+
+        """
+        pop_times = np.linspace(0, self.n_steps * np.abs(self.t_step), n_steps)
+        pops = {'times': pop_times, 'vals': np.empty((n_steps, 2))}
+
+        # Pre-allocate arrays for efficient sampling.
+        if self.is_sampling:
+            n_samples = int(n_steps / self.sample_rate)
+            sampled_psik = np.empty((n_samples, 2, *self.psik[0].shape),
+                                    dtype=np.complex128)
+            sampled_times = np.linspace(0, self.n_steps * np.abs(self.t_step),
+                                        n_samples)
+
+        # Main propagation loop
+        for _i in tqdm(range(n_steps)):
+            if self.is_sampling:
+                if _i % self.sample_rate == 0:
+                    idx = int(_i / self.sample_rate)
+                    sampled_psik[idx] = np.array(ttools.to_numpy(self.psik))
+
+            self.full_step()
+
+            # Calculate and store populations
+            pops['vals'][_i] = ttools.calc_pops(self.psik, self.space['dv_k'])
+
+        energy = self.eng_expect(self.psik)
+
+        if self.is_sampling:
+            # Saves sampled wavefunctions to file; times are in dimensionless
+            # time units
+            test_name = self.paths['trial'] + 'psik_sampled'
+            file_name = next_available_path(test_name,
+                                            self.paths['folder'], '.npz')
+            np.savez(file_name, psiks=sampled_psik, times=sampled_times)
+        else:
+            file_name = None
+
+        psik = ttools.to_numpy(self.psik)
+        psi = ttools.ifft_2d(psik, ttools.to_numpy(self.space['dr']))
+
+        result = prop_result.PropResult(psi, psik, energy, pops, file_name)
+        return result
+
+    def full_step(self):
+        """Full step forward in real or imaginary time.
+
+        For accuracy, divide the full propagation step into three single steps
+        using the magic gamma time steps.
+        """
+        self.single_step(self.dt_out, self.eng_out)  # Outer sub-time step
+        self.single_step(self.dt_in, self.eng_in)  # Inner sub-time step
+        self.single_step(self.dt_out, self.eng_out)  # Outer sub-time step
+
     def single_step(self, t_step, eng):
-        """Single step forward in real or imaginary time.
+        """Single step forward in real or imaginary time with spectral method.
+
+        The kinetic, interaction, and coupling time-evolution operators are
+        symmetrically split into two half-single steps around the full-single
+        step potential energy operator.
 
         Parameters
         ----------
@@ -129,7 +204,7 @@ class TensorPropagator:
         # First half step of the interaction energy operator
         int_eng = [self.g_sc['uu'] * dens[0] + self.g_sc['ud'] * dens[1],
                    self.g_sc['dd'] * dens[1] + self.g_sc['ud'] * dens[0]]
-        int_op = ttools.evolution_op(int_eng, t_step / 2)
+        int_op = ttools.evolution_op(t_step / 2, int_eng)
         psi = [op * p for op, p in zip(int_op, psi)]
 
         # First half step of the coupling energy operator
@@ -146,11 +221,11 @@ class TensorPropagator:
                    for row in eng['coupl']]
 
         # Second half step of the interaction energy operator
-        # ??? Is renormalization needed? We don't have it in the previous code.
+        # ??? Is renormalization needed? It's not in previous code versions.
         # psi, dens = ttools.norm(psi, self.space['dv_r'], self.atom_num)
         # int_eng = [self.g_sc['uu'] * dens[0] + self.g_sc['ud'] * dens[1],
         #            self.g_sc['dd'] * dens[1] + self.g_sc['ud'] * dens[0]]
-        # int_op = ttools.evolution_op(int_eng, t_step / 2)
+        # int_op = ttools.evolution_op(t_step / 2, int_eng)
         psi = [op * p for op, p in zip(int_op, psi)]
 
         # Second half step of the kintetic energy operator
@@ -158,82 +233,29 @@ class TensorPropagator:
         psik = [eng * pk for eng, pk in zip(eng['kin'], psik)]
         self.psik, _ = ttools.norm(psik, self.space['dv_k'], self.atom_num)
 
-    def full_step(self):
-        """Full step forward in real or imaginary time.
+    def eng_expect(self, psik):
+        """Compute the energy expectation value of the wavefunction.
 
-        Divide the full propagation step into three single steps using
-        the magic gamma for accuracy.
-        """
-        self.single_step(self.dt_out, self.eng_out)  # Outer sub-time step
-        self.single_step(self.dt_in, self.eng_in)  # Inner sub-time step
-        self.single_step(self.dt_out, self.eng_out)  # Outer sub-time step
-
-    def prop_loop(self, n_steps):
-        """Contains the actual propagation for-loop.
+        To calculate the kinetic energy potion of the energy expectation value,
+        spatial gradients of the phase and square root density must be
+        obtained.
 
         Parameters
         ----------
-        n_steps : :obj:`int`
-            The number of propagation steps.
+        psik : :obj:`list` of NumPy :obj:`array`
+            The k-space representation of wavefunction to evaluate.
 
-        Returns
-        -------
-        result : :obj:`PropResult`
+        Notes
+        -----
+        While spatial gradients of the wavefunction's phase can be computed
+        with PyTorch tensors, there is currently not an implementation of the
+        2D phase-unwrapping algorithm. For this this reason, the energy
+        expectation value needs to be computed with NumPy :obj:`arrays`.
 
-        """
-        # Every sample_rate steps, need to save a copy of the wavefunction to a
-        #    NumPy array in memory.
-        # Every anneal_rate steps, need to
-        pop_times = np.linspace(0, self.n_steps * np.abs(self.t_step), n_steps)
-        pops = {'times': pop_times, 'vals': np.empty((n_steps, 2))}
-        if self.is_sampling:
-            n_samples = int(n_steps / self.sample_rate)
-            sampled_psik = np.empty((n_samples, 2, *self.psik[0].shape),
-                                    dtype=np.complex128)
-            sampled_times = np.linspace(0, self.n_steps * np.abs(self.t_step),
-                                        n_samples)
-        energy = self.eng_expect(self.psik)
-        print('\n', energy)
-        # Main propagation loop
-
-        for _i in tqdm(range(n_steps)):
-            if self.is_sampling:
-                if _i % self.sample_rate == 0:
-                    # sampled_psik.append(ttools.to_numpy(self.psik))
-                    idx = int(_i / self.sample_rate)
-                    sampled_psik[idx] = np.array(ttools.to_numpy(self.psik))
-
-            self.full_step()
-
-            pops['vals'][_i] = ttools.calc_pops(self.psik, self.space['dv_k'])
-
-        energy = self.eng_expect(self.psik)
-        print('\n', energy)
-
-        if self.is_sampling:
-            # Save sampled wavefunctions; times are in dimensionless time units
-            test_name = self.paths['trial'] + 'psik_sampled'
-            file_name = next_available_path(test_name,
-                                            self.paths['folder'], '.npz')
-            np.savez(file_name, psiks=sampled_psik, times=sampled_times)
-        else:
-            file_name = None
-
-        psik = ttools.to_numpy(self.psik)
-        psi = ttools.ifft_2d(psik, ttools.to_numpy(self.space['dr']))
-
-        result = prop_result.PropResult(psi, psik, energy, pops, file_name)
-        return result
-
-    def eng_expect(self, psik):
-        """Compute the energy expectation value.
-
-        Needs to be computed on the fly. Energies are computed with NumPy
-        on the CPU.
         """
         assert len(psik) == 2, ("Requires two spinor components to calculate "
                                 "the energy expectation value.")
-        # TODO: Debug this later when running a Raman configuration.
+        # FIXME: I don't have a lot of confidence in the values generated.
         if not isinstance(psik[0], np.ndarray):
             psik = ttools.to_numpy(psik)
         delta_r = ttools.to_numpy(self.space['dr'])
@@ -261,6 +283,5 @@ class TensorPropagator:
                    * ttools.to_numpy(self.coupling) / 2)
 
         total_eng = np.real((kin + pot + int_e + coupl_e).sum())
-        # print(total_eng)
         return [total_eng, np.real(kin).sum(), np.real(pot).sum(),
                 np.real(int_e).sum()]

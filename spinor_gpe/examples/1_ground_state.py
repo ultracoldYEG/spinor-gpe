@@ -30,7 +30,7 @@ ATOM_NUM = 1e2
 OMEG = {'x': W, 'y': Y_SCALE * W, 'z': Z_SCALE * W}
 G_SC = {'uu': 1, 'dd': 1, 'ud': 1.04}
 
-ps = spin.PSpinor(DATA_PATH, overwrite=False,  # Initialize PSpinor object
+ps = spin.PSpinor(DATA_PATH, overwrite=True,  # Initialize PSpinor object
                   atom_num=ATOM_NUM,
                   omeg=OMEG,
                   g_sc=G_SC,

@@ -11,6 +11,122 @@ from skimage import restoration as rest
 # changed to norm="ortho"?
 
 
+def to_numpy(input_tens):
+    """Convert from PyTorch Tensor to NumPy arrays.
+
+    Accepts a single PyTorch Tensor, or a :obj:`list` of PyTorch Tensor,
+    as in the wavefunction objects.
+
+    Parameters
+    ----------
+    input_tens : PyTorch :obj:`Tensor`, or :obj:`list` of PyTorch :obj:`Tensor`
+        Input tensor, or list of tensor, to be converted to :obj:`array`,
+        on CPU memory.
+
+    Returns
+    -------
+    output_arr : NumPy :obj:`array` or :obj:`list` of NumPy :obj:`array`
+        Output array stored on CPU memory.
+
+    """
+    if isinstance(input_tens, list):
+        output_tens = [inp.cpu().numpy() for inp in input_tens]
+
+    elif isinstance(input_tens, torch.Tensor):
+        output_tens = input_tens.cpu().numpy()
+
+    return output_tens
+
+
+def to_tensor(input_arr, dev='cpu', dtype=64):
+    """Convert from NumPy arrays to Tensors.
+
+    Accepts a single NumPy array, or a :obj:`list` of NumPy arrays, as in the
+    wavefunction objects.
+
+    Parameters
+    ----------
+    input_arr : NumPy :obj:`array`,  or :obj:`list` of NumPy :obj:`array`
+        Input array, or list of arrays, to be converted to a :obj:`Tensor`,
+        on either CPU or GPU memory.
+    dev : :obj:`str`, default='cpu'
+        The name of the device on which to store the tensor,
+        e.g. {'cpu', 'cuda', 'cuda:0'}
+    dtype : :obj:`int`, default=64
+        Designator for the torch dtype -
+
+        * 32  : :obj:`torch.float32`;
+        * 64  : :obj:`torch.float64`;
+        * 128 : :obj:`torch.complex128`
+
+    Returns
+    -------
+    output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
+        Output tensor of `dtype` stored on `dev` memory.
+
+    """
+    all_dtypes = {32: torch.float32, 64: torch.float64, 128: torch.complex128}
+    if isinstance(input_arr, list):
+        output_tens = [torch.as_tensor(inp, dtype=all_dtypes[dtype],
+                                       device=dev) for inp in input_arr]
+
+    elif isinstance(input_arr, np.ndarray):
+        output_tens = torch.as_tensor(input_arr, dtype=all_dtypes[dtype],
+                                      device=dev)
+
+    return output_tens
+
+
+def to_cpu(input_tens):
+    """Transfers `input_tens` from GPU to CPU memory.
+
+    Parameters
+    ----------
+    input_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
+        Input tensor stored on GPU memory.
+
+    Returns
+    -------
+    output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
+        Output tensor stored on CPU memory.
+
+    """
+    if isinstance(input_tens, list):
+        output_tens = [inp.cpu() for inp in input_tens]
+
+    elif isinstance(input_tens, torch.Tensor):
+        output_tens = input_tens.cpu()
+
+    return output_tens
+
+
+def to_gpu(input_tens, dev='cuda'):
+    """Transfers `input_tens` from CPU to GPU memory.
+
+    Parameters
+    ----------
+    input_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
+        Input tensor stored on GPU memory.
+    dev : :obj:`str`, default='cuda'
+        The name of the device on which to store the tensor,
+        e.g. {'cuda', 'cuda:0'}
+
+    Returns
+    -------
+    output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
+
+    """
+    if isinstance(input_tens, list):
+        assert isinstance(input_tens[0], torch.Tensor), f"Cannot move a \
+            non-Tensor object of dtype `{type(input_tens[0])}` to GPU memory."
+        output_tens = [inp.to(dev) for inp in input_tens]
+
+    elif isinstance(input_tens.to(dev), torch.Tensor):
+        output_tens = input_tens
+
+    return output_tens
+
+
 def fft_1d(psi, delta_r=(1, 1), axis=0) -> list:
     """Compute the forward 1D FFT of `psi` along a single axis.
 
@@ -142,150 +258,57 @@ def ifft_2d(psik, delta_r=(1, 1)) -> list:
     return psi
 
 
-def to_numpy(input_tens):
-    """Convert from PyTorch Tensor to NumPy arrays.
+def norm(psi, vol_elem, atom_num, pop_frac=None):
+    """
+    Normalize spinor wavefunction to the expected atom numbers and populations.
 
-    Accepts a single PyTorch Tensor, or a :obj:`list` of PyTorch Tensor,
-    as in the wavefunction objects.
+    This function normalizes to the total expected atom number `atom_num`,
+    and to the expected population fractions `pop_frac`. Normalization is
+    essential in processes where the total atom number is not conserved,
+    (e.g. imaginary time propagation).
 
     Parameters
     ----------
-    input_tens : PyTorch :obj:`Tensor`, or :obj:`list` of PyTorch :obj:`Tensor`
-        Input tensor, or list of tensor, to be converted to :obj:`array`,
-        on CPU memory.
+    psi : :obj:`list` of NumPy :obj:`arrays` or PyTorch :obj:`Tensors`.
+        The wavefunction to normalize.
+    vol_elem : :obj:`float`
+        Volume element for either real- or k-space.
+    atom_num : :obj:`int`
+        The total expected atom number.
+    pop_frac : array-like, optional
+        The expected population fractions in each spin component.
 
     Returns
     -------
-    output_arr : NumPy :obj:`array` or :obj:`list` of NumPy :obj:`array`
-        Output array stored on CPU memory.
+    psi_norm : :obj:`list` of NumPy :obj:`arrays` or PyTorch :obj:`Tensors`.
+        The normalized wavefunction.
+    dens_norm : :obj:`list` of NumPy :obj:`arrays` or PyTorch :obj:`Tensors`.
+        The densities of the normalized wavefunction's components
 
     """
-    if isinstance(input_tens, list):
-        output_tens = [inp.cpu().numpy() for inp in input_tens]
+    dens = density(psi)
+    if isinstance(dens[0], np.ndarray):
+        if pop_frac is None:
+            norm_factor = np.sum(dens[0] + dens[1]) * vol_elem / atom_num
+            psi_norm = [p / np.sqrt(norm_factor) for p in psi]
+            dens_norm = [d / norm_factor for d in dens]
+        else:
+            # TODO: Implement population fraction normalization.
+            raise NotImplementedError("Normalizing to the expected population "
+                                      "fractions is not yet implemented for "
+                                      "NumPy arrays.")
 
-    elif isinstance(input_tens, torch.Tensor):
-        output_tens = input_tens.cpu().numpy()
+    elif isinstance(dens[0], torch.Tensor):
+        if pop_frac is None:
+            norm_factor = torch.sum(dens[0] + dens[1]) * vol_elem / atom_num
+            psi_norm = [p / np.sqrt(norm_factor.item()) for p in psi]
+            dens_norm = [d / norm_factor.item() for d in dens]
+        else:
+            raise NotImplementedError("Normalizing to the expected population "
+                                      "fractions is not implemented for "
+                                      "PyTorch tensors.")
 
-    return output_tens
-
-
-def to_tensor(input_arr, dev='cpu', dtype=64):
-    """Convert from NumPy arrays to Tensors.
-
-    Accepts a single NumPy array, or a :obj:`list` of NumPy arrays, as in the
-    wavefunction objects.
-
-    Parameters
-    ----------
-    input_arr : NumPy :obj:`array`,  or :obj:`list` of NumPy :obj:`array`
-        Input array, or list of arrays, to be converted to a :obj:`Tensor`,
-        on either CPU or GPU memory.
-    dev : :obj:`str`, default='cpu'
-        The name of the device on which to store the tensor,
-        e.g. {'cpu', 'cuda', 'cuda:0'}
-    dtype : :obj:`int`, default=64
-        Designator for the torch dtype -
-
-        * 32  : :obj:`torch.float32`;
-        * 64  : :obj:`torch.float64`;
-        * 128 : :obj:`torch.complex128`
-
-    Returns
-    -------
-    output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
-        Output tensor of `dtype` stored on `dev` memory.
-
-    """
-    all_dtypes = {32: torch.float32, 64: torch.float64, 128: torch.complex128}
-    if isinstance(input_arr, list):
-        output_tens = [torch.as_tensor(inp, dtype=all_dtypes[dtype],
-                                       device=dev) for inp in input_arr]
-
-    elif isinstance(input_arr, np.ndarray):
-        output_tens = torch.as_tensor(input_arr, dtype=all_dtypes[dtype],
-                                      device=dev)
-
-    return output_tens
-
-
-def to_cpu(input_tens):
-    """Transfers `input_tens` from gpu to cpu memory.
-
-    Parameters
-    ----------
-    input_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
-        Input tensor stored on GPU memory.
-
-    Returns
-    -------
-    output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
-        Output tensor stored on CPU memory.
-
-    """
-    if isinstance(input_tens, list):
-        output_tens = [inp.cpu() for inp in input_tens]
-
-    elif isinstance(input_tens, torch.Tensor):
-        output_tens = input_tens.cpu()
-
-    return output_tens
-
-
-def to_gpu(input_tens, dev='cuda'):
-    """Transfers `input_tens` from cpu to gpu memory.
-
-    Parameters
-    ----------
-    input_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
-        Input tensor stored on GPU memory.
-    dev : :obj:`str`, default='cuda'
-        The name of the device on which to store the tensor,
-        e.g. {'cuda', 'cuda:0'}
-
-    Returns
-    -------
-    output_tens : PyTorch :obj:`Tensor` or :obj:`list` of PyTorch :obj:`Tensor`
-
-    """
-    if isinstance(input_tens, list):
-        assert isinstance(input_tens[0], torch.Tensor), f"Cannot move a \
-            non-Tensor object of dtype `{type(input_tens[0])}` to GPU memory."
-        output_tens = [inp.to(dev) for inp in input_tens]
-
-    elif isinstance(input_tens.to(dev), torch.Tensor):
-        output_tens = input_tens
-
-    return output_tens
-
-
-def norm_sq(psi_comp):
-    """Compute the density (norm-squared) of a single wavefunction component.
-
-    Parameters
-    ----------
-    psi_comp : NumPy :obj:`array` or PyTorch :obj:`Tensor`
-        A single wavefunction component.
-
-    Returns
-    -------
-    psi_sq : NumPy :obj:`array` or PyTorch :obj:`Tensor`
-        The norm-square of the wavefunction.
-
-    Raises
-    ------
-    TypeError
-        If `psi_comp` is neither an :obj:`array` or a :obj:`Tensor` of the
-        correct shape.
-    """
-    if isinstance(psi_comp, np.ndarray):
-        psi_sq = np.abs(psi_comp)**2
-
-    elif isinstance(psi_comp, torch.Tensor):
-        psi_sq = torch.abs(psi_comp)**2
-    else:
-        raise TypeError(f"`psi_comp` is of type {type(psi_comp)} and shape "
-                        f"{psi_comp.shape}.")
-    return psi_sq
+    return psi_norm, dens_norm
 
 
 def grad(psi, delta_r):
@@ -344,6 +367,15 @@ def grad_sq(psi, delta_r):
     return g_sq
 
 
+def conj(psi):
+    """Complex conjugate of a complex tensor."""
+    if isinstance(psi, list):
+        conjugate = [conj_comp(p) for p in psi]
+    else:
+        conjugate = conj_comp(psi)
+    return conjugate
+
+
 def conj_comp(psi_comp):
     """Complex conjugate of a single wavefunction component."""
     if isinstance(psi_comp, np.ndarray):
@@ -355,68 +387,6 @@ def conj_comp(psi_comp):
                         f"{psi_comp.shape}.")
 
     return cconj
-
-
-def conj(psi):
-    """Complex conjugate of a complex tensor."""
-    if isinstance(psi, list):
-        conjugate = [conj_comp(p) for p in psi]
-    else:
-        conjugate = conj_comp(psi)
-    return conjugate
-
-
-def norm(psi, vol_elem, atom_num, pop_frac=None):
-    """
-    Normalize spinor wavefunction to the expected atom numbers and populations.
-
-    This function normalizes to the total expected atom number `atom_num`,
-    and to the expected population fractions `pop_frac`. Normalization is
-    essential in processes where the total atom number is not conserved,
-    (e.g. imaginary time propagation).
-
-    Parameters
-    ----------
-    psi : :obj:`list` of NumPy :obj:`arrays` or PyTorch :obj:`Tensors`.
-        The wavefunction to normalize.
-    vol_elem : :obj:`float`
-        Volume element for either real- or k-space.
-    atom_num : :obj:`int`
-        The total expected atom number.
-    pop_frac : array-like, optional
-        The expected population fractions in each spin component.
-
-    Returns
-    -------
-    psi_norm : :obj:`list` of NumPy :obj:`arrays` or PyTorch :obj:`Tensors`.
-        The normalized wavefunction.
-    dens_norm : :obj:`list` of NumPy :obj:`arrays` or PyTorch :obj:`Tensors`.
-        The densities of the normalized wavefunction's components
-
-    """
-    dens = density(psi)
-    if isinstance(dens[0], np.ndarray):
-        if pop_frac is None:
-            norm_factor = np.sum(dens[0] + dens[1]) * vol_elem / atom_num
-            psi_norm = [p / np.sqrt(norm_factor) for p in psi]
-            dens_norm = [d / norm_factor for d in dens]
-        else:
-            # TODO: Implement population fraction normalization.
-            raise NotImplementedError("Normalizing to the expected population "
-                                      "fractions is not yet implemented for "
-                                      "NumPy arrays.")
-
-    elif isinstance(dens[0], torch.Tensor):
-        if pop_frac is None:
-            norm_factor = torch.sum(dens[0] + dens[1]) * vol_elem / atom_num
-            psi_norm = [p / np.sqrt(norm_factor.item()) for p in psi]
-            dens_norm = [d / norm_factor.item() for d in dens]
-        else:
-            raise NotImplementedError("Normalizing to the expected population "
-                                      "fractions is not implemented for "
-                                      "PyTorch tensors.")
-
-    return psi_norm, dens_norm
 
 
 def density(psi):
@@ -441,8 +411,8 @@ def density(psi):
     return dens
 
 
-def phase_comp(psi_comp, uwrap=False, dens=None):
-    """Compute the phase (angle) of a single complex wavefunction component.
+def norm_sq(psi_comp):
+    """Compute the density (norm-squared) of a single wavefunction component.
 
     Parameters
     ----------
@@ -451,49 +421,24 @@ def phase_comp(psi_comp, uwrap=False, dens=None):
 
     Returns
     -------
-    angle : NumPy :obj:`array` or PyTorch :obj:`Tensor`
-        The phase (angle) of the component's wavefunction.
+    psi_sq : NumPy :obj:`array` or PyTorch :obj:`Tensor`
+        The norm-square of the wavefunction.
 
+    Raises
+    ------
+    TypeError
+        If `psi_comp` is neither an :obj:`array` or a :obj:`Tensor` of the
+        correct shape.
     """
     if isinstance(psi_comp, np.ndarray):
-        ang = np.angle(psi_comp)
-        if uwrap:
-            ang = rest.unwrap_phase(ang)
+        psi_sq = np.abs(psi_comp)**2
+
     elif isinstance(psi_comp, torch.Tensor):
-        ang = torch.angle(psi_comp)
-        if uwrap:
-            raise NotImplementedError("Unwrapping the complex phase is not "
-                                      "implemented for PyTorch tensors.")
-    if dens is not None:
-        ang[dens < (dens.max() * 1e-6)] = 0
-    return ang
-
-
-def phase(psi, uwrap=False, dens=None):
-    """Compute the phase of a real-space spinor wavefunction.
-
-    Parameters
-    ----------
-    psi : :obj:`list` of 2D NumPy :obj:`array` or PyTorch :obj:`Tensor`
-        The input spinor wavefunction.
-
-    Returns
-    -------
-    phase : NumPy :obj:`array`, PyTorch :obj:`Tensor`, or :obj:`list` thereof
-        The phase of each component's wavefunction.
-    """
-    if dens is not None:
-        assert len(psi) == len(dens), ("`psi` and `dens` should have the same "
-                                       "length.")
-    elif (dens is None and isinstance(psi, list)):
-        dens = [None] * len(psi)
-
-    if isinstance(psi, list):
-        phase_psi = [phase_comp(p, uwrap, d) for p, d in zip(psi, dens)]
+        psi_sq = torch.abs(psi_comp)**2
     else:
-        phase_psi = phase_comp(psi, uwrap, dens)
-
-    return phase_psi
+        raise TypeError(f"`psi_comp` is of type {type(psi_comp)} and shape "
+                        f"{psi_comp.shape}.")
+    return psi_sq
 
 
 def calc_atoms(psi, vol_elem=1.0):
@@ -539,11 +484,66 @@ def calc_pops(psi, vol_elem=1.0):
     return pops
 
 
+def phase(psi, uwrap=False, dens=None):
+    """Compute the phase of a real-space spinor wavefunction.
+
+    Parameters
+    ----------
+    psi : :obj:`list` of 2D NumPy :obj:`array` or PyTorch :obj:`Tensor`
+        The input spinor wavefunction.
+
+    Returns
+    -------
+    phase : NumPy :obj:`array`, PyTorch :obj:`Tensor`, or :obj:`list` thereof
+        The phase of each component's wavefunction.
+    """
+    if dens is not None:
+        assert len(psi) == len(dens), ("`psi` and `dens` should have the same "
+                                       "length.")
+    elif (dens is None and isinstance(psi, list)):
+        dens = [None] * len(psi)
+
+    if isinstance(psi, list):
+        phase_psi = [phase_comp(p, uwrap, d) for p, d in zip(psi, dens)]
+    else:
+        phase_psi = phase_comp(psi, uwrap, dens)
+
+    return phase_psi
+
+
+def phase_comp(psi_comp, uwrap=False, dens=None):
+    """Compute the phase (angle) of a single complex wavefunction component.
+
+    Parameters
+    ----------
+    psi_comp : NumPy :obj:`array` or PyTorch :obj:`Tensor`
+        A single wavefunction component.
+
+    Returns
+    -------
+    angle : NumPy :obj:`array` or PyTorch :obj:`Tensor`
+        The phase (angle) of the component's wavefunction.
+
+    """
+    if isinstance(psi_comp, np.ndarray):
+        ang = np.angle(psi_comp)
+        if uwrap:
+            ang = rest.unwrap_phase(ang)
+    elif isinstance(psi_comp, torch.Tensor):
+        ang = torch.angle(psi_comp)
+        if uwrap:
+            raise NotImplementedError("Unwrapping the complex phase is not "
+                                      "implemented for PyTorch tensors.")
+    if dens is not None:
+        ang[dens < (dens.max() * 1e-6)] = 0
+    return ang
+
+
 def inner_prod():
     """Calculate the inner product of two wavefunctions."""
 
 
-def evolution_op(energy, t_step):
+def evolution_op(t_step, energy):
     # TODO: Change the signature so that t_step comes first
     """Compute the unitary time-evolution operator for the given energy.
 

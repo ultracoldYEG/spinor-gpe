@@ -155,8 +155,8 @@ class PSpinor:
                     "To overwrite this directory, supply the parameter "
                     "`overwrite=True`.")
 
-            warnings.warn(f"The directory {data_path} is being deleted and "
-                          "all containing data will be lost.")
+            # warnings.warn(f"The directory {data_path} is being deleted and "
+            #               "all containing data will be lost.")
             shutil.rmtree(data_path)  # Deletes the data directory
 
         # Create the directories and sub-directories
