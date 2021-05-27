@@ -15,7 +15,35 @@ from spinor_gpe.pspinor import plotting_tools as ptools
 
 
 class PropResult:
-    """The result of propagation, with plotting and analysis tools."""
+    """The result of propagation, with plotting and analysis tools.
+
+    Attributes
+    ----------
+    psi : :obj:`list` of :obj:`array`
+        The final real-space wavefunctions.
+    psik : :obj:`list` of :obj:`array`
+        The final momentum-space wavefunctions.
+    eng_final : :obj:`list`
+        The energy expectation values: [<total>, <kin.>, <pot.>, <int.>].
+    pops : :obj:`dict` of :obj:`array`
+        Times and populations at every time step, {'times', 'vals'}.
+    sampled_path : :obj:`str`
+        Path to the .npz file where the sampled wavefunctions and times are
+        stored for this result.
+    dens : :obj:`list` of :obj:`array`
+        The final real-space densities.
+    densk : :obj:`list` of :obj:`array`
+        The final momentum-space densities.
+    phase : :obj:`list` of :obj:`array`
+        The final real-space phases.
+    paths : :obj:`dict`
+        See ``pspinor.PSpinor``.
+    time_scale : :obj:`float`
+        See ``pspinor.PSpinor``.
+    space : :obj:`dict` of :obj:`array`
+        See ``tensor_propagator.TensorPropagator``.
+
+    """
 
     def __init__(self, psi_final, psik_final, eng_final, pops,
                  sampled_path=None):
@@ -48,7 +76,7 @@ class PropResult:
         self.phase = ttools.phase(self.psi, uwrap=False, dens=self.dens)
 
         self.paths = dict()
-        self.t_scale = None
+        self.time_scale = None
         self.space = dict()
 
     def calc_separation(self):
@@ -153,7 +181,7 @@ class PropResult:
         """
         if scaled:
             xlabel = 'Time [s]'
-            scale = self.t_scale
+            scale = self.time_scale
         else:
             xlabel = 'Time [$1/\\omega_x$]'
             scale = 1.0

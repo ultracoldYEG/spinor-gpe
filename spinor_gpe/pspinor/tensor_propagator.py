@@ -18,27 +18,27 @@ class TensorPropagator:
     device : :obj:`str`
         The computing device on which propagation is performed
     paths : :obj:`dict`
-        See `pspinor.Pspinor`.
+        See ``pspinor.Pspinor``.
     t_step : :obj:`float` or :obj:`complex`
         Duration of the full time step.
     dt_out : :obj:`float` or :obj:`complex`
         Duration of the outer time sub-step.
     dt_in : :obj:`float` or :obj:`complex`
         Duration of the inner time sub-step.
-    rand_seed : :obj:``
-        See `pspinor.Pspinor`.
+    rand_seed : :obj:`int`
+        See ``pspinor.Pspinor``.
     is_sampling : :obj:`bool`
         Option to sample the wavefunction periodically throughout propagation.
     atom_num : :obj:`float`
-        See `pspinor.Pspinor`.
+        See ``pspinor.Pspinor``.
     is_coupling : :obj:`bool`
-        See `pspinor.Pspinor`.
+        See ``pspinor.Pspinor``.
     g_sc : :obj:`dict` of :obj:`Tensor`
         See `pspinor.Pspinor`.
     kin_eng_spin : :obj:`list` of :obj:`Tensor`
-        See `pspinor.Pspinor`.
+        See ``pspinor.Pspinor``.
     pot_eng_spin : :obj:`list` of :obj:`Tensor`
-        See `pspinor.Pspinor`.
+        See ``pspinor.Pspinor``.
     psik : :obj:`list` of :obj:`Tensor`
         See `pspinor.Pspinor`.
     space : :obj:`dict` of :obj:`Tensor`
@@ -47,7 +47,7 @@ class TensorPropagator:
     coupling : :obj:`Tensor`
         See `pspinor.Pspinor`.
     kL_recoil : :obj:`float`
-        See `pspinor.Pspinor`.
+        See ``pspinor.Pspinor``.
     expon : :obj:`Tensor`
         The exponential argument on the coupling operator off-diagonals. If
         the coupling is in a rotated reference frame, then `expon`=0.0.

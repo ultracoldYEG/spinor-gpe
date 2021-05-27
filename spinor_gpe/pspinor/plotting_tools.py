@@ -18,12 +18,15 @@ def next_available_path(file_name, trial_name, ext=''):
     ----------
     file_name : :obj:`str`
         The base file path to test.
-    triak_name : :obj:`str`
-    
+    trial_name : :obj:`str`
+        The name of the trial to append to the end of the file name.
+    ext : :obj:`str`, default=''
+        File extention.
 
     Returns
     -------
-    None.
+    test_path : :obj:`str`
+        The file path with the next available index.
 
     """
     i = 1
@@ -35,7 +38,19 @@ def next_available_path(file_name, trial_name, ext=''):
 
 
 def progress_message(frame, n_total):
-    """Display an updating progress message while the animation is saving."""
+    """Display an updating progress message while the animation is saving.
+
+    This function produces an output similar to what the ``tqdm`` package
+    gives. This one works in situations where ``tqdm`` cannot be applied.
+
+    Parameters
+    ----------
+    frame : :obj:`int`
+        The current frame/index number in the loop.
+    n_total : :obj:`int`
+        The total number of frames in the loop.
+
+    """
     global timelast
     if frame != 0:
         timethis = t.time()
@@ -53,7 +68,18 @@ def progress_message(frame, n_total):
 
 
 def time_remaining(frame, n_total, its):
-    """Calculate completion time in the progressMessage function."""
+    """Calculate completion time in the progress_message function.
+
+    Parameters
+    ----------
+    frame : :obj:`int`
+        The current frame/index number in the loop.
+    n_total : :obj:`int`
+        The total number of frames in the loop.
+    its : :obj:`float`
+        The time in seconds between successive iterations.
+
+    """
     totaltime = (n_total - frame) / its
     hours = int(np.floor(totaltime / 3600))
     minutes = int(np.floor((totaltime - hours * 3600) / 60))
