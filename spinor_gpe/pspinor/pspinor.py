@@ -79,13 +79,9 @@ class PSpinor:
     time_scale : :obj:`float`
         Inverse x-axis trapping frequency - the characteristic time scale,
         [1 / omeg['x']].
-    pot_eng : :obj:`array`
-        2D potential energy grid, [\\hbar * omeg['x']].
     pot_eng_spin : :obj:`list` of :obj:`array`
         A :obj:`list` of 2D potential energy grids for each spin component,
         [\\hbar * omeg['x']].
-    kin_eng : :obj:`array`
-        2D kinetic energy grid, [\\hbar * omeg['x']].
     kin_eng_spin : :obj:`list` of :obj:`array`
         A :obj:`list` of 2D kinetic energy grids for each spin component,
         [\\hbar * omeg['x']].
@@ -107,10 +103,6 @@ class PSpinor:
     prop : :obj:`PropResult`
         Object containing the results of propagation, along with analysis
         methods.
-    coupling : :obj:`array`
-        2D coupling array [\\hbar * omeg['x']].
-    detuning : :obj:`array`
-        2D detuning array [\\hbar * omeg['x']].
     rot_coupling : :obj:`bool`, default=True
         Option to place coupling in a rotating reference frame, i.e. no
         momentum shift on the coupling operation.
@@ -387,7 +379,11 @@ class PSpinor:
 
     @property
     def pot_eng(self):
-        """Get the `pot_eng` attribute."""
+        r"""Get the `pot_eng` attribute.
+
+        2D potential energy grid, [\\hbar * omeg['x']].
+
+        """
         return self._pot_eng
 
     @pot_eng.setter
@@ -398,7 +394,11 @@ class PSpinor:
 
     @property
     def kin_eng(self):
-        """Get the `kin_eng` attribute."""
+        r"""Get the `kin_eng` attribute.
+
+        2D kinetic energy grid, [\\hbar * omeg['x']]0
+
+        """
         return self._kin_eng
 
     @kin_eng.setter
@@ -544,7 +544,11 @@ class PSpinor:
 
     @property
     def coupling(self):
-        """Get the `coupling` attribute."""
+        r"""Get the `coupling` attribute.
+
+        2D coupling array [\\hbar * omeg['x']].
+
+        """
         return self._coupling
 
     @coupling.setter
@@ -554,7 +558,11 @@ class PSpinor:
 
     @property
     def detuning(self):
-        """Get the `detuning` attribute."""
+        r"""Get the `detuning` attribute.
+
+        2D detuning array [\\hbar * omeg['x']].
+
+        """
         return self._detuning
 
     @detuning.setter

@@ -193,11 +193,13 @@ trapping energy along the x-direction [hbar * <cite>omeg[‘x’]</cite>].</p>
 <dl class="py attribute">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.paths">
 <code class="sig-name descname"><span class="pre">paths</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.paths" title="Permalink to this definition">¶</a></dt>
-<dd><p>Essential paths and directory names for a given trial.
-- ‘folder’ : The name of the topmost trial directory.
-- ‘data’ : Path to the simulation data &amp; results.
-- ‘code’ : Path to the subdirectory containing the trial code.
-- ‘trial’ : Path to the subdirectory containing raw trial data.</p>
+<dd><p>Essential paths and directory names for a given trial.</p>
+<ul class="simple">
+<li><p>‘folder’ : The name of the topmost trial directory.</p></li>
+<li><p>‘data’ : Path to the simulation data &amp; results.</p></li>
+<li><p>‘code’ : Path to the subdirectory containing the trial code.</p></li>
+<li><p>‘trial’ : Path to the subdirectory containing raw trial data.</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></p>
@@ -219,11 +221,49 @@ trapping energy along the x-direction [hbar * <cite>omeg[‘x’]</cite>].</p>
 <dl class="py attribute">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.space">
 <code class="sig-name descname"><span class="pre">space</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.space" title="Permalink to this definition">¶</a></dt>
-<dd><p>Spatial arrays, meshes, spacings, volume elements, and sizes,
-{‘x’, ‘y’, ‘kx’, ‘ky’, ‘x_mesh’, ‘y_mesh’, ‘kx_mesh’, ‘ky_mesh’,</p>
-<blockquote>
-<div><p>‘dr’, ‘dk’, ‘dv_r’, ‘dv_k’, ‘mesh_points’, ‘r_sizes’, ‘k_sizes’}</p>
-</div></blockquote>
+<dd><p>Spatial arrays, meshes, spacings, volume elements, and sizes:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head" colspan="5"><p><strong>KEYS</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Arrays:</p></td>
+<td><p>‘x’</p></td>
+<td><p>‘y’</p></td>
+<td><p>‘kx’</p></td>
+<td><p>‘ky’</p></td>
+</tr>
+<tr class="row-odd"><td><p>Meshes:</p></td>
+<td><p>‘x_mesh’</p></td>
+<td><p>‘y_mesh’</p></td>
+<td><p>‘kx_mesh’</p></td>
+<td><p>‘ky_mesh’</p></td>
+</tr>
+<tr class="row-even"><td><p>Spacings:</p></td>
+<td colspan="2"><p>‘dr’</p></td>
+<td colspan="2"><p>‘dk’</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vol. elem.:</p></td>
+<td colspan="2"><p>‘dv_r’</p></td>
+<td colspan="2"><p>‘dv_k’</p></td>
+</tr>
+<tr class="row-even"><td><p>Sizes:</p></td>
+<td colspan="2"><p>‘r_sizes’</p></td>
+<td colspan="2"><p>‘k_sizes’</p></td>
+</tr>
+<tr class="row-odd"><td><p>Other:</p></td>
+<td colspan="4"><p>‘mesh_points’</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></p>
@@ -312,17 +352,6 @@ characteristic length scale.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="spinor_gpe.pspinor.pspinor.PSpinor.pot_eng">
-<code class="sig-name descname"><span class="pre">pot_eng</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.pot_eng" title="Permalink to this definition">¶</a></dt>
-<dd><p>2D potential energy grid, [\hbar * omeg[‘x’]].</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
 <dt id="spinor_gpe.pspinor.pspinor.PSpinor.pot_eng_spin">
 <code class="sig-name descname"><span class="pre">pot_eng_spin</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.pot_eng_spin" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of 2D potential energy grids for each spin component,
@@ -330,17 +359,6 @@ characteristic length scale.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="spinor_gpe.pspinor.pspinor.PSpinor.kin_eng">
-<code class="sig-name descname"><span class="pre">kin_eng</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.kin_eng" title="Permalink to this definition">¶</a></dt>
-<dd><p>2D kinetic energy grid, [\hbar * omeg[‘x’]].</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -439,23 +457,13 @@ methods.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="spinor_gpe.pspinor.pspinor.PSpinor.coupling">
-<code class="sig-name descname"><span class="pre">coupling</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.coupling" title="Permalink to this definition">¶</a></dt>
-<dd><p>2D coupling array [\hbar * omeg[‘x’]].</p>
+<dt id="spinor_gpe.pspinor.pspinor.PSpinor.rot_coupling">
+<code class="sig-name descname"><span class="pre">rot_coupling</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.rot_coupling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Option to place coupling in a rotating reference frame, i.e. no
+momentum shift on the coupling operation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="spinor_gpe.pspinor.pspinor.PSpinor.detuning">
-<code class="sig-name descname"><span class="pre">detuning</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.detuning" title="Permalink to this definition">¶</a></dt>
-<dd><p>2D detuning array [\hbar * omeg[‘x’]].</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>, default=True</p>
 </dd>
 </dl>
 </dd></dl>
@@ -520,9 +528,10 @@ spin components.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id0">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">coupling</span></code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dt id="spinor_gpe.pspinor.pspinor.PSpinor.coupling">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">coupling</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.coupling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the <cite>coupling</cite> attribute.</p>
+<p>2D coupling array [\hbar * omeg[‘x’]].</p>
 </dd></dl>
 
 <dl class="py method">
@@ -594,9 +603,10 @@ momentum.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id3">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">detuning</span></code><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dt id="spinor_gpe.pspinor.pspinor.PSpinor.detuning">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">detuning</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.detuning" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the <cite>detuning</cite> attribute.</p>
+<p>2D detuning array [\hbar * omeg[‘x’]].</p>
 </dd></dl>
 
 <dl class="py method">
@@ -674,9 +684,10 @@ analysis.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id4">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">kin_eng</span></code><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dt id="spinor_gpe.pspinor.pspinor.PSpinor.kin_eng">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">kin_eng</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.kin_eng" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the <cite>kin_eng</cite> attribute.</p>
+<p>2D kinetic energy grid, [\hbar * omeg[‘x’]]0</p>
 </dd></dl>
 
 <dl class="py method">
@@ -791,9 +802,10 @@ format “/<cite>data_path</cite>/pop_evolution%s-<cite>trial_name</cite>.pdf”
 </dd></dl>
 
 <dl class="py method">
-<dt id="id5">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">pot_eng</span></code><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dt id="spinor_gpe.pspinor.pspinor.PSpinor.pot_eng">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">pot_eng</span></code><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.pot_eng" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the <cite>pot_eng</cite> attribute.</p>
+<p>2D potential energy grid, [\hbar * omeg[‘x’]].</p>
 </dd></dl>
 
 <dl class="py method">
@@ -883,9 +895,239 @@ direction or the other.</p></li>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>CPU- or GPU-compatible propagator of the GPE, with tensors.</p>
 <dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.n_steps">
+<code class="sig-name descname"><span class="pre">n_steps</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.n_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>The total number of full time steps in propagation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.device">
+<code class="sig-name descname"><span class="pre">device</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.device" title="Permalink to this definition">¶</a></dt>
+<dd><p>The computing device on which propagation is performed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.paths">
+<code class="sig-name descname"><span class="pre">paths</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">pspinor.Pspinor</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.t_step">
 <code class="sig-name descname"><span class="pre">t_step</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.t_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Duration of the full time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">complex</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.dt_out">
+<code class="sig-name descname"><span class="pre">dt_out</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.dt_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Duration of the outer time sub-step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">complex</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.dt_in">
+<code class="sig-name descname"><span class="pre">dt_in</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.dt_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Duration of the inner time sub-step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">complex</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.rand_seed">
+<code class="sig-name descname"><span class="pre">rand_seed</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.rand_seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">pspinor.Pspinor</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.is_sampling">
+<code class="sig-name descname"><span class="pre">is_sampling</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.is_sampling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Option to sample the wavefunction periodically throughout propagation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.atom_num">
+<code class="sig-name descname"><span class="pre">atom_num</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.atom_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">pspinor.Pspinor</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.is_coupling">
+<code class="sig-name descname"><span class="pre">is_coupling</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.is_coupling" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">pspinor.Pspinor</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.g_sc">
+<code class="sig-name descname"><span class="pre">g_sc</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.g_sc" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <cite>pspinor.Pspinor</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.kin_eng_spin">
+<code class="sig-name descname"><span class="pre">kin_eng_spin</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.kin_eng_spin" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">pspinor.Pspinor</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.pot_eng_spin">
+<code class="sig-name descname"><span class="pre">pot_eng_spin</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.pot_eng_spin" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">pspinor.Pspinor</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.psik">
+<code class="sig-name descname"><span class="pre">psik</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.psik" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <cite>pspinor.Pspinor</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.space">
+<code class="sig-name descname"><span class="pre">space</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.space" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>See <cite>pspinor.Pspinor</cite>. Contains only keys:</dt><dd><p>{‘dr’, ‘dk’, ‘x_mesh’, ‘y_mesh’, ‘dv_r’, ‘dv_k’}</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.coupling">
+<code class="sig-name descname"><span class="pre">coupling</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.coupling" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <cite>pspinor.Pspinor</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.kL_recoil">
+<code class="sig-name descname"><span class="pre">kL_recoil</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.kL_recoil" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">pspinor.Pspinor</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.expon">
+<code class="sig-name descname"><span class="pre">expon</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.expon" title="Permalink to this definition">¶</a></dt>
+<dd><p>The exponential argument on the coupling operator off-diagonals. If
+the coupling is in a rotated reference frame, then <a href="#id3"><span class="problematic" id="id4">`</span></a>expon`=0.0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.sample_rate">
+<code class="sig-name descname"><span class="pre">sample_rate</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.sample_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>How often wavefunctions are sampled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.eng_out">
+<code class="sig-name descname"><span class="pre">eng_out</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.eng_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-computed energy evolution operators for the outer time sub-step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.eng_in">
+<code class="sig-name descname"><span class="pre">eng_in</span></code><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.eng_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-computed energy evolution operators for the inner time sub-step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.eng_expect">
@@ -969,6 +1211,128 @@ to the given sub-time step.</p></li>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.prop_result.</span></code><code class="sig-name descname"><span class="pre">PropResult</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psi_final</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psik_final</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eng_final</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pops</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampled_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The result of propagation, with plotting and analysis tools.</p>
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.psi">
+<code class="sig-name descname"><span class="pre">psi</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.psi" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final real-space wavefunctions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.psik">
+<code class="sig-name descname"><span class="pre">psik</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.psik" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final momentum-space wavefunctions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.eng_final">
+<code class="sig-name descname"><span class="pre">eng_final</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.eng_final" title="Permalink to this definition">¶</a></dt>
+<dd><p>The energy expectation values: [&lt;total&gt;, &lt;kin.&gt;, &lt;pot.&gt;, &lt;int.&gt;].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.pops">
+<code class="sig-name descname"><span class="pre">pops</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.pops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Times and populations at every time step, {‘times’, ‘vals’}.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.sampled_path">
+<code class="sig-name descname"><span class="pre">sampled_path</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.sampled_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the .npz file where the sampled wavefunctions and times are
+stored for this result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.dens">
+<code class="sig-name descname"><span class="pre">dens</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.dens" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final real-space densities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.densk">
+<code class="sig-name descname"><span class="pre">densk</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.densk" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final momentum-space densities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.phase">
+<code class="sig-name descname"><span class="pre">phase</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final real-space phases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.paths">
+<code class="sig-name descname"><span class="pre">paths</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">pspinor.PSpinor</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.time_scale">
+<code class="sig-name descname"><span class="pre">time_scale</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.time_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">pspinor.PSpinor</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="spinor_gpe.pspinor.prop_result.PropResult.space">
+<code class="sig-name descname"><span class="pre">space</span></code><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.space" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <code class="docutils literal notranslate"><span class="pre">tensor_propagator.TensorPropagator</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="spinor_gpe.pspinor.prop_result.PropResult.analyze_vortex">
 <code class="sig-name descname"><span class="pre">analyze_vortex</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.prop_result.PropResult.analyze_vortex" title="Permalink to this definition">¶</a></dt>
@@ -1529,14 +1893,15 @@ e.g. {‘cpu’, ‘cuda’, ‘cuda:0’}</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_name</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The base file path to test.</p></li>
-<li><p><strong>triak_name</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
+<li><p><strong>trial_name</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The name of the trial to append to the end of the file name.</p></li>
+<li><p><strong>ext</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, default=’’) – File extention.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p><strong>test_path</strong> – The file path with the next available index.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1660,12 +2025,31 @@ format “/<cite>data_path</cite>/spin_dens_phase%s-<cite>trial_name</cite>.pdf�
 <dt id="spinor_gpe.pspinor.plotting_tools.progress_message">
 <code class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.plotting_tools.</span></code><code class="sig-name descname"><span class="pre">progress_message</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_total</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.plotting_tools.progress_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display an updating progress message while the animation is saving.</p>
+<p>This function produces an output similar to what the <code class="docutils literal notranslate"><span class="pre">tqdm</span></code> package
+gives. This one works in situations where <code class="docutils literal notranslate"><span class="pre">tqdm</span></code> cannot be applied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>) – The current frame/index number in the loop.</p></li>
+<li><p><strong>n_total</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>) – The total number of frames in the loop.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="spinor_gpe.pspinor.plotting_tools.time_remaining">
 <code class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.plotting_tools.</span></code><code class="sig-name descname"><span class="pre">time_remaining</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_total</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">its</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.plotting_tools.time_remaining" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate completion time in the progressMessage function.</p>
+<dd><p>Calculate completion time in the progress_message function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>) – The current frame/index number in the loop.</p></li>
+<li><p><strong>n_total</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>) – The total number of frames in the loop.</p></li>
+<li><p><strong>its</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>) – The time in seconds between successive iterations.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
