@@ -27,7 +27,7 @@ before reaching the ground state of this configuration. The detuning
 gradient separates the two components vertically, and the line where they
 interfere is a row of vortices.
 
-.. GENERATED FROM PYTHON SOURCE LINES 12-75
+.. GENERATED FROM PYTHON SOURCE LINES 12-74
 
 .. code-block:: default
 
@@ -82,8 +82,7 @@ interfere is a row of vortices.
     DEVICE = 'cuda'
     ps.rand_seed = 99999
 
-    res, t_prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True,
-                               n_samples=50)
+    res = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
     # 3. ANALYZE

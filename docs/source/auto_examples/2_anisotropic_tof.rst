@@ -26,7 +26,7 @@ Propagates in imaginary time tor reach the ground state. The trapping
 potential is suddenly removed and both components expand and experience
 an inversion of their aspect ratio.
 
-.. GENERATED FROM PYTHON SOURCE LINES 11-87
+.. GENERATED FROM PYTHON SOURCE LINES 11-86
 
 .. code-block:: default
 
@@ -71,15 +71,14 @@ an inversion of their aspect ratio.
 
     # 2. RUN (Imaginary-time)
 
-    N_STEPS = 1000
     DT = 1/50
+    N_STEPS = 1000
     DEVICE = 'cuda'
     ps.rand_seed = 99999
 
     # Run propagation loop:
     # - Returns `PropResult` & `TensorPropagator` objects
-    res0, t_prop0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=False,
-                                 n_samples=50)
+    res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=False, n_samples=50)
 
 
     # 3. ANALYZE
@@ -91,12 +90,12 @@ an inversion of their aspect ratio.
 
     # 4. RUN (Real-time)
 
-    N_STEPS = 1000
     DT = 1/500
+    N_STEPS = 1000
     ps.pot_eng = np.zeros_like(ps.pot_eng)  # Removes trapping potential
 
     # Run propagation loop
-    res1, t_prop0 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
+    res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
     # 5. ANALYZE

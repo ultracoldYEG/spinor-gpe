@@ -853,7 +853,7 @@ class PSpinor:
 
         self.psik = result.psik
         self.psi = result.psi
-        return result, prop  # FIXME: prop generally doesn't return
+        return result
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
              n_samples=1):
@@ -890,13 +890,4 @@ class PSpinor:
 
         self.psik = result.psik
         self.psi = result.psi
-        return result, prop
-
-
-# ----- DOCUMENTATION -----
-#  - `sphinx`
-#  - `sphinx.ext.autodoc`; this website was helpful:
-#  - `sphinx.ext.napoleon` --> for using NumPy documentation style;
-#    alternatively, use `numpydoc`; here is their style guide:
-#    https://numpydoc.readthedocs.io/en/latest/format.html
-#  - ReadTheDocs, for hosting the documentation once it's good
+        return result

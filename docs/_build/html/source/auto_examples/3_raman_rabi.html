@@ -93,6 +93,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../operation.html">Basic Operation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="1_ground_state.html">Example 1: Ground State</a></li>
 <li class="toctree-l2"><a class="reference internal" href="2_anisotropic_tof.html">Example 2: Anisotropic Time-of-Flight</a></li>
@@ -227,13 +228,12 @@ between the two components.</p>
 
 <span class="c1"># 2. RUN (Imaginary-time)</span>
 
-<span class="n">N_STEPS</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="n">DT</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">50</span>
+<span class="n">N_STEPS</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="n">DEVICE</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span>
 <span class="n">ps</span><span class="o">.</span><span class="n">rand_seed</span> <span class="o">=</span> <span class="mi">99999</span>
 
-<span class="n">res0</span><span class="p">,</span> <span class="n">t_prop0</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">imaginary</span><span class="p">(</span><span class="n">DT</span><span class="p">,</span> <span class="n">N_STEPS</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">is_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                             <span class="n">n_samples</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">res0</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">imaginary</span><span class="p">(</span><span class="n">DT</span><span class="p">,</span> <span class="n">N_STEPS</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">is_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
 
 <span class="c1"># 3. ANALYZE</span>
@@ -250,9 +250,9 @@ between the two components.</p>
 <span class="c1"># Initializes a uniform Raman coupling (scaled in `EL_recoil` units)</span>
 <span class="n">ps</span><span class="o">.</span><span class="n">coupling_uniform</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">ps</span><span class="o">.</span><span class="n">EL_recoil</span><span class="p">)</span>
 
-<span class="n">N_STEPS</span> <span class="o">=</span> <span class="mi">2000</span>
 <span class="n">DT</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5000</span>
-<span class="n">res1</span><span class="p">,</span> <span class="n">t_prop0</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">DT</span><span class="p">,</span> <span class="n">N_STEPS</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">is_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">N_STEPS</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">res1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">DT</span><span class="p">,</span> <span class="n">N_STEPS</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">is_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
 
 <span class="c1"># 5. ANALYZE</span>

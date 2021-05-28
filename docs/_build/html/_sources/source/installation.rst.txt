@@ -39,9 +39,9 @@ To verify that Pytorch was installed correctly, you should be able to import it:
 
 .. code-block:: python
 
-  >>>import torch
-  >>>x = torch.rand(5, 3)
-  >>>print(x)
+  >>> import torch
+  >>> x = torch.rand(5, 3)
+  >>> print(x)
   tensor([[0.2757, 0.3957, 0.9074],
           [0.6304, 0.1279, 0.7565],
           [0.0946, 0.7667, 0.2934],
@@ -52,7 +52,7 @@ Also, if you have an NVIDIA GPU, you can test that it is available for GPU compu
 
 .. code-block:: python
 
-  >>>torch.cuda.is_available()
+  >>> torch.cuda.is_available()
   True
 
 CUDA Installation

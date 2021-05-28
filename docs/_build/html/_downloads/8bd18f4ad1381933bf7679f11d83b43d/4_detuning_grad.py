@@ -61,8 +61,7 @@ DT = 1/50
 DEVICE = 'cuda'
 ps.rand_seed = 99999
 
-res, t_prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True,
-                           n_samples=50)
+res = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
 # 3. ANALYZE

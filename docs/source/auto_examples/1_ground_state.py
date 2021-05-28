@@ -48,15 +48,14 @@ ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
 # 2. RUN (Imaginary-time)
 
-N_STEPS = 1000
 DT = 1/50
+N_STEPS = 1000
 DEVICE = 'cuda'
 ps.rand_seed = 99999
 
 # Run propagation loop:
 # - Returns `PropResult` & `TensorPropagator` objects
-res, prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True,
-                         n_samples=50)
+res = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
 # 3. ANALYZE

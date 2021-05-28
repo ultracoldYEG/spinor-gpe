@@ -26,7 +26,7 @@ component. Propagates in imaginary time to the ground state. From here,
 configures a uniform Raman coupling which drives the population on resonance
 between the two components.
 
-.. GENERATED FROM PYTHON SOURCE LINES 11-92
+.. GENERATED FROM PYTHON SOURCE LINES 11-91
 
 .. code-block:: default
 
@@ -76,13 +76,12 @@ between the two components.
 
     # 2. RUN (Imaginary-time)
 
-    N_STEPS = 1000
     DT = 1/50
+    N_STEPS = 1000
     DEVICE = 'cuda'
     ps.rand_seed = 99999
 
-    res0, t_prop0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True,
-                                 n_samples=50)
+    res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
     # 3. ANALYZE
@@ -99,9 +98,9 @@ between the two components.
     # Initializes a uniform Raman coupling (scaled in `EL_recoil` units)
     ps.coupling_uniform(1.0 * ps.EL_recoil)
 
-    N_STEPS = 2000
     DT = 1/5000
-    res1, t_prop0 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=100)
+    N_STEPS = 2000
+    res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=100)
 
 
     # 5. ANALYZE

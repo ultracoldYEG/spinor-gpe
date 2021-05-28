@@ -10,6 +10,7 @@
 
    source/intro
    source/installation
+   source/operation
    source/auto_examples/index
    source/pspinor
 

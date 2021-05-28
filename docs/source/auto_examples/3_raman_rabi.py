@@ -55,13 +55,12 @@ ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
 # 2. RUN (Imaginary-time)
 
-N_STEPS = 1000
 DT = 1/50
+N_STEPS = 1000
 DEVICE = 'cuda'
 ps.rand_seed = 99999
 
-res0, t_prop0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True,
-                             n_samples=50)
+res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
 # 3. ANALYZE
@@ -78,9 +77,9 @@ print(f'\nFinal energy: {res0.eng_final[0]} [hbar * omeg]')
 # Initializes a uniform Raman coupling (scaled in `EL_recoil` units)
 ps.coupling_uniform(1.0 * ps.EL_recoil)
 
-N_STEPS = 2000
 DT = 1/5000
-res1, t_prop0 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=100)
+N_STEPS = 2000
+res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=100)
 
 
 # 5. ANALYZE
