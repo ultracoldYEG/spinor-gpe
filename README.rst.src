@@ -6,5 +6,3 @@ A python package simulating the quasi-2D pseudospin-1/2 Gross-Pitaevskii equatio
 .. include:: docs/source/intro.rst
 
 .. include:: docs/source/installation.rst
-
-.. include:: docs/source/operation.rst
