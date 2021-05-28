@@ -1,5 +1,6 @@
 .. image:: docs/_static/final_logo.png
    :align: right
+   :target: https://spinor-gpe.readthedocs.io/en/latest/
 
 A python package simulating the quasi-2D pseudospin-1/2 Gross-Pitaevskii equation with NVIDIA GPU acceleration.
 
@@ -10,6 +11,8 @@ Introduction
 While this package is primarily built on NumPy, the main computational heavy-lifting is performed using PyTorch, a deep neural network library commonly used in machine learning applications. PyTorch has a NumPy-like interface, but a backend that can run either on a conventional processor or a CUDA-enabled NVIDIA(R) graphics card. Accessing a CUDA device will provide a significant hardware acceleration of the simulations.
 
 This package has been tested on Windows 10. 
+
+View the documentation on `ReadTheDocs <https://spinor-gpe.readthedocs.io/en/latest/>`_
 
 
 Installation

@@ -1,5 +1,6 @@
 .. image:: docs/_static/final_logo.png
    :align: right
+   :target: https://spinor-gpe.readthedocs.io/en/latest/
 
 A python package simulating the quasi-2D pseudospin-1/2 Gross-Pitaevskii equation with NVIDIA GPU acceleration.
 
