@@ -56,8 +56,8 @@ ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 
 # 2. RUN (Imaginary-time)
 
-N_STEPS = 1000
 DT = 1/50
+N_STEPS = 1000
 DEVICE = 'cuda'
 ps.rand_seed = 99999
 

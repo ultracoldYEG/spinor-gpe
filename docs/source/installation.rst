@@ -25,9 +25,13 @@ The dependencies for ``spinor-gpe`` can be installed directly into the new ``con
 
    conda env create --file environment.yml
 
-Note, this installation may take a while.
+This installation may take a while.
 
-The dependencies can also be installed manually using ``conda`` into a virtual environment: ::
+.. note::
+   The version of CUDA used in this package does not support macOS. Users on these computers may still install PyTorch and run the examples on their CPU. To install correctly on macOS, remove the `- cudatoolkit=11.1` line from the `environment.yml` file. After installation, you will need to modify the example code to run on the `cpu` device instead of the `cuda` device.
+
+
+The above dependencies can also be installed manually using ``conda`` into a virtual environment: ::
 
    conda activate <new_virt_env_name>
    conda install pytorch torchvision torchaudio cudatoolkit=11.1 -c pytorch -c conda-forge
@@ -67,10 +71,12 @@ Given that your graphics card can run CUDA, the following are the steps to insta
 
 #. `Download <https://www.nvidia.com/Download/index.aspx>`_ the correct drivers for your NVIDIA device. Once the driver is installed, you will have the NVIDIA Control Panel installed on your computer.
 
-#. (Optional) Download the `cuDNN library <https://developer.nvidia.com/cudnn>`_ corresponding to your CUDA installation version. To do this you will need to create an account with NVIDIA and - for ethical purposes - specify for what you will be using the deep neural network library. To install:
+..
+   #. (Optional) Download the `cuDNN library <https://developer.nvidia.com/cudnn>`_ corresponding to your CUDA installation version. To do this you will need to create an account with NVIDIA and - for ethical purposes - specify for what you will be using the deep neural network library. To install:
 
-    #. Unzip the download file
-    #. Move all the folders in the unzipped sub-directory ``/cuda`` to the ``C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3`` directory.
+..
+       #. Unzip the download file
+       #. Move all the folders in the unzipped sub-directory ``/cuda`` to the ``C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3`` directory.
 
 
 Getting Started
