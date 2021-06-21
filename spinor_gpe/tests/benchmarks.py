@@ -35,7 +35,7 @@ ATOM_NUM = 1e2
 OMEG = {'x': W, 'y': W, 'z': 40 * W}
 G_SC = {'uu': 1, 'dd': 1, 'ud': 1.04}
 
-DEVICE = 'cuda'
+DEVICE = 'cpu'
 COMPUTER = 'Acer Aspire'
 
 for i, grid in enumerate(grids):
@@ -54,7 +54,7 @@ for i, grid in enumerate(grids):
 
         timer = timeit.Timer(stmt=stmt, globals=globals())
 
-        N = timer.autorange()[0] * 5
+        N = timer.autorange()[0] * 10
         vals = timer.repeat(N, 1)
         meas_times[i] = vals
         repeats[i] = N
@@ -73,3 +73,5 @@ med_ab_dev = np.array([mad(times, scale='normal') for times in meas_times])
 tag = 'benchmark - ' + COMPUTER + '_' + DEVICE
 np.savez(ps.paths['data'] + '..\\' + tag, computer=COMPUTER, device=DEVICE,
          size=size, n_repeats=repeats, med=median, mad=med_ab_dev)
+
+np.save(ps.paths['data'] + '..\\' + tag, np.array(meas_times, dtype='object'))

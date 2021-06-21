@@ -67,7 +67,9 @@ CUDA is the API that interfaces with the computing resources on NVIDIA graphics 
 Given that your graphics card can run CUDA, the following are the steps to install CUDA on a Windows computer:
 
 #. Install the NVIDIA CUDA Toolkit.
-   Go to the `CUDA download page <https://developer.nvidia.com/cuda-downloads>`_ for the most recent version. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This may take a while. For reference, here is the CUDA Toolkit `installation guide <https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html>`_.
+   Go to the `CUDA download page <https://developer.nvidia.com/cuda-downloads>`_ for the most recent version. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This may take a while. For reference, here is the Windows CUDA Toolkit `installation guide <https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html>`_.
+   
+   To test that CUDA is installed, run `which nvcc`, and, if instlled correctly, will return the installation path. Also run `nvcc --version` to verify that the version of CUDA matches the PyTorch CUDA toolkit version (>=11.1).
 
 #. `Download <https://www.nvidia.com/Download/index.aspx>`_ the correct drivers for your NVIDIA device. Once the driver is installed, you will have the NVIDIA Control Panel installed on your computer.
 
