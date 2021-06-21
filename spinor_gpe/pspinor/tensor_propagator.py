@@ -322,7 +322,7 @@ class TensorPropagator:
                * 2 * self.kL_recoil * self.is_coupling) / 2
 
         pot = sum([d * pot for d, pot in
-                   zip(dens, ttools.to_numpy(self.pot_eng))])
+                   zip(dens, ttools.to_numpy(self.pot_eng_spin))])
 
         int_e = (self.g_sc['uu'] * dens[0]**2 + self.g_sc['dd'] * dens[1]**2
                  + self.g_sc['ud'] * dens[0] * dens[1])

@@ -848,12 +848,12 @@ class PSpinor:
 
         # Include PSpinor attributes with the result object
         result.paths = self.paths
-        result.t_scale = self.time_scale
+        result.time_scale = self.time_scale
         result.space = self.space
 
         self.psik = result.psik
         self.psi = result.psi
-        return result
+        return result, prop
 
     def real(self, t_step, n_steps=1000, device='cpu', is_sampling=False,
              n_samples=1):
@@ -885,9 +885,9 @@ class PSpinor:
 
         # Include PSpinor attributes with the result object
         result.paths = self.paths
-        result.t_scale = self.time_scale
+        result.time_scale = self.time_scale
         result.space = self.space
 
         self.psik = result.psik
         self.psi = result.psi
-        return result
+        return result, prop
