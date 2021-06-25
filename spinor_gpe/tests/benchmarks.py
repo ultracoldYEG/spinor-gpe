@@ -21,7 +21,7 @@ torch.cuda.empty_cache()
 
 grids = [(64, 64), (64, 128), (128, 128), (128, 256), (256, 256),
          (256, 512), (512, 512), (512, 1024), (1024, 1024), (1024, 2048),
-         (2048, 4096), (4096, 4096)]
+         (2048, 2048), (2048, 4096), (4096, 4096)]
 n_grids = len(grids)
 meas_times = [[0] for i in range(n_grids)]
 repeats = np.zeros(n_grids)
@@ -35,7 +35,7 @@ ATOM_NUM = 1e2
 OMEG = {'x': W, 'y': W, 'z': 40 * W}
 G_SC = {'uu': 1, 'dd': 1, 'ud': 1.04}
 
-DEVICE = 'cpu'
+DEVICE = 'cuda'
 COMPUTER = 'Acer Aspire'
 
 for i, grid in enumerate(grids):
@@ -70,7 +70,7 @@ for i, grid in enumerate(grids):
 median = np.array([np.median(times) for times in meas_times])
 med_ab_dev = np.array([mad(times, scale='normal') for times in meas_times])
 
-tag = 'benchmark - ' + COMPUTER + '_' + DEVICE
+tag = 'benchmark - ' + COMPUTER + '_' + DEVICE + '_1'
 np.savez(ps.paths['data'] + '..\\' + tag, computer=COMPUTER, device=DEVICE,
          size=size, n_repeats=repeats, med=median, mad=med_ab_dev)
 
