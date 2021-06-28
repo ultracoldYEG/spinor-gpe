@@ -1,9 +1,9 @@
 """
-Benchmarks
-==========
+FFT and iFFT Benchmarks
+=======================
 
-On a given system and hardware configuration, times the propagation loop for
-increasing mesh grid sizes.
+On a given system and hardware configuration, times the FFT and iFFT function
+calls for increasing mesh grid sizes.
 
 """
 import os
