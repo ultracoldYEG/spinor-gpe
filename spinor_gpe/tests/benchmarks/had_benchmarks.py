@@ -76,6 +76,8 @@ for i, grid in tqdm(enumerate(grids)):
         timer = timeit.Timer(stmt=stmt, globals=globals())
 
         N = timer.autorange()[0]
+        if N < 10:
+            N *= 10
         vals = timer.repeat(N, 1)
         meas_times[i] = vals
         repeats[i] = N
@@ -89,8 +91,8 @@ for i, grid in tqdm(enumerate(grids)):
 median = np.array([np.median(times) for times in meas_times])
 med_ab_dev = np.array([mad(times, scale='normal') for times in meas_times])
 
-tag = 'fft\\' + COMPUTER + '_' + DEVICE + '_had'
-np.savez(ps.paths['data'] + '..\\' + tag, computer=COMPUTER, device=DEVICE,
+tag = COMPUTER + '_' + DEVICE + '_had'
+np.savez('data\\' + tag, computer=COMPUTER, device=DEVICE,
          size=size, n_repeats=repeats, med=median, mad=med_ab_dev)
 
 np.save(ps.paths['data'] + '..\\' + tag, np.array(meas_times, dtype='object'))
