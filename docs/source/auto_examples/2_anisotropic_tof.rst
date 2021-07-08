@@ -78,7 +78,7 @@ an inversion of their aspect ratio.
 
     # Run propagation loop:
     # - Returns `PropResult` & `TensorPropagator` objects
-    res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=False, n_samples=50)
+    res0, prop0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=False, n_samples=50)
 
 
     # 3. ANALYZE
@@ -95,7 +95,7 @@ an inversion of their aspect ratio.
     ps.pot_eng = np.zeros_like(ps.pot_eng)  # Removes trapping potential
 
     # Run propagation loop
-    res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
+    res1, prop1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
     # 5. ANALYZE

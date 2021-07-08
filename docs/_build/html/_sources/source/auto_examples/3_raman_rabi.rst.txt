@@ -81,7 +81,7 @@ between the two components.
     DEVICE = 'cuda'
     ps.rand_seed = 99999
 
-    res0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
+    res0, prop0 = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
     # 3. ANALYZE
@@ -100,7 +100,7 @@ between the two components.
 
     DT = 1/5000
     N_STEPS = 2000
-    res1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=100)
+    res1, prop1 = ps.real(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=100)
 
 
     # 5. ANALYZE

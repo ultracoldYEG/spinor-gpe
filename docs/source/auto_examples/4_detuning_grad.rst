@@ -77,12 +77,12 @@ interfere is a row of vortices.
 
     # 2. RUN (Imaginary-time)
 
-    N_STEPS = 1000
     DT = 1/50
+    N_STEPS = 1000
     DEVICE = 'cuda'
     ps.rand_seed = 99999
 
-    res = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
+    res, prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
     # 3. ANALYZE

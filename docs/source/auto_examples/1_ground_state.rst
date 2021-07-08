@@ -76,7 +76,7 @@ on both components' densities.
 
     # Run propagation loop:
     # - Returns `PropResult` & `TensorPropagator` objects
-    res = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
+    res, prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
 
 
     # 3. ANALYZE

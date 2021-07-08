@@ -10,7 +10,7 @@ Introduction
 
 While this package is primarily built on NumPy, the main computational heavy-lifting is performed using PyTorch, a deep neural network library commonly used in machine learning applications. PyTorch has a NumPy-like interface, but a backend that can run either on a conventional processor or a CUDA-enabled NVIDIA(R) graphics card. Accessing a CUDA device will provide a significant hardware acceleration of the simulations.
 
-This package has been tested on Windows 10. 
+This package has been tested on Windows, Mac, and Linux systems. 
 
 View the documentation on `ReadTheDocs <https://spinor-gpe.readthedocs.io/en/latest/>`_
 
@@ -42,9 +42,13 @@ The dependencies for ``spinor-gpe`` can be installed directly into the new ``con
 
    conda env create --file environment.yml
 
-Note, this installation may take a while.
+This installation may take a while.
 
-The dependencies can also be installed manually using ``conda`` into a virtual environment: ::
+.. note::
+   The version of CUDA used in this package does not support macOS. Users on these computers may still install PyTorch and run the examples on their CPU. To install correctly on macOS, remove the `- cudatoolkit=11.1` line from the `environment.yml` file. After installation, you will need to modify the example code to run on the `cpu` device instead of the `cuda` device.
+
+
+The above dependencies can also be installed manually using ``conda`` into a virtual environment: ::
 
    conda activate <new_virt_env_name>
    conda install pytorch torchvision torchaudio cudatoolkit=11.1 -c pytorch -c conda-forge
@@ -80,14 +84,18 @@ CUDA is the API that interfaces with the computing resources on NVIDIA graphics 
 Given that your graphics card can run CUDA, the following are the steps to install CUDA on a Windows computer:
 
 #. Install the NVIDIA CUDA Toolkit.
-   Go to the `CUDA download page <https://developer.nvidia.com/cuda-downloads>`_ for the most recent version. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This may take a while. For reference, here is the CUDA Toolkit `installation guide <https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html>`_.
+   Go to the `CUDA download page <https://developer.nvidia.com/cuda-downloads>`_ for the most recent version. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This may take a while. For reference, here is the Windows CUDA Toolkit `installation guide <https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html>`_.
+   
+   To test that CUDA is installed, run `which nvcc`, and, if instlled correctly, will return the installation path. Also run `nvcc --version` to verify that the version of CUDA matches the PyTorch CUDA toolkit version (>=11.1).
 
 #. `Download <https://www.nvidia.com/Download/index.aspx>`_ the correct drivers for your NVIDIA device. Once the driver is installed, you will have the NVIDIA Control Panel installed on your computer.
 
-#. (Optional) Download the `cuDNN library <https://developer.nvidia.com/cudnn>`_ corresponding to your CUDA installation version. To do this you will need to create an account with NVIDIA and - for ethical purposes - specify for what you will be using the deep neural network library. To install:
+..
+   #. (Optional) Download the `cuDNN library <https://developer.nvidia.com/cudnn>`_ corresponding to your CUDA installation version. To do this you will need to create an account with NVIDIA and - for ethical purposes - specify for what you will be using the deep neural network library. To install:
 
-    #. Unzip the download file
-    #. Move all the folders in the unzipped sub-directory ``/cuda`` to the ``C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3`` directory.
+..
+       #. Unzip the download file
+       #. Move all the folders in the unzipped sub-directory ``/cuda`` to the ``C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3`` directory.
 
 
 Getting Started

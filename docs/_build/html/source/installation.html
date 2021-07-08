@@ -1,39 +1,28 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Installation &mdash; spinor-gpe 0.0.1 documentation</title>
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
-
+  
   
   
 
   
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -41,6 +30,16 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Basic Operation" href="operation.html" />
@@ -81,7 +80,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,7 +87,7 @@
               
             
             
-              <p><span class="caption-text">Contents:</span></p>
+              <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
@@ -111,7 +109,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -146,20 +143,18 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
       <li>Installation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="../_sources/source/installation.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -201,8 +196,12 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">env</span> <span class="n">create</span> <span class="o">--</span><span class="n">file</span> <span class="n">environment</span><span class="o">.</span><span class="n">yml</span>
 </pre></div>
 </div>
-<p>Note, this installation may take a while.</p>
-<p>The dependencies can also be installed manually using <code class="docutils literal notranslate"><span class="pre">conda</span></code> into a virtual environment:</p>
+<p>This installation may take a while.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The version of CUDA used in this package does not support macOS. Users on these computers may still install PyTorch and run the examples on their CPU. To install correctly on macOS, remove the <cite>- cudatoolkit=11.1</cite> line from the <cite>environment.yml</cite> file. After installation, you will need to modify the example code to run on the <cite>cpu</cite> device instead of the <cite>cuda</cite> device.</p>
+</div>
+<p>The above dependencies can also be installed manually using <code class="docutils literal notranslate"><span class="pre">conda</span></code> into a virtual environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">new_virt_env_name</span><span class="o">&gt;</span>
 <span class="n">conda</span> <span class="n">install</span> <span class="n">pytorch</span> <span class="n">torchvision</span> <span class="n">torchaudio</span> <span class="n">cudatoolkit</span><span class="o">=</span><span class="mf">11.1</span> <span class="o">-</span><span class="n">c</span> <span class="n">pytorch</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
 <span class="n">conda</span> <span class="n">install</span> <span class="n">numpy</span> <span class="n">matplotlib</span> <span class="n">tqdm</span> <span class="n">scikit</span><span class="o">-</span><span class="n">image</span> <span class="n">ffmpeg</span> <span class="n">spyder</span>
@@ -235,16 +234,10 @@
 <p>Given that your graphics card can run CUDA, the following are the steps to install CUDA on a Windows computer:</p>
 <ol class="arabic">
 <li><p>Install the NVIDIA CUDA Toolkit.
-Go to the <a class="reference external" href="https://developer.nvidia.com/cuda-downloads">CUDA download page</a> for the most recent version. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This may take a while. For reference, here is the CUDA Toolkit <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html">installation guide</a>.</p></li>
-<li><p><a class="reference external" href="https://www.nvidia.com/Download/index.aspx">Download</a> the correct drivers for your NVIDIA device. Once the driver is installed, you will have the NVIDIA Control Panel installed on your computer.</p></li>
-<li><p>(Optional) Download the <a class="reference external" href="https://developer.nvidia.com/cudnn">cuDNN library</a> corresponding to your CUDA installation version. To do this you will need to create an account with NVIDIA and - for ethical purposes - specify for what you will be using the deep neural network library. To install:</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><p>Unzip the download file</p></li>
-<li><p>Move all the folders in the unzipped sub-directory <code class="docutils literal notranslate"><span class="pre">/cuda</span></code> to the <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\NVIDIA</span> <span class="pre">GPU</span> <span class="pre">Computing</span> <span class="pre">Toolkit\CUDA\v11.3</span></code> directory.</p></li>
-</ol>
-</div></blockquote>
+Go to the <a class="reference external" href="https://developer.nvidia.com/cuda-downloads">CUDA download page</a> for the most recent version. Select the operating system options and installer type. Download the installer and install it via the wizard on the screen. This may take a while. For reference, here is the Windows CUDA Toolkit <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html">installation guide</a>.</p>
+<p>To test that CUDA is installed, run <cite>which nvcc</cite>, and, if instlled correctly, will return the installation path. Also run <cite>nvcc –version</cite> to verify that the version of CUDA matches the PyTorch CUDA toolkit version (&gt;=11.1).</p>
 </li>
+<li><p><a class="reference external" href="https://www.nvidia.com/Download/index.aspx">Download</a> the correct drivers for your NVIDIA device. Once the driver is installed, you will have the NVIDIA Control Panel installed on your computer.</p></li>
 </ol>
 </section>
 <section id="getting-started">
@@ -261,29 +254,29 @@ Go to the <a class="reference external" href="https://developer.nvidia.com/cuda-
            
           </div>
           <footer>
+  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="operation.html" class="btn btn-neutral float-right" title="Basic Operation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
+        <a href="operation.html" class="btn btn-neutral float-right" title="Basic Operation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2021, Benjamin D. Smith.
+        &copy; Copyright 2021, Benjamin D. Smith
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
 
@@ -291,6 +284,7 @@ Go to the <a class="reference external" href="https://developer.nvidia.com/cuda-
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {
