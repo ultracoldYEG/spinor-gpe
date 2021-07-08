@@ -11,7 +11,8 @@ from matplotlib.lines import Line2D
 #from scipy.stats import median_abs_deviation as mad
 from scipy.optimize import curve_fit
 
-SAVE = False
+SAVE = True
+filepath = 'G:\\My Drive\\Research\\GPU paper\\Paper Figures\\'
 
 comp1 = 'TitanV'
 comp2 = '980Ti'
@@ -164,10 +165,9 @@ ax.set_xlim(None, 25)
 ax.set_ylim(1e-3, 150)
 
 ax.set_xticks([2*n for n in range(6, 13)])
-ax.tick_params(axis='y', labelsize=10)
 ax.tick_params(axis='both', width=0.5, length=2, direction='in',
-               top='true', right='true')
-ax.tick_params(axis='x', which='minor', direction='in', right='true',
+               top='true', right='true', labelsize=10)
+ax.tick_params(axis='x', which='minor', direction='in',
                bottom=False)
 ax.tick_params(axis='y', which='minor', direction='in', right='true')
 
@@ -178,7 +178,8 @@ plt.text(16-1, textheight, '($256^2$)', fontsize=9)
 plt.text(20-1.2, textheight, '($1024^2$)', fontsize=9)
 plt.text(24-1, textheight, '($4096^2$)', fontsize=9)
 if SAVE:
-    plt.savefig('bench_prop_times.pdf', bbox_inches='tight')
+    plt.savefig(filepath + 'Fig2_Benchmarks\\' + 'bench_prop_times.pdf',
+                bbox_inches='tight')
 plt.show()
 
 #%%
@@ -202,13 +203,13 @@ fig = plt.figure(figsize=(3.277, 3.5), facecolor=None)
 ax = plt.axes(xscale='log', yscale='log')
 ax.errorbar(N[:len(Sp1)], Sp1, yerr=devSp1_plt, fmt='-', ms=8, zorder=9,
               color=c1, lw=0, marker='o', label='i9 / Titan V',
-              elinewidth=3, capthick=2, capsize=cs)
+              elinewidth=3, capsize=cs)
 ax.errorbar(N[:len(Sp2)], Sp2, yerr=devSp2_plt, fmt='-', ms=8, zorder=8,
               color=c2, lw=0, marker='s', label='FX / 980 Ti',
-              elinewidth=3, capthick=2, capsize=cs)
+              elinewidth=3, capsize=cs)
 ax.errorbar(N[:len(Sp3)], Sp3, yerr=devSp3_plt, fmt='-', ms=8, zorder=7,
               color=c3, lw=0, marker='^', label='i5 / MX150',
-              elinewidth=3, capthick=2, capsize=cs)
+              elinewidth=3, capsize=cs)
 
 idx = 9750
 ax.plot(Nx[:idx], power(Nx[:idx], *p_1C) / line(Nx[:idx], *p_1G), '-',
@@ -234,8 +235,14 @@ ax.yaxis.set_label_position("right")
 ax.set_xticks(N[::2])
 ax.set_xticklabels([str(int(np.log2(n))) for n in N[::2]], fontsize=12)
 ax.tick_params(axis='y', labelsize=10)
-ax.tick_params(axis='both', width=0.5, length=2, direction='in', top='true',
-               right='true')
+#ax.tick_params(axis='both', width=0.5, length=2, direction='in', top='true',
+#               right='true')
+#ax.set_xticks([2*n for n in range(6, 13)])
+#ax.tick_params(axis='y', labelsize=10)
+ax.tick_params(axis='both', width=0.5, length=2, direction='in',
+               top='true', right='true', labelsize=10)
+ax.tick_params(axis='x', which='minor', direction='in', bottom=False)
+ax.tick_params(axis='y', which='minor', direction='in', right='true')
 ax.yaxis.tick_right()
 
 ax.set_ylim(8e-1, 300)
@@ -248,7 +255,8 @@ plt.text(1.93**20, textheight, '($1024^2$)', fontsize=9)
 plt.text(1.94**24, textheight, '($4096^2$)', fontsize=9)
 
 if SAVE:
-    plt.savefig('bench_prop_speedup.pdf', bbox_inches='tight')
+    plt.savefig(filepath + 'Fig2_Benchmarks\\' + 'bench_prop_speedup.pdf',
+                bbox_inches='tight')
 plt.show()
 print(f'Max. speedup - Computer 1: {np.max(Sp1):.1f}')
 print(f'Max. speedup - Computer 2: {np.max(Sp2):.1f}')
@@ -260,18 +268,29 @@ print(f'Max. speedup - Computer 3: {np.max(Sp3):.1f}')
 # Load in data
 NGfft, medGfft, madGfft = load('TitanV', 'cuda_fft')
 NGifft, medGifft, madGifft = load('TitanV', 'cuda_ifft')
-NGhad, medGhad, madGhad = load('TitanV', 'cuda_had')
+NGhad, medGhad, madGhad = load('TitanV', 'cuda_had3')
 
 NCfft, medCfft, madCfft = load('TitanV', 'cpu_fft')
 NCifft, medCifft, madCifft = load('TitanV', 'cpu_ifft')
-NChad, medChad, madChad = load('TitanV', 'cpu_had')
+NChad, medChad, madChad = load('TitanV', 'cpu_had3')
 
 # Fit CPU function times to power law.
 p_Cfft, c_Cfft = curve_fit(power, 2**(NCfft), medCfft, sigma=madCfft)
 p_Cifft, c_Cifft = curve_fit(power, 2**(NCifft), medCifft, sigma=madCifft)
 p_Chad, c_Chad = curve_fit(power, 2**(NChad), medChad, sigma=madChad)
 
-C0 = '#1A181B'#79745C'
+p_Gfft, c_Gfft = curve_fit(line, 2**(NGfft), medGfft, sigma=madGfft)
+p_Gifft, c_Gifft = curve_fit(line, 2**(NGifft), medGifft, sigma=madGifft)
+p_Ghad, c_Ghad = curve_fit(line, 2**(NGhad), medGhad, sigma=madGhad)
+
+
+# Average the fitted parameters and print the results
+print('CPU Power: ' , np.mean([p_Cfft[1], p_Cifft[1], p_Chad[1]]), ' +/- ',
+      np.sqrt(np.diag(p_Cfft)[0] + np.diag(p_Cifft)[0] + np.diag(p_Chad)[0]))
+print('CPU amplitude: ' , np.mean([p_Cfft[0], p_Cifft[0], p_Chad[0]]), ' +/- ',
+      np.sqrt(np.diag(p_Cfft)[0] + np.diag(p_Cifft)[0] + np.diag(p_Chad)[0]))
+
+C0 = '#32533D'#79745C'
 C1 = '#FE4A49'#709176'
 C2 = '#3F88C5'#f9d55b'
 
@@ -280,30 +299,70 @@ fig = plt.subplots(figsize=(3.277, 3.5))
 ax = plt.axes(xscale='log', yscale='log')
 lw = 2
 ms = 7
-cs = 0
+cs=3
 
 # TitanV GPU function times
-ax.errorbar(2**NGfft, medGfft, yerr=madGfft, fmt='s', ms=ms, color=C0,
-            capsize=cs, label='$\\mathcal{F}$', alpha=1.0, zorder=5)
-ax.errorbar(2**NGifft, medGifft, yerr=madGifft, fmt='D', ms=ms, color=C1,
-            capsize=cs, label='$\\mathcal{F}^{-1}$', alpha=1.0, zorder=5)
-ax.errorbar(2**NGhad, medGhad, yerr=madGhad, fmt='o', ms=ms, color=C2,
-            capsize=cs, label='$A \\circ B$', alpha=1.0, zorder=5)
+markGfft, capGfft, barGfft, = ax.errorbar(2**NGfft, medGfft, yerr=madGfft,
+                                          fmt='s', ms=ms, color=C0,
+                                          capsize=cs, label='$\\mathcal{F}$',
+                                          alpha=1.0, zorder=5)
+markGifft, capGifft, barGifft, = ax.errorbar(2**NGifft, medGifft, yerr=madGifft,
+                                             fmt='D', ms=ms, color=C1,
+                                             capsize=cs,
+                                             label='$\\mathcal{F}^{-1}$',
+                                             alpha=1.0, zorder=5)
+markGhad, capGhad, barGhad, = ax.errorbar(2**NGhad, medGhad, yerr=madGhad,
+                                          fmt='o', ms=ms, color=C2,
+                                          capsize=cs, label='$A \\circ B$',
+                                          alpha=1.0, zorder=5)
 
 # i9 CPU function times
-ax.errorbar(2**NCfft, medCfft, yerr=madCfft, fmt='s', ms=ms, color=C0,
-            fillstyle="full", markerfacecolor='w', mew=2, 
-            capsize=cs, label='$\\mathcal{F}$', alpha=1.0, zorder=2)
-ax.errorbar(2**NCifft, medCifft, yerr=madCifft, fmt='D', ms=ms, color=C1,
-            fillstyle="full", markerfacecolor='w', mew=2, 
-            capsize=cs, label='$\\mathcal{F}^{-1}$', alpha=1.0, zorder=2)
-ax.errorbar(2**NChad, medChad, yerr=madChad, fmt='o', ms=ms, color=C2,
-            fillstyle="full", markerfacecolor='w', mew=2, 
-            capsize=cs, label='$A \\circ B$', alpha=1.0, zorder=2)
+markCfft, capCfft, barCfft, = ax.errorbar(2**NCfft, medCfft, yerr=madCfft,
+                                          fmt='s', ms=ms, color=C0,
+                                          fillstyle="full",
+                                          markerfacecolor='w', mew=2, 
+                                          capsize=cs, label='$\\mathcal{F}$',
+                                          alpha=1.0, zorder=2)
+markCifft, capCifft, barCifft, = ax.errorbar(2**NCifft, medCifft,
+                                             yerr=madCifft, fmt='D', ms=ms,
+                                             color=C1, fillstyle="full",
+                                             markerfacecolor='w', mew=2, 
+                                             capsize=cs,
+                                             label='$\\mathcal{F}^{-1}$',
+                                             alpha=1.0, zorder=2)
+markChad, capChad, barChad, = ax.errorbar(2**NChad, medChad, yerr=madChad,
+                                          fmt='o', ms=ms, color=C2,
+                                          fillstyle="full",
+                                          markerfacecolor='w', mew=2, 
+                                          capsize=cs, label='$A \\circ B$',
+                                          alpha=1.0, zorder=2)
 
-ax.plot(Nx, power(Nx, *p_Cfft), '-', lw=lw, color=C0)
-ax.plot(Nx, power(Nx, *p_Cifft), '-', lw=lw, color=C1)
-ax.plot(Nx, power(Nx, *p_Chad), '-', lw=lw, color=C2)
+lineCfft, = ax.plot(Nx, power(Nx, *p_Cfft), '-', lw=lw, color=C0)
+lineCifft, = ax.plot(Nx, power(Nx, *p_Cifft), '-', lw=lw, color=C1)
+lineChad, = ax.plot(Nx, power(Nx, *p_Chad), '-', lw=lw, color=C2)
+
+lineGfft, = ax.plot(Nx, line(Nx, *p_Gfft), '-', lw=0, color=C0)
+lineGifft, = ax.plot(Nx, line(Nx, *p_Gifft), '-', lw=0, color=C1)
+lineGhad, = ax.plot(Nx, line(Nx, *p_Ghad), '-', lw=0, color=C2)
+
+
+# Combinging legend artists
+labels = np.array(['$\\mathcal{F}$', '$\\mathcal{F}^{-1}$', '$A \\circ B$',
+                   '$\\mathcal{F}$', '$\\mathcal{F}^{-1}$', '$A \\circ B$'])
+
+#space = Line2D([], [], linestyle='')
+#mark_space, cap_space, bar_space, = ax.errorbar([], [], yerr=[], c='w')
+
+leg = ax.legend([(lineCfft, markCfft), (lineCifft, markCifft), (lineChad, markChad),
+                 (lineGfft, markGfft), (lineGifft, markGifft), (lineGhad, markGhad)],
+                labels, fontsize=8, loc=2)
+t1, t2, t3, t4, t5, t6 = leg.get_texts()
+t1._fontproperties = t2._fontproperties.copy()
+t6._fontproperties = t2._fontproperties.copy()
+t5._fontproperties = t2._fontproperties.copy()
+t1.set_size(9)
+t6.set_size(9)
+t5.set_size(9)
 
 
 ax.set_ylabel('Evaluation time [s]', fontsize=12)
@@ -328,7 +387,8 @@ plt.text(1.93**24, txtheight, '($4096^2$)', fontsize=txtsize)
 #plt.grid()
 plt.legend(fontsize=9)
 if SAVE:
-    plt.savefig('bench_ffthad_times.pdf', bbox_inches='tight')
+    plt.savefig(filepath + 'Fig3_FFTHadamard\\'  + 'bench_ffthad_times.pdf',
+                bbox_inches='tight')
 plt.show()
 
 
@@ -347,20 +407,20 @@ devSpifft = Spifft * np.sqrt((madGifft/medGifft)**2
                              + (madCifft[:-1]/medCifft[:-1])**2)
 devSphad = Sphad * np.sqrt((madGhad/medGhad)**2 + (madChad/medChad)**2)
 
-lw=0
+lw=2
 
 fig = plt.figure(figsize=(3.277, 3.5), facecolor=None)
 ax = plt.axes(xscale='log', yscale='log')
 
 ax.errorbar(N[:len(Spfft)], Spfft, yerr=error(devSpfft, Spfft), fmt='-',
             ms=ms, zorder=9, color=C0, lw=lw, marker='s',
-            label='$\\mathcal{F}$', elinewidth=3, capthick=2)
+            label='$\\mathcal{F}$', elinewidth=3, capsize=cs)
 ax.errorbar(N[:len(Spifft)], Spifft, yerr=error(devSpifft, Spifft), fmt='-',
             ms=ms, zorder=8, color=C1, lw=lw, marker='D',
-            label='$\\mathcal{F}^{-1}$', elinewidth=3, capthick=2)
+            label='$\\mathcal{F}^{-1}$', elinewidth=3, capsize=cs)
 ax.errorbar(2**NGhad, Sphad, yerr=error(devSphad, Sphad), fmt='-', ms=8,
             zorder=ms, color=C2, marker='o', lw=lw,
-            label='$A \\circ B$', elinewidth=3, capthick=2)
+            label='$A \\circ B$', elinewidth=3, capsize=cs)
 
 ax.hlines(1, xmin=2**12, xmax=2**23, ls=(0, (2, 1)), color='k', lw=2, zorder=1)
 
@@ -378,12 +438,13 @@ ax.set_xticks(N[::2])
 ax.set_xticklabels([str(int(np.log2(n))) for n in N[::2]], fontsize=12)
 ax.tick_params(axis='y', labelsize=10)
 ax.tick_params(axis='both', width=0.5, length = 2, direction='in', top='true',
-               right='true')
+               right='true', labelsize=10)
 ax.tick_params(axis='x', which='minor', bottom=False, direction='in',
                right='true')
+ax.yaxis.tick_right()
 ax.tick_params(axis='y', which='minor', direction='in', right='true',
                left='true')
-ax.yaxis.tick_right()
+
 
 # Annotate grid sizes
 txtheight = 2e-1
@@ -394,7 +455,8 @@ plt.text(1.93**20, txtheight, '($1024^2$)', fontsize=9)
 plt.text(1.94**24, txtheight, '($4096^2$)', fontsize=9)
 
 if SAVE:
-    plt.savefig('bench_ffthad_speedup.pdf', bbox_inches='tight')
+    plt.savefig(filepath + 'Fig3_FFTHadamard\\' + 'bench_ffthad_speedup.pdf',
+                bbox_inches='tight')
 plt.show()
 print(f'Max. speedup - FFT: {np.max(Spfft):.1f}')
 print(f'Max. speedup - iFFT: {np.max(Spifft):.1f}')
