@@ -36,7 +36,7 @@ ps = spin.PSpinor(DATA_PATH, overwrite=True,  # Initialize PSpinor object
                   g_sc=G_SC,
                   pop_frac=(0.5, 0.5),
                   r_sizes=(8, 8),
-                  mesh_points=(256, 256))
+                  mesh_points=(64, 64))
 
 ps.coupling_setup(wavel=790.1e-9, kin_shift=False)
 
@@ -49,8 +49,8 @@ ps.plot_spins(rscale=ps.rad_tf, kscale=ps.kL_recoil, zoom=ZOOM)
 # 2. RUN (Imaginary-time)
 
 DT = 1/50
-N_STEPS = 1000
-DEVICE = 'cuda'
+N_STEPS = 100
+DEVICE = 'cpu'
 ps.rand_seed = 99999
 
 # Run propagation loop:

@@ -57,6 +57,7 @@ N2C, med2C, mad2C = load('980 Ti', 'cpu_step')
 N3G, med3G, mad3G = load('Acer Aspire', 'cuda_step')
 N3C, med3C, mad3C = load('Acer Aspire', 'cpu_step')
 
+
 # %%
 
 # This section generates the benchmark plot - Figure 2a
@@ -78,6 +79,13 @@ print('CPU Power: ' , np.mean([p_1C[1], p_2C[1], p_3C[1]]), ' +/- ',
       np.sqrt(np.diag(c_1C)[1] + np.diag(c_2C)[1] + np.diag(c_3C)[1]))
 print('CPU amplitude: ' , np.mean([p_1C[0], p_2C[0], p_3C[0]]), ' +/- ',
       np.sqrt(np.diag(c_1C)[0] + np.diag(c_2C)[0] + np.diag(c_3C)[0]))
+
+
+
+def power_alt(nu, a, k):
+    return a * 2**(nu*k)
+
+p_1C_a, c_1C_a = curve_fit(power_alt, N1C, med1C, sigma=mad1C)
 
 # %%
 

@@ -1,6 +1,8 @@
 """prop_result.py module."""
 import os
 import warnings
+import sys
+import subprocess
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -293,7 +295,11 @@ class PropResult:
         plt.close(fig)
 
         if play:
-            os.startfile(file_name)
+            if sys.platform == "win32":
+                os.startfile(file_name)
+            else:
+                opener ="open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, file_name])
 
     def rebin(self, arr, new_shape=(256, 256)):
         """Rebin a 2D `arr` to shape `new_shape` by averaging.
