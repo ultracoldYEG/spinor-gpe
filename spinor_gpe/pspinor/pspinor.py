@@ -273,6 +273,9 @@ class PSpinor:
         self.psi, _ = ttools.norm(self.psi, self.space['dv_r'], self.atom_num)
         self.psik = ttools.fft_2d(self.psi, self.space['dr'])
 
+        self.heal = [np.sqrt(8*np.pi * np.max(np.abs(p)**2) * self.a_sc) for p
+                     in self.psi]
+
         # Saves the real- and k-space versions of the Thomas-Fermi wavefunction
         np.savez(self.paths['trial'] + 'tf_wf-' + self.paths['folder'],
                  psi=self.psi, psik=self.psik)
@@ -675,11 +678,11 @@ class PSpinor:
         """
         self.detuning = np.ones_like(self.space['x_mesh']) * value
 
-    def seed_vortices(self, positions, windings):
+    def seed_vortices(self, positions, windings, ):
         """Seeds vortices at the positions specified.
-        
+
         Pass a list of tuple coordinates
-        
+
         Parameters
         ----------
         positions : :obj:`list` of :obj:`tuple`
@@ -689,19 +692,53 @@ class PSpinor:
             is supplied, all vortices will have the same winding.
             If a :obj:`list` is supplied, it must have the same
             length as `positions`.
-            
+
         # TODO: Figure out the option for same and opposite windings
         # in each spinor component.
-        
+
         """
         raise NotImplementedError()
-        if isinstance(windings, list):
-            assert len(windings) != len(positions), ("The numbers of "
-                "windings and positions are not the same.")
-        
-        n = len(positions)
-        for (x, y) in positions:
-            xv = np.sqrt((self.space['X'] - x)**2 + (self.space['Y'] - y)**2) / self.heal
+        positions = np.array(positions)
+        assert positions.shape[-1] == 2, ("Positions should be ordered "
+                                          "pairs, e.g. (x, y).")
+        if len(positions.shape) == 2:
+            # Both spinor components have vortices at the same positions.
+            N_pos = len(positions)
+            positions = np.array([positions, positions])
+            ident_pos = True
+        else:
+            assert len(positions.shape) == 3, ("`positions` must be at most "
+                                               "a three-dimensional array.")
+
+        # The number of vortex positions in each component.
+        vnum = [len(pos) for pos in positions]
+
+        windings = np.array(windings)
+        if windings.shape == (1,):
+            # If only one winding value is supplied, all vortices in both
+            # components will have the same winding.
+            windings *= np.ones_like(positions)
+
+        elif len(windings.shape) == 1:
+            # If both spinor components have vortices at the same positions,
+            # then only a list of windings for those positions should be
+            # supplied.
+            assert ident_pos and len(windings) == N_pos, \
+                ("The number of supplied windings must match the number of "
+                 "supplied positions")
+            windings = np.array([windings, windings])
+
+        elif len(windings.shape) == 3:
+            # All vortices in both components have independent windings
+            assert windings.shape == positions.shape[:-1], \
+                ("The number of supplied windings must match the number of "
+                 "supplied positions")
+
+        for i, p in enumerate(self.psi):
+            for j, (x, y) in positions[i]:
+                v_grid = (np.sqrt((self.space['X'] - x)**2
+                                  + (self.space['Y'] - y)**2) / self.heal)
+                psi[i] = psi[ind] * (xv/np.sqrt(xv**2 + 2)) * np.exp((-1)**(ind) * sign*1j*np.arctan2((grid.Y-ys[q]),(grid.X-xs[q])))
         return None
         
     def seed_regular_vortices(self):
