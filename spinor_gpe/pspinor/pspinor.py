@@ -675,6 +675,35 @@ class PSpinor:
         """
         self.detuning = np.ones_like(self.space['x_mesh']) * value
 
+    def seed_vortices(self, positions, windings):
+        """Seeds vortices at the positions specified.
+        
+        Pass a list of tuple coordinates
+        
+        Parameters
+        ----------
+        positions : :obj:`list` of :obj:`tuple`
+            The positions at which to seed the vortices.
+        windings : :obs:`int` or :obj:`list` of :obj:`int`
+            Must have values of +1 or -1. If a single :obj:`int`
+            is supplied, all vortices will have the same winding.
+            If a :obj:`list` is supplied, it must have the same
+            length as `positions`.
+            
+        # TODO: Figure out the option for same and opposite windings
+        # in each spinor component.
+        
+        """
+        raise NotImplementedError()
+        if isinstance(windings, list):
+            assert len(windings) != len(positions), ("The numbers of "
+                "windings and positions are not the same.")
+        
+        n = len(positions)
+        for (x, y) in positions:
+            xv = np.sqrt((self.space['X'] - x)**2 + (self.space['Y'] - y)**2) / self.heal
+        return None
+        
     def seed_regular_vortices(self):
         """Seed regularly-arranged vortices into the wavefunction.
 
@@ -682,7 +711,7 @@ class PSpinor:
         """
         raise NotImplementedError()
 
-    def seed_random_vortices(self):
+    def seed_random_vortices(self, N):
         """Seed randomly-arranged vortices into the wavefunction."""
         raise NotImplementedError()
 
