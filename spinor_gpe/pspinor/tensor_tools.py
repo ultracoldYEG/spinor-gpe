@@ -206,8 +206,8 @@ def fft_2d(psi, delta_r=(1, 1)) -> list:
     psi : :obj:`list` of NumPy :obj:`array` or PyTorch :obj:`Tensor`
         The input wavefunction.
     delta_r : NumPy :obj:`array`, default=(1,1)
-        A two-element list of the real-sapce x- and y-mesh spacings,
-        respectively.
+        A two-element list of the real-space x- and y-mesh spacings,
+        respectively. Typically, use `ps.space['dr']`.
 
     Returns
     -------
@@ -237,7 +237,7 @@ def ifft_2d(psik, delta_r=(1, 1)) -> list:
         The input wavefunction.
     delta_r : NumPy :obj:`array`, default=(1,1)
         A two-element list of the real-sapce x- and y-mesh spacings,
-        respectively.
+        respectively. Typically, use `ps.space['dr']`.
 
     Returns
     -------

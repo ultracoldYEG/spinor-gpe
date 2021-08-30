@@ -273,7 +273,7 @@ class PSpinor:
         self.psi, _ = ttools.norm(self.psi, self.space['dv_r'], self.atom_num)
         self.psik = ttools.fft_2d(self.psi, self.space['dr'])
 
-        self.heal = [np.sqrt(8*np.pi * np.max(np.abs(p)**2) * self.a_sc) for p
+        self.heal = [(8*np.pi * np.max(np.abs(p)**2) * self.a_sc)**(-1/2) for p
                      in self.psi]
 
         # Saves the real- and k-space versions of the Thomas-Fermi wavefunction
@@ -299,14 +299,14 @@ class PSpinor:
 
         # Dimensionless scattering length, [a_x]
         if species == 'Rb87':
-            a_sc = const.Rb87['a_sc'] / self.a_x
+            self.a_sc = const.Rb87['a_sc'] / self.a_x
         else:
-            a_sc = 1
+            self.a_sc = 1
 
-        self.chem_pot = ((4 * self.atom_num * a_sc * y_trap
+        self.chem_pot = ((4 * self.atom_num * self.a_sc * y_trap
                           * np.sqrt(z_trap / (2 * np.pi)))**(1/2))
 
-        g_scale = np.sqrt(8 * z_trap * np.pi) * a_sc
+        g_scale = np.sqrt(8 * z_trap * np.pi) * self.a_sc
         self.g_sc.update({k: g_scale * self.g_sc[k] for k in self.g_sc.keys()})
         self.rad_tf = np.sqrt(2 * self.chem_pot)
 
@@ -678,7 +678,7 @@ class PSpinor:
         """
         self.detuning = np.ones_like(self.space['x_mesh']) * value
 
-    def seed_vortices(self, positions, windings, ):
+    def seed_vortices(self, positions, windings):
         """Seeds vortices at the positions specified.
 
         Pass a list of tuple coordinates
@@ -695,9 +695,10 @@ class PSpinor:
 
         # TODO: Figure out the option for same and opposite windings
         # in each spinor component.
+        # ???: Allow for imbalanced vortex numbers? Or assert equal numbers.
 
         """
-        raise NotImplementedError()
+        # raise NotImplementedError()
         positions = np.array(positions)
         assert positions.shape[-1] == 2, ("Positions should be ordered "
                                           "pairs, e.g. (x, y).")
@@ -709,9 +710,6 @@ class PSpinor:
         else:
             assert len(positions.shape) == 3, ("`positions` must be at most "
                                                "a three-dimensional array.")
-
-        # The number of vortex positions in each component.
-        vnum = [len(pos) for pos in positions]
 
         windings = np.array(windings)
         if windings.shape == (1,):
@@ -735,12 +733,18 @@ class PSpinor:
                  "supplied positions")
 
         for i, p in enumerate(self.psi):
-            for j, (x, y) in positions[i]:
-                v_grid = (np.sqrt((self.space['X'] - x)**2
-                                  + (self.space['Y'] - y)**2) / self.heal)
-                psi[i] = psi[ind] * (xv/np.sqrt(xv**2 + 2)) * np.exp((-1)**(ind) * sign*1j*np.arctan2((grid.Y-ys[q]),(grid.X-xs[q])))
-        return None
-        
+            for j, [x, y] in enumerate(positions[i]):
+                xdiff = self.space['x_mesh'] - x
+                ydiff = self.space['y_mesh'] - y
+                v_grid = (np.sqrt(xdiff**2 + ydiff**2) / self.heal[i])
+
+                v_profile = (v_grid / np.sqrt(v_grid**2 + 1))
+                v_phase = np.exp(windings[i, j] * 1j * np.arctan2(ydiff,
+                                                                  xdiff))
+                self.psi[i] = (self.psi[i] * v_profile * v_phase)
+
+        self.psik = ttools.fft_2d(self.psi, delta_r=self.space['dr'])
+
     def seed_regular_vortices(self):
         """Seed regularly-arranged vortices into the wavefunction.
 
