@@ -58,7 +58,7 @@ Physical Parameters
 Numerical Parameters
 --------------------
 
-.. topic:: Number of grid points, `benchmark_prop.py` and `benchmark_fft.py`
+.. topic:: Number of grid points
 
     :math:`\quad (N_x^{(\rm min)}, N_y^{(\rm min)}) = (64, 64)~{\rm to}~(4096, 4096)`
 
