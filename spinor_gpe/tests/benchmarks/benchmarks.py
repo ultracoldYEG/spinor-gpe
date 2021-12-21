@@ -9,7 +9,7 @@ increasing mesh grid sizes.
 import os
 import sys
 import timeit
-sys.path.insert(0, os.path.abspath('../..'))  # Adds project root to the PATH
+sys.path.insert(0, os.path.abspath('../../..'))  # Adds project root to the PATH
 
 import numpy as np
 import torch
@@ -18,10 +18,10 @@ from scipy.stats import median_abs_deviation as mad
 from spinor_gpe.pspinor import pspinor as spin
 
 torch.cuda.empty_cache()
-
 grids = [(64, 64), (64, 128), (128, 128), (128, 256), (256, 256),
          (256, 512), (512, 512), (512, 1024), (1024, 1024), (1024, 2048),
          (2048, 2048), (2048, 4096), (4096, 4096)]
+grids = [grids[9]]
 n_grids = len(grids)
 meas_times = [[0] for i in range(n_grids)]
 repeats = np.zeros(n_grids)
@@ -45,9 +45,7 @@ for i, grid in enumerate(grids):
                           atom_num=ATOM_NUM, omeg=OMEG, g_sc=G_SC,
                           pop_frac=(0.5, 0.5), r_sizes=(8, 8),
                           mesh_points=grid)
-
         ps.coupling_setup(wavel=790.1e-9, kin_shift=False)
-
         res, prop = ps.imaginary(1/50, 1, DEVICE, is_sampling=False)
 
         stmt = """prop.full_step()"""  # A full time step evaluation.
@@ -61,7 +59,6 @@ for i, grid in enumerate(grids):
         meas_times[i] = vals
         repeats[i] = N
         size[i] = np.log2(np.prod(grid))
-
         torch.cuda.empty_cache()
     except RuntimeError as ex:
         print(ex)

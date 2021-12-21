@@ -6,6 +6,94 @@ Starting with the Thomas-Fermi solution, propagate in imaginary time to
 reach the ground state. Propagation smooths out the sharp edges
 on both components' densities.
 
+Physical Parameters
+-------------------
+.. topic:: Atom number
+
+    :math:`\\quad N_{\\rm at} = 100`
+
+.. topic:: Atomic mass, Rubidium-87
+
+    :math:`\\quad m = 1.4442 \\times 10^{-25}~[\\rm kg]`
+
+.. topic:: Trap frequencies
+
+    :math:`\\quad (\\omega_x, \\omega_y, \\omega_z) = 2 \\pi \\times (50, 50, 2000)~[{\\rm Hz}]`
+
+    :math:`\\quad (\\omega_x, \\omega_y, \\omega_z) = \\omega_x \\times (1, \\gamma, \\eta) = (1, 1, 40)~[\\omega_x]`
+
+.. topic:: Harmonic oscillator length, x-axis
+
+    :math:`\\quad a_x = \\sqrt{\\hbar / m \\omega_x} = 1.525~[{\\mu\\rm m}]`
+
+.. topic:: 3D scattering length, Rubidium-87
+
+    | :math:`\\quad a = 5.313~[{\\rm nm}]`
+
+    | :math:`\\quad a_{\\rm sc} = a / a_x = 0.00348~[a_x]`
+
+.. topic:: Scattering 2D scale
+
+    | :math:`\\quad g_{\\rm sc}^{2\\rm D} = \\sqrt{8\\pi\\eta}~a_{\\rm sc} = 0.1105~[\\omega_x a_x^2]`
+
+.. topic:: Scattering coupling
+
+    | :math:`\\quad (g_{\\rm uu}, g_{\\rm dd}, g_{\\rm ud}) = g_{\\rm sc}^{2 \\rm D} \\times (1, 1, 1.04)~[\\omega_x a_x^2]`
+
+.. topic:: Chemical potential
+
+    :math:`\\quad \\mu = \\sqrt{4 N_{\\rm at} a_{\\rm sc} \\gamma \\sqrt{\\eta / 2 \\pi}} = 1.875~[\\omega_x]`
+
+.. topic:: Thomas-Fermi radius
+
+    :math:`\\quad R_{\\rm TF} = \\sqrt{2 \\mu} = 1.937~[a_x]`
+
+.. topic:: Initial population fractions
+
+    :math:`\\quad (p_0, p_1) = (0.5, 0.5)`
+
+.. topic:: Raman wavelength
+
+    :math:`\\quad \\lambda_L = 790.1~[{\\rm nm}]`
+
+Numerical Parameters
+--------------------
+
+.. topic:: Number of grid points
+
+    :math:`\\quad (N_x, N_y) = (64, 64)`
+
+.. topic:: r-grid half-size
+
+    :math:`\\quad (x^{\\rm max}, y^{\\rm max}) = (8, 8)~[a_x]`
+
+.. topic:: k-grid half-size
+
+    :math:`\\quad (k_x^{\\rm max}, k_y^{\\rm max}) = (12.566, 12.566)~[a_x^{-1}]`
+
+.. topic:: r-grid spacing
+
+    :math:`\\quad (\\Delta x, \\Delta y) = (0.25, 0.25)~[a_x]`
+
+.. topic:: k-grid spacing
+
+    :math:`\\quad (\\Delta k_x, \\Delta k_y) = \\pi / (x^{\\rm max}, y^{\\rm max}) = (0.3927, 0.3927)~[a_x^{-1}]`
+
+.. topic:: Time scale
+
+    :math:`\\quad \\tau_0 = 1 / \\omega_x = 0.00318~[{\\rm s/rad}]`
+
+    :math:`\\quad \\tau_0 = 1~[\\omega_x^{-1}]`
+
+.. topic:: Time step duration, imaginary
+
+    :math:`\\quad \\Delta \\tau_{\\rm im} = 1 / 50~[-i \\tau_0]`
+
+.. topic:: Number of time steps, imaginary
+
+    :math:`\\quad N_{\\rm im} = 100`
+
+
 """
 import os
 import sys

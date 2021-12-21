@@ -8,6 +8,95 @@ before reaching the ground state of this configuration. The detuning
 gradient separates the two components vertically, and the line where they
 interfere is a row of vortices.
 
+Physical Parameters
+-------------------
+.. topic:: Atom number
+
+    :math:`\\quad N_{\\rm at} = 10,000`
+
+.. topic:: Atomic mass, Rubidium-87
+
+    :math:`\\quad m = 1.4442 \\times 10^{-25}~[\\rm kg]`
+
+.. topic:: Trap frequencies
+
+    :math:`\\quad (\\omega_x, \\omega_y, \\omega_z) = 2 \\pi \\times (50, 50, 2000)~[{\\rm Hz}]`
+
+    :math:`\\quad (\\omega_x, \\omega_y, \\omega_z) = \\omega_x \\times (1, \\gamma, \\eta) = (1, 1, 40)~[\\omega_x]`
+
+.. topic:: Harmonic oscillator length, x-axis
+
+    :math:`\\quad a_x = \\sqrt{\\hbar / m \\omega_x} = 1.525~[{\\mu\\rm m}]`
+
+.. topic:: 3D scattering length, Rubidium-87
+
+    | :math:`\\quad a = 5.313~[{\\rm nm}]`
+
+    | :math:`\\quad a_{\\rm sc} = a / a_x = 0.00348~[a_x]`
+
+.. topic:: Scattering 2D scale
+
+    | :math:`\\quad g_{\\rm sc}^{2\\rm D} = \\sqrt{8\\pi\\eta}~a_{\\rm sc} = 0.1105~[\\omega_x a_x^2]`
+
+.. topic:: Scattering coupling
+
+    | :math:`\\quad (g_{\\rm uu}, g_{\\rm dd}, g_{\\rm ud}) = g_{\\rm sc}^{2 \\rm D} \\times (1, 0.995, 0.995)~[\\omega_x a_x^2]`
+
+.. topic:: Chemical potential
+
+    :math:`\\quad \\mu = \\sqrt{4 N_{\\rm at} a_{\\rm sc} \\gamma \\sqrt{\\eta / 2 \\pi}} = 18.754~[\\omega_x]`
+
+.. topic:: Thomas-Fermi radius
+
+    :math:`\\quad R_{\\rm TF} = \\sqrt{2 \\mu} = 6.124~[a_x]`
+
+.. topic:: Initial population fractions
+
+    :math:`\\quad (p_0, p_1) = (0.5, 0.5)`
+
+.. topic:: Raman wavelength
+
+    :math:`\\quad \\lambda_L = 790.1~[{\\rm nm}]`
+
+Numerical Parameters
+--------------------
+
+.. topic:: Number of grid points
+
+    :math:`\\quad (N_x, N_y) = (256, 256)`
+
+.. topic:: r-grid half-size
+
+    :math:`\\quad (x^{\\rm max}, y^{\\rm max}) = (16, 16)~[a_x]`
+
+.. topic:: k-grid half-size
+
+    :math:`\\quad (k_x^{\\rm max}, k_y^{\\rm max}) = (25.133, 25.133)~[a_x^{-1}]`
+
+.. topic:: r-grid spacing
+
+    :math:`\\quad (\\Delta x, \\Delta y) = (0.125, 0.125)~[a_x]`
+
+.. topic:: k-grid spacing
+
+    :math:`\\quad (\\Delta k_x, \\Delta k_y) = \\pi / (x^{\\rm max}, y^{\\rm max}) = (0.1963, 0.1963)~[a_x^{-1}]`
+
+.. topic:: Time scale
+
+    :math:`\\quad \\tau_0 = 1 / \\omega_x = 0.00318~[{\\rm s/rad}]`
+
+    :math:`\\quad \\tau_0 = 1~[\\omega_x^{-1}]`
+
+.. topic:: Time step duration, imaginary
+
+    :math:`\\quad \\Delta \\tau_{\\rm im} = 1 / 50~[-i \\tau_0]`
+
+.. topic:: Number of time steps, imaginary
+
+    :math:`\\quad N_{\\rm im} = 1000`
+
+
+
 """
 import os
 import sys
@@ -20,7 +109,7 @@ from spinor_gpe.pspinor import pspinor as spin
 
 # 1. SETUP
 
-DATA_PATH = 'examples/Trial_004'  # Default data path is in the /data/ folder
+DATA_PATH = 'examples/Trial_008'  # Default data path is in the /data/ folder
 
 FREQ = 50
 W = 2*np.pi*FREQ
@@ -62,7 +151,6 @@ DEVICE = 'cuda'
 ps.rand_seed = 99999
 
 res, prop = ps.imaginary(DT, N_STEPS, DEVICE, is_sampling=True, n_samples=50)
-
 
 # 3. ANALYZE
 

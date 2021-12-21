@@ -115,22 +115,18 @@ class TensorPropagator:
                                              dev=self.device)
         self.pot_eng_spin = ttools.to_tensor(spin.pot_eng_spin,
                                              dev=self.device)
-
         self.psik = ttools.to_tensor(spin.psik, dev=self.device, dtype=128)
-
         keys_space = ['dr', 'dk', 'x_mesh', 'y_mesh', 'dv_r', 'dv_k']
         self.space = {k: torch.tensor(spin.space[k], device=self.device)
                       for k in keys_space}
-
         self.coupling = ttools.to_tensor(spin.coupling, dev=self.device)
+
         # pylint: disable=invalid-name
         self.kL_recoil = spin.kL_recoil
-
         if spin.rot_coupling:
             self.expon = torch.tensor(0.0)
         else:
             self.expon = 2 * self.kL_recoil * self.space['x_mesh']
-
         # Calculate the sampling and annealing rates, as needed.
         if self.is_sampling:
             assert self.n_steps % n_samples == 0, (
@@ -138,15 +134,13 @@ class TensorPropagator:
                 f"divide the total number of steps {self.n_steps}.")
 
         self.sample_rate = self.n_steps / n_samples
-
         # Pre-compute several evolution operators
         self.eng_out = {'kin': ttools.evolution_op(self.dt_out / 2,
                                                    self.kin_eng_spin),
                         'pot': ttools.evolution_op(self.dt_out,
                                                    self.pot_eng_spin),
-                        'coupl': ttools.coupling_op(self.dt_out / 2,
-                                                    self.coupling, self.expon)}
-
+                        'coupl': ttools.coupling_op(self.dt_out,
+                                                    self.coupling / 2, self.expon)}
         self.eng_in = {'kin': ttools.evolution_op(self.dt_in / 2,
                                                   self.kin_eng_spin),
                        'pot': ttools.evolution_op(self.dt_in,
@@ -254,20 +248,16 @@ class TensorPropagator:
                    self.g_sc['dd'] * dens[1] + self.g_sc['ud'] * dens[0]]
         int_op = ttools.evolution_op(t_step / 2, int_eng)
         psi = [op * p for op, p in zip(int_op, psi)]
-
         # First half step of the coupling energy operator
         if self.is_coupling:
             psi = [sum([elem * p for elem, p in zip(row, psi)])
                    for row in eng['coupl']]
-
         # Full step of the potential energy operator
         psi = [eng * p for eng, p in zip(eng['pot'], psi)]
-
         # Second half step of the coupling energy operator
         if self.is_coupling:
             psi = [sum([elem * p for elem, p in zip(row, psi)])
                    for row in eng['coupl']]
-
         # Second half step of the interaction energy operator
         # ??? Is renormalization needed? It's not in previous code versions.
         # psi, dens = ttools.norm(psi, self.space['dv_r'], self.atom_num)
@@ -275,7 +265,6 @@ class TensorPropagator:
         #            self.g_sc['dd'] * dens[1] + self.g_sc['ud'] * dens[0]]
         # int_op = ttools.evolution_op(t_step / 2, int_eng)
         psi = [op * p for op, p in zip(int_op, psi)]
-
         # Second half step of the kintetic energy operator
         psik = ttools.fft_2d(psi, delta_r=self.space['dr'])
         psik = [eng * pk for eng, pk in zip(eng['kin'], psik)]

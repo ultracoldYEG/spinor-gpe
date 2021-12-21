@@ -86,7 +86,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -470,7 +470,7 @@ momentum shift on the coupling operation.</p>
 <dd><p>Compute the initial potential and kinetic energy grids.</p>
 <p>Assumes that the BEC is in a harmonic trap. This harmonic potential
 determines the initial ‘Thomas-Fermi’ density profile of the BEC.
-<cite>pot_eng</cite> can be modified prior to progation to have any arbitrary
+<code class="docutils literal notranslate"><span class="pre">pot_eng</span></code> can be modified prior to progation to have any arbitrary
 potential energy landscape.</p>
 <p>Also assumes that the BEC has a simple free-particle kinetic energy
 dispersion. If using a momentum-dependent spin coupling, this grid
@@ -561,8 +561,8 @@ need to be converted to [hbar*omeg_x] units.</p>
 <dt class="sig sig-object py" id="spinor_gpe.pspinor.pspinor.PSpinor.coupling_setup">
 <span class="sig-name descname"><span class="pre">coupling_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7.901e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kin_shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.coupling_setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate parameters for the momentum-(in)dependent coupling.</p>
-<p>If <a href="#id1"><span class="problematic" id="id2">`</span></a>kin_shift`=True, the kinetic energy grid receives a spin-dependent
-shift in momentum.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">kin_shift=True</span></code>, the kinetic energy grid receives a
+spin-dependent shift in momentum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -826,7 +826,7 @@ analysis.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spinor_gpe.pspinor.pspinor.PSpinor.seed_random_vortices">
-<span class="sig-name descname"><span class="pre">seed_random_vortices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.seed_random_vortices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">seed_random_vortices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.seed_random_vortices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Seed randomly-arranged vortices into the wavefunction.</p>
 </dd></dl>
 
@@ -835,6 +835,27 @@ analysis.</p>
 <span class="sig-name descname"><span class="pre">seed_regular_vortices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.seed_regular_vortices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Seed regularly-arranged vortices into the wavefunction.</p>
 <p>These seed-vortex functions might be moved to the ttools module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spinor_gpe.pspinor.pspinor.PSpinor.seed_vortices">
+<span class="sig-name descname"><span class="pre">seed_vortices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">windings</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spinor_gpe.pspinor.pspinor.PSpinor.seed_vortices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Seeds vortices at the positions specified.</p>
+<p>Pass a list of tuple coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code>) – The positions at which to seed the vortices.</p></li>
+<li><p><strong>windings</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>) – Must have values of +1 or -1. If a single <code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>
+is supplied, all vortices will have the same winding.
+If a <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> is supplied, it must have the same
+length as <cite>positions</cite>.</p></li>
+<li><p><strong>TODO</strong> (<em>#</em>) – </p></li>
+<li><p><strong>component.</strong> (<em># in each spinor</em>) – </p></li>
+<li><p><strong>???</strong> (<em>#</em>) – </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1084,7 +1105,7 @@ direction or the other.</p></li>
 <dt class="sig sig-object py" id="spinor_gpe.pspinor.tensor_propagator.TensorPropagator.expon">
 <span class="sig-name descname"><span class="pre">expon</span></span><a class="headerlink" href="#spinor_gpe.pspinor.tensor_propagator.TensorPropagator.expon" title="Permalink to this definition">¶</a></dt>
 <dd><p>The exponential argument on the coupling operator off-diagonals. If
-the coupling is in a rotated reference frame, then <a href="#id3"><span class="problematic" id="id4">`</span></a>expon`=0.0.</p>
+the coupling is in a rotated reference frame, then <a href="#id1"><span class="problematic" id="id2">`</span></a>expon`=0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code></p>
@@ -1569,7 +1590,7 @@ no coupling, then this is 0 by default.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="spinor_gpe.pspinor.tensor_tools.fft_1d">
-<span class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.tensor_tools.</span></span><span class="sig-name descname"><span class="pre">fft_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#spinor_gpe.pspinor.tensor_tools.fft_1d" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.tensor_tools.</span></span><span class="sig-name descname"><span class="pre">fft_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#spinor_gpe.pspinor.tensor_tools.fft_1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the forward 1D FFT of <cite>psi</cite> along a single axis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1592,14 +1613,14 @@ respectively.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="spinor_gpe.pspinor.tensor_tools.fft_2d">
-<span class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.tensor_tools.</span></span><span class="sig-name descname"><span class="pre">fft_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#spinor_gpe.pspinor.tensor_tools.fft_2d" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.tensor_tools.</span></span><span class="sig-name descname"><span class="pre">fft_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#spinor_gpe.pspinor.tensor_tools.fft_2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the forward 2D FFT of <cite>psi</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>psi</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of NumPy <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code> or PyTorch <code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code>) – The input wavefunction.</p></li>
-<li><p><strong>delta_r</strong> (NumPy <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, default=(1,1)) – A two-element list of the real-sapce x- and y-mesh spacings,
-respectively.</p></li>
+<li><p><strong>delta_r</strong> (NumPy <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, default=(1,1)) – A two-element list of the real-space x- and y-mesh spacings,
+respectively. Typically, use <cite>ps.space[‘dr’]</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1651,7 +1672,7 @@ respectively.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="spinor_gpe.pspinor.tensor_tools.ifft_1d">
-<span class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.tensor_tools.</span></span><span class="sig-name descname"><span class="pre">ifft_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psik</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#spinor_gpe.pspinor.tensor_tools.ifft_1d" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.tensor_tools.</span></span><span class="sig-name descname"><span class="pre">ifft_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psik</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#spinor_gpe.pspinor.tensor_tools.ifft_1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the inverse 1D FFT of <cite>psi</cite> along a single axis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1674,14 +1695,14 @@ respectively.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="spinor_gpe.pspinor.tensor_tools.ifft_2d">
-<span class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.tensor_tools.</span></span><span class="sig-name descname"><span class="pre">ifft_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psik</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#spinor_gpe.pspinor.tensor_tools.ifft_2d" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">spinor_gpe.pspinor.tensor_tools.</span></span><span class="sig-name descname"><span class="pre">ifft_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psik</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#spinor_gpe.pspinor.tensor_tools.ifft_2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the inverse 2D FFT of <cite>psik</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>psik</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of NumPy <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code> or PyTorch <code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensor</span></code>) – The input wavefunction.</p></li>
 <li><p><strong>delta_r</strong> (NumPy <code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, default=(1,1)) – A two-element list of the real-sapce x- and y-mesh spacings,
-respectively.</p></li>
+respectively. Typically, use <cite>ps.space[‘dr’]</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

@@ -415,7 +415,7 @@ class PSpinor:
 
         Assumes that the BEC is in a harmonic trap. This harmonic potential
         determines the initial 'Thomas-Fermi' density profile of the BEC.
-        `pot_eng` can be modified prior to progation to have any arbitrary
+        ``pot_eng`` can be modified prior to progation to have any arbitrary
         potential energy landscape.
 
         Also assumes that the BEC has a simple free-particle kinetic energy
@@ -469,8 +469,8 @@ class PSpinor:
     def coupling_setup(self, wavel=790.1e-9, scale=1.0, kin_shift=False):
         """Calculate parameters for the momentum-(in)dependent coupling.
 
-        If `kin_shift`=True, the kinetic energy grid receives a spin-dependent
-        shift in momentum.
+        If ``kin_shift=True``, the kinetic energy grid receives a
+        spin-dependent shift in momentum.
 
         Parameters
         ----------
@@ -484,7 +484,6 @@ class PSpinor:
             momentum.
         kin_shift : :obj:`bool`, default=False
             Option for a momentum-(in)dependent coupling.
-
         """
         # pylint: disable=attribute-defined-outside-init
         self.is_coupling = True
@@ -687,7 +686,7 @@ class PSpinor:
         ----------
         positions : :obj:`list` of :obj:`tuple`
             The positions at which to seed the vortices.
-        windings : :obs:`int` or :obj:`list` of :obj:`int`
+        windings : :obj:`int` or :obj:`list` of :obj:`int`
             Must have values of +1 or -1. If a single :obj:`int`
             is supplied, all vortices will have the same winding.
             If a :obj:`list` is supplied, it must have the same

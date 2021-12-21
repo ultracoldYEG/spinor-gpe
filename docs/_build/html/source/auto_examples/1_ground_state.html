@@ -26,6 +26,7 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -87,13 +88,17 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../operation.html">Basic Operation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Example 1: Ground State</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Example 1: Ground State</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#physical-parameters">Physical Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#numerical-parameters">Numerical Parameters</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="2_anisotropic_tof.html">Example 2: Anisotropic Time-of-Flight</a></li>
 <li class="toctree-l2"><a class="reference internal" href="3_raman_rabi.html">Example 3: Raman Rabi Flopping</a></li>
 <li class="toctree-l2"><a class="reference internal" href="4_detuning_grad.html">Example 4: Raman Detuning Gradient Ground State</a></li>
@@ -176,6 +181,98 @@ to download the full example code</p>
 <p>Starting with the Thomas-Fermi solution, propagate in imaginary time to
 reach the ground state. Propagation smooths out the sharp edges
 on both components’ densities.</p>
+<section id="physical-parameters">
+<h2>Physical Parameters<a class="headerlink" href="#physical-parameters" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title">Atom number</p>
+<p><span class="math notranslate nohighlight">\(\quad N_{\rm at} = 100\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Atomic mass, Rubidium-87</p>
+<p><span class="math notranslate nohighlight">\(\quad m = 1.4442 \times 10^{-25}~[\rm kg]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Trap frequencies</p>
+<p><span class="math notranslate nohighlight">\(\quad (\omega_x, \omega_y, \omega_z) = 2 \pi \times (50, 50, 2000)~[{\rm Hz}]\)</span></p>
+<p><span class="math notranslate nohighlight">\(\quad (\omega_x, \omega_y, \omega_z) = \omega_x \times (1, \gamma, \eta) = (1, 1, 40)~[\omega_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Harmonic oscillator length, x-axis</p>
+<p><span class="math notranslate nohighlight">\(\quad a_x = \sqrt{\hbar / m \omega_x} = 1.525~[{\mu\rm m}]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Rubidium-87 3D scattering length</p>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\quad a = 5.313~[{\rm nm}]\)</span></div>
+</div>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\quad a_{\rm sc} = a / a_x = 0.00348~[a_x]\)</span></div>
+</div>
+</div>
+<div class="topic">
+<p class="topic-title">Scattering 2D scale</p>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\quad g_{\rm sc}^{2\rm D} = \sqrt{8\pi\eta}~a_{\rm sc} = 0.1105~[\omega_x a_x^2]\)</span></div>
+</div>
+</div>
+<div class="topic">
+<p class="topic-title">Scattering coupling</p>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\quad (g_{\rm uu}, g_{\rm dd}, g_{\rm ud}) = g_{\rm sc}^{2 \rm D} \times (1, 1, 1.04)~[\omega_x a_x^2]\)</span></div>
+</div>
+</div>
+<div class="topic">
+<p class="topic-title">Chemical potential</p>
+<p><span class="math notranslate nohighlight">\(\quad \mu = \sqrt{4 N_{\rm at} a_{\rm sc} \gamma \sqrt{\eta / 2 \pi}} = 1.875~[\omega_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Thomas-Fermi radius</p>
+<p><span class="math notranslate nohighlight">\(\quad R_{\rm TF} = \sqrt{2 \mu} = 1.937~[a_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Initial population fractions</p>
+<p><span class="math notranslate nohighlight">\(\quad (p_0, p_1) = (0.5, 0.5)\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Raman wavelength</p>
+<p><span class="math notranslate nohighlight">\(\quad \lambda_L = 790.1~[{\rm nm}]\)</span></p>
+</div>
+</section>
+<section id="numerical-parameters">
+<h2>Numerical Parameters<a class="headerlink" href="#numerical-parameters" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title">Number of grid points</p>
+<p><span class="math notranslate nohighlight">\(\quad (N_x, N_y) = (64, 64)\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">r-grid half-size</p>
+<p><span class="math notranslate nohighlight">\(\quad (x^{\rm max}, y^{\rm max}) = (8, 8)~[a_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">k-grid half-size</p>
+<p><span class="math notranslate nohighlight">\(\quad (k_x^{\rm max}, k_y^{\rm max}) = (12.566, 12.566)~[a_x^{-1}]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">r-grid spacing</p>
+<p><span class="math notranslate nohighlight">\(\quad (\Delta x, \Delta y) = (0.25, 0.25)~[a_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">k-grid spacing</p>
+<p><span class="math notranslate nohighlight">\(\quad (\Delta k_x, \Delta k_y) = \pi / (x^{\rm max}, y^{\rm max}) = (0.3927, 0.3927)~[a_x^{-1}]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Time scale</p>
+<p><span class="math notranslate nohighlight">\(\quad \tau_0 = 1 / \omega_x = 0.00318~[{\rm s/rad}]\)</span></p>
+<p><span class="math notranslate nohighlight">\(\quad \tau_0 = 1~[\omega_x^{-1}]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Time step duration, imaginary</p>
+<p><span class="math notranslate nohighlight">\(\quad \Delta \tau_{\rm im} = 1 / 50~[-i \tau_0]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Number of time steps, imaginary</p>
+<p><span class="math notranslate nohighlight">\(\quad N_{\rm im} = 100\)</span></p>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../..&#39;</span><span class="p">))</span>  <span class="c1"># Adds project root to the PATH</span>
@@ -204,7 +301,7 @@ on both components’ densities.</p>
                   <span class="n">g_sc</span><span class="o">=</span><span class="n">G_SC</span><span class="p">,</span>
                   <span class="n">pop_frac</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
                   <span class="n">r_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
-                  <span class="n">mesh_points</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span>
+                  <span class="n">mesh_points</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">))</span>
 
 <span class="n">ps</span><span class="o">.</span><span class="n">coupling_setup</span><span class="p">(</span><span class="n">wavel</span><span class="o">=</span><span class="mf">790.1e-9</span><span class="p">,</span> <span class="n">kin_shift</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -217,8 +314,8 @@ on both components’ densities.</p>
 <span class="c1"># 2. RUN (Imaginary-time)</span>
 
 <span class="n">DT</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">50</span>
-<span class="n">N_STEPS</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">DEVICE</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span>
+<span class="n">N_STEPS</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span>
 <span class="n">ps</span><span class="o">.</span><span class="n">rand_seed</span> <span class="o">=</span> <span class="mi">99999</span>
 
 <span class="c1"># Run propagation loop:</span>
@@ -245,6 +342,7 @@ on both components’ densities.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
 </section>
 
 

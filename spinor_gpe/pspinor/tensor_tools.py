@@ -544,7 +544,6 @@ def inner_prod():
 
 
 def evolution_op(t_step, energy):
-    # TODO: Change the signature so that t_step comes first
     """Compute the unitary time-evolution operator for the given energy.
 
     Parameters
