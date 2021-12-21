@@ -1,8 +1,8 @@
 """
-Benchmarks
-==========
+Hadamard Time
+=============
 
-On a given system and hardware configuration, times the propagation loop for
+On a given system and hardware configuration, times Hadamard product for
 increasing mesh grid sizes.
 
 """

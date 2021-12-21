@@ -1,27 +1,44 @@
 """
-Benchmarks
-==========
+Propagation Time
+================
 
-On a given system and hardware configuration, times the propagation loop for
-increasing mesh grid sizes.
+For a given system and hardware configuration (CPU or GPU), this script
+generates `PSpinor` objects of increasing mesh grid size in a for-loop,
+starting from (64, 64) up to (4096, 4096), or until the memory limit is
+reached. After generating the `PSpinor`, it performs a brief propagation
+in imaginary time, returning a `TensorPropagator` object `prop`. The script
+then measures the time for a single function call of `prop.full_step()`, and
+repeats that N times. With the measured times for each grid size, saves the
+median and median absolute deviation.
 
 """
 import os
 import sys
 import timeit
-sys.path.insert(0, os.path.abspath('../../..'))  # Adds project root to the PATH
 
 import numpy as np
 import torch
 from scipy.stats import median_abs_deviation as mad
 
+sys.path.insert(0, os.path.abspath('../../..'))  # Adds project root to PATH
+
 from spinor_gpe.pspinor import pspinor as spin
 
 torch.cuda.empty_cache()
-grids = [(64, 64), (64, 128), (128, 128), (128, 256), (256, 256),
-         (256, 512), (512, 512), (512, 1024), (1024, 1024), (1024, 2048),
-         (2048, 2048), (2048, 4096), (4096, 4096)]
-grids = [grids[9]]
+grids = [(64, 64),
+         (64, 128),
+         (128, 128),
+         (128, 256),
+         (256, 256),
+         (256, 512),
+         (512, 512),
+         (512, 1024),
+         (1024, 1024),
+         (1024, 2048),
+         (2048, 2048),
+         (2048, 4096),
+         (4096, 4096)]
+grids = [grids[0]]
 n_grids = len(grids)
 meas_times = [[0] for i in range(n_grids)]
 repeats = np.zeros(n_grids)
@@ -41,6 +58,7 @@ COMPUTER = 'Acer Aspire'
 for i, grid in enumerate(grids):
     print(i)
     try:
+        # Create a PSpinor object
         ps = spin.PSpinor(DATA_PATH, overwrite=True,
                           atom_num=ATOM_NUM, omeg=OMEG, g_sc=G_SC,
                           pop_frac=(0.5, 0.5), r_sizes=(8, 8),
@@ -48,14 +66,19 @@ for i, grid in enumerate(grids):
         ps.coupling_setup(wavel=790.1e-9, kin_shift=False)
         res, prop = ps.imaginary(1/50, 1, DEVICE, is_sampling=False)
 
-        stmt = """prop.full_step()"""  # A full time step evaluation.
+        stmt = """prop.full_step()"""  # A full time step function call.
 
+        # Create a code timing object.
         timer = timeit.Timer(stmt=stmt, globals=globals())
 
+        # Estimate the number of timing repetitions to make
         N = timer.autorange()[0]
         if N < 10:
             N *= 10
-        vals = timer.repeat(N, 1)
+
+        vals = timer.repeat(N, 1)  # Time and repeat N times.
+
+        # Save timing values.
         meas_times[i] = vals
         repeats[i] = N
         size[i] = np.log2(np.prod(grid))
@@ -69,8 +92,8 @@ for i, grid in enumerate(grids):
 median = np.array([np.median(times) for times in meas_times])
 med_ab_dev = np.array([mad(times, scale='normal') for times in meas_times])
 
-tag = COMPUTER + '_' + DEVICE + '_step'
-np.savez('data\\' + tag, computer=COMPUTER, device=DEVICE,
+tag = COMPUTER + '_' + DEVICE
+np.savez('bench_data\\' + tag, computer=COMPUTER, device=DEVICE,
          size=size, n_repeats=repeats, med=median, mad=med_ab_dev)
 
 np.save(ps.paths['data'] + '..\\' + tag, np.array(meas_times, dtype='object'))

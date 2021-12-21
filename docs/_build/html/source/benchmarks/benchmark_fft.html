@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>FFT and iFFT Time &mdash; spinor-gpe 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-rendered-html.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Hadamard Time" href="benchmark_had.html" />
+    <link rel="prev" title="Benchmarks" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> spinor-gpe
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../operation.html">Basic Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Benchmarks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#physical-parameters">Physical Parameters</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#numerical-parameters">Numerical Parameters</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">FFT and iFFT Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="benchmark_had.html">Hadamard Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="benchmark_prop.html">Propagation Time</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pspinor.html">pspinor package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">spinor-gpe</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Benchmarks</a> &raquo;</li>
+        
+      <li>FFT and iFFT Time</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/source/benchmarks/benchmark_fft.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-source-benchmarks-benchmark-fft-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="fft-and-ifft-time">
+<span id="sphx-glr-source-benchmarks-benchmark-fft-py"></span><h1>FFT and iFFT Time<a class="headerlink" href="#fft-and-ifft-time" title="Permalink to this headline">¶</a></h1>
+<p>On a given system and hardware configuration, times the FFT and iFFT function
+calls for increasing mesh grid sizes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">timeit</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../..&#39;</span><span class="p">))</span>  <span class="c1"># Adds project root to the PATH</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">median_abs_deviation</span> <span class="k">as</span> <span class="n">mad</span>
+
+<span class="kn">from</span> <span class="nn">spinor_gpe.pspinor</span> <span class="kn">import</span> <span class="n">pspinor</span> <span class="k">as</span> <span class="n">spin</span>
+<span class="kn">from</span> <span class="nn">spinor_gpe.pspinor</span> <span class="kn">import</span> <span class="n">tensor_tools</span> <span class="k">as</span> <span class="n">ttools</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
+
+<span class="n">grids</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">1024</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">2048</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="mi">2048</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="mi">4096</span><span class="p">),</span>
+         <span class="p">(</span><span class="mi">4096</span><span class="p">,</span> <span class="mi">4096</span><span class="p">)]</span>
+<span class="n">n_grids</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grids</span><span class="p">)</span>
+<span class="n">meas_times</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_grids</span><span class="p">)]</span>
+<span class="n">repeats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_grids</span><span class="p">)</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_grids</span><span class="p">)</span>
+
+
+<span class="n">DATA_PATH</span> <span class="o">=</span> <span class="s1">&#39;benchmarks/Bench_001&#39;</span>  <span class="c1"># Default data path is in the /data/ folder</span>
+
+<span class="n">W</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">50</span>
+<span class="n">ATOM_NUM</span> <span class="o">=</span> <span class="mf">1e2</span>
+<span class="n">OMEG</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">W</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">W</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="mi">40</span> <span class="o">*</span> <span class="n">W</span><span class="p">}</span>
+<span class="n">G_SC</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;uu&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;dd&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ud&#39;</span><span class="p">:</span> <span class="mf">1.04</span><span class="p">}</span>
+
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span>
+<span class="n">COMPUTER</span> <span class="o">=</span> <span class="s1">&#39;Acer Aspire&#39;</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">grid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grids</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="n">spin</span><span class="o">.</span><span class="n">PSpinor</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">atom_num</span><span class="o">=</span><span class="n">ATOM_NUM</span><span class="p">,</span> <span class="n">omeg</span><span class="o">=</span><span class="n">OMEG</span><span class="p">,</span> <span class="n">g_sc</span><span class="o">=</span><span class="n">G_SC</span><span class="p">,</span>
+                          <span class="n">pop_frac</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">r_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+                          <span class="n">mesh_points</span><span class="o">=</span><span class="n">grid</span><span class="p">)</span>
+
+        <span class="n">ps</span><span class="o">.</span><span class="n">coupling_setup</span><span class="p">(</span><span class="n">wavel</span><span class="o">=</span><span class="mf">790.1e-9</span><span class="p">,</span> <span class="n">kin_shift</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">res</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">imaginary</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">50</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">is_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">stmt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;ttools.fft_2d(prop.psik, prop.space[&#39;dr&#39;])&quot;&quot;&quot;</span>
+
+        <span class="n">timer</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">stmt</span><span class="o">=</span><span class="n">stmt</span><span class="p">,</span> <span class="nb">globals</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+
+        <span class="n">N</span> <span class="o">=</span> <span class="n">timer</span><span class="o">.</span><span class="n">autorange</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">*=</span> <span class="mi">10</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">timer</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">meas_times</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
+        <span class="n">repeats</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span>
+        <span class="n">size</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
+
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="k">break</span>
+
+<span class="n">median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="k">for</span> <span class="n">times</span> <span class="ow">in</span> <span class="n">meas_times</span><span class="p">])</span>
+<span class="n">med_ab_dev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mad</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">times</span> <span class="ow">in</span> <span class="n">meas_times</span><span class="p">])</span>
+
+<span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;fft</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">COMPUTER</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">DEVICE</span> <span class="o">+</span> <span class="s1">&#39;_fft&#39;</span>
+<span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">tag</span><span class="p">,</span> <span class="n">computer</span><span class="o">=</span><span class="n">COMPUTER</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">,</span>
+         <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">n_repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span> <span class="n">med</span><span class="o">=</span><span class="n">median</span><span class="p">,</span> <span class="n">mad</span><span class="o">=</span><span class="n">med_ab_dev</span><span class="p">)</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">tag</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">meas_times</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">grid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grids</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="n">spin</span><span class="o">.</span><span class="n">PSpinor</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">atom_num</span><span class="o">=</span><span class="n">ATOM_NUM</span><span class="p">,</span> <span class="n">omeg</span><span class="o">=</span><span class="n">OMEG</span><span class="p">,</span> <span class="n">g_sc</span><span class="o">=</span><span class="n">G_SC</span><span class="p">,</span>
+                          <span class="n">pop_frac</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">r_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+                          <span class="n">mesh_points</span><span class="o">=</span><span class="n">grid</span><span class="p">)</span>
+
+        <span class="n">ps</span><span class="o">.</span><span class="n">coupling_setup</span><span class="p">(</span><span class="n">wavel</span><span class="o">=</span><span class="mf">790.1e-9</span><span class="p">,</span> <span class="n">kin_shift</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">res</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">imaginary</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">50</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">is_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">stmt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;ttools.ifft_2d(prop.psik, prop.space[&#39;dr&#39;])&quot;&quot;&quot;</span>
+
+        <span class="n">timer</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">stmt</span><span class="o">=</span><span class="n">stmt</span><span class="p">,</span> <span class="nb">globals</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+
+        <span class="n">N</span> <span class="o">=</span> <span class="n">timer</span><span class="o">.</span><span class="n">autorange</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">timer</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">meas_times</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
+        <span class="n">repeats</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span>
+        <span class="n">size</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
+
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="k">break</span>
+
+<span class="n">median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="k">for</span> <span class="n">times</span> <span class="ow">in</span> <span class="n">meas_times</span><span class="p">])</span>
+<span class="n">med_ab_dev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mad</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">times</span> <span class="ow">in</span> <span class="n">meas_times</span><span class="p">])</span>
+
+<span class="n">tag</span> <span class="o">=</span> <span class="n">COMPUTER</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">DEVICE</span> <span class="o">+</span> <span class="s1">&#39;_ifft&#39;</span>
+<span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="s1">&#39;data</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">tag</span><span class="p">,</span> <span class="n">computer</span><span class="o">=</span><span class="n">COMPUTER</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">,</span>
+         <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">n_repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span> <span class="n">med</span><span class="o">=</span><span class="n">median</span><span class="p">,</span> <span class="n">mad</span><span class="o">=</span><span class="n">med_ab_dev</span><span class="p">)</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">tag</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">meas_times</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-source-benchmarks-benchmark-fft-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/df25ea5dd680fa97345a6626badeca3d/benchmark_fft.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">benchmark_fft.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/82443083113281af054b5e3b92a42365/benchmark_fft.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">benchmark_fft.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="benchmark_had.html" class="btn btn-neutral float-right" title="Hadamard Time" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Benchmarks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, Benjamin D. Smith
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

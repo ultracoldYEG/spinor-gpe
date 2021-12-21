@@ -26,7 +26,7 @@ Physical Parameters
 
     :math:`\\quad a_x = \\sqrt{\\hbar / m \\omega_x} = 1.525~[{\\mu\\rm m}]`
 
-.. topic:: Rubidium-87 3D scattering length
+.. topic:: 3D scattering length, Rubidium-87
 
     | :math:`\\quad a = 5.313~[{\\rm nm}]`
 
@@ -67,17 +67,21 @@ Numerical Parameters
 
     :math:`\\quad (x^{\\rm max}, y^{\\rm max}) = (8, 8)~[a_x]`
 
-.. topic:: k-grid half-size
-
-    :math:`\\quad (k_x^{\\rm max}, k_y^{\\rm max}) = (12.566, 12.566)~[a_x^{-1}]`
-
 .. topic:: r-grid spacing
 
     :math:`\\quad (\\Delta x, \\Delta y) = (0.25, 0.25)~[a_x]`
 
+.. topic:: k-grid half-size
+
+    :math:`\\quad (k_x^{\\rm max}, k_y^{\\rm max}) = \\pi / (\\Delta x, \\Delta y)`
+
+    :math:`\\quad (k_x^{\\rm max}, k_y^{\\rm max}) = (12.566, 12.566)~[a_x^{-1}]`
+
 .. topic:: k-grid spacing
 
-    :math:`\\quad (\\Delta k_x, \\Delta k_y) = \\pi / (x^{\\rm max}, y^{\\rm max}) = (0.3927, 0.3927)~[a_x^{-1}]`
+    :math:`\\quad (\\Delta k_x, \\Delta k_y) = \\pi / (x^{\\rm max}, y^{\\rm max})`
+
+    :math:`\\quad (\\Delta k_x, \\Delta k_y) = (0.3927, 0.3927)~[a_x^{-1}]`
 
 .. topic:: Time scale
 

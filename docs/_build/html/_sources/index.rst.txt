@@ -12,6 +12,7 @@
    source/installation
    source/operation
    source/auto_examples/index
+   source/benchmarks/index
    source/pspinor
 
 

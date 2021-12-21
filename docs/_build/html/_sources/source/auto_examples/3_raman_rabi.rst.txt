@@ -40,13 +40,13 @@ Physical Parameters
 
     :math:`\quad (\omega_x, \omega_y, \omega_z) = 2 \pi \times (50, 200, 2000)~[{\rm Hz}]`
 
-    :math:`\quad (\omega_x, \omega_y, \omega_z) = \omega_x \times (1, \gamma, \eta) = (1, 4, 40)~[\omega_x]`
+    :math:`\quad (\omega_x, \omega_y, \omega_z) = \omega_x \times (1, \gamma, \eta) = (1, 1, 40)~[\omega_x]`
 
 .. topic:: Harmonic oscillator length, x-axis
 
     :math:`\quad a_x = \sqrt{\hbar / m \omega_x} = 1.525~[{\mu\rm m}]`
 
-.. topic:: Rubidium-87 3D scattering length
+.. topic:: 3D scattering length, Rubidium-87
 
     | :math:`\quad a = 5.313~[{\rm nm}]`
 
@@ -87,17 +87,21 @@ Numerical Parameters
 
     :math:`\quad (x^{\rm max}, y^{\rm max}) = (16, 16)~[a_x]`
 
-.. topic:: k-grid half-size
-
-    :math:`\quad (k_x^{\rm max}, k_y^{\rm max}) = (25.133, 25.133)~[a_x^{-1}]`
-
 .. topic:: r-grid spacing
 
     :math:`\quad (\Delta x, \Delta y) = (0.125, 0.125)~[a_x]`
 
+.. topic:: k-grid half-size
+
+    :math:`\quad (k_x^{\rm max}, k_y^{\rm max}) = \pi / (\Delta x, \Delta y)`
+
+    :math:`\quad (k_x^{\rm max}, k_y^{\rm max}) = (25.133, 25.133)~[a_x^{-1}]`
+
 .. topic:: k-grid spacing
 
-    :math:`\quad (\Delta k_x, \Delta k_y) = \pi / (x^{\rm max}, y^{\rm max}) = (0.1963, 0.1963)~[a_x^{-1}]`
+    :math:`\quad (\Delta k_x, \Delta k_y) = \pi / (x^{\rm max}, y^{\rm max})`
+
+    :math:`\quad (\Delta k_x, \Delta k_y) = (0.1963, 0.1963)~[a_x^{-1}]`
 
 .. topic:: Time scale
 
@@ -121,7 +125,7 @@ Numerical Parameters
 
     :math:`\quad N_{\rm real} = 2000`
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-188
+.. GENERATED FROM PYTHON SOURCE LINES 112-192
 
 .. code-block:: default
 

@@ -1,6 +1,6 @@
 """
-FFT and iFFT Benchmarks
-=======================
+FFT and iFFT Time
+=================
 
 On a given system and hardware configuration, times the FFT and iFFT function
 calls for increasing mesh grid sizes.
@@ -20,9 +20,19 @@ from spinor_gpe.pspinor import tensor_tools as ttools
 
 torch.cuda.empty_cache()
 
-grids = [(64, 64), (64, 128), (128, 128), (128, 256), (256, 256),
-         (256, 512), (512, 512), (512, 1024), (1024, 1024), (1024, 2048),
-         (2048, 2048), (2048, 4096), (4096, 4096)]
+grids = [(64, 64),
+         (64, 128),
+         (128, 128),
+         (128, 256),
+         (256, 256),
+         (256, 512),
+         (512, 512),
+         (512, 1024),
+         (1024, 1024),
+         (1024, 2048),
+         (2048, 2048),
+         (2048, 4096),
+         (4096, 4096)]
 n_grids = len(grids)
 meas_times = [[0] for i in range(n_grids)]
 repeats = np.zeros(n_grids)

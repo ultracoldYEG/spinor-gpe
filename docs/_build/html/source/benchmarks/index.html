@@ -1,0 +1,347 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Benchmarks &mdash; spinor-gpe 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-rendered-html.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="FFT and iFFT Time" href="benchmark_fft.html" />
+    <link rel="prev" title="Example 4: Raman Detuning Gradient Ground State" href="../auto_examples/4_detuning_grad.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> spinor-gpe
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../operation.html">Basic Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Benchmarks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#physical-parameters">Physical Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#numerical-parameters">Numerical Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="benchmark_fft.html">FFT and iFFT Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="benchmark_had.html">Hadamard Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="benchmark_prop.html">Propagation Time</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pspinor.html">pspinor package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">spinor-gpe</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>Benchmarks</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/source/benchmarks/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="benchmarks">
+<span id="sphx-glr-source-benchmarks"></span><h1>Benchmarks<a class="headerlink" href="#benchmarks" title="Permalink to this headline">¶</a></h1>
+<p>These three scripts profile the execution time of certain functions within the spinor-gpe package. The first one measures the time for the main time-evolution propagation function <cite>TensorPropagator.full_step()</cite>. The second and third measure the execution times for the forward and inverse 2D FFT functions and the Hadamard product, respectively.</p>
+<p>The scripts share the following physical and numerical parameters. Individual differeces in these parameters are noted in each file.</p>
+<section id="physical-parameters">
+<h2>Physical Parameters<a class="headerlink" href="#physical-parameters" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title">Atom number</p>
+<p><span class="math notranslate nohighlight">\(\quad N_{\rm at} = 100\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Atomic mass, Rubidium-87</p>
+<p><span class="math notranslate nohighlight">\(\quad m = 1.4442 \times 10^{-25}~[\rm kg]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Trap frequencies</p>
+<p><span class="math notranslate nohighlight">\(\quad (\omega_x, \omega_y, \omega_z) = 2 \pi \times (50, 50, 2000)~[{\rm Hz}]\)</span></p>
+<p><span class="math notranslate nohighlight">\(\quad (\omega_x, \omega_y, \omega_z) = \omega_x \times (1, \gamma, \eta) = (1, 1, 40)~[\omega_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Harmonic oscillator length, x-axis</p>
+<p><span class="math notranslate nohighlight">\(\quad a_x = \sqrt{\hbar / m \omega_x} = 1.525~[{\mu\rm m}]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">3D scattering length, Rubidium-87</p>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\quad a = 5.313~[{\rm nm}]\)</span></div>
+</div>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\quad a_{\rm sc} = a / a_x = 0.00348~[a_x]\)</span></div>
+</div>
+</div>
+<div class="topic">
+<p class="topic-title">Scattering 2D scale</p>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\quad g_{\rm sc}^{2\rm D} = \sqrt{8\pi\eta}~a_{\rm sc} = 0.1105~[\omega_x a_x^2]\)</span></div>
+</div>
+</div>
+<div class="topic">
+<p class="topic-title">Scattering coupling</p>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\quad (g_{\rm uu}, g_{\rm dd}, g_{\rm ud}) = g_{\rm sc}^{2 \rm D} \times (1, 1, 1.04)~[\omega_x a_x^2]\)</span></div>
+</div>
+</div>
+<div class="topic">
+<p class="topic-title">Chemical potential</p>
+<p><span class="math notranslate nohighlight">\(\quad \mu = \sqrt{4 N_{\rm at} a_{\rm sc} \gamma \sqrt{\eta / 2 \pi}} = 1.875~[\omega_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Thomas-Fermi radius</p>
+<p><span class="math notranslate nohighlight">\(\quad R_{\rm TF} = \sqrt{2 \mu} = 1.937~[a_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Initial population fractions</p>
+<p><span class="math notranslate nohighlight">\(\quad (p_0, p_1) = (0.5, 0.5)\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Raman wavelength</p>
+<p><span class="math notranslate nohighlight">\(\quad \lambda_L = 790.1~[{\rm nm}]\)</span></p>
+</div>
+</section>
+<section id="numerical-parameters">
+<h2>Numerical Parameters<a class="headerlink" href="#numerical-parameters" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title">Number of grid points, <cite>benchmark_prop.py</cite> and <cite>benchmark_fft.py</cite></p>
+<p><span class="math notranslate nohighlight">\(\quad (N_x^{(\rm min)}, N_y^{(\rm min)}) = (64, 64)~{\rm to}~(4096, 4096)\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">r-grid half-size</p>
+<p><span class="math notranslate nohighlight">\(\quad (x^{\rm max}, y^{\rm max}) = (8, 8)~[a_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">r-grid spacing</p>
+<p><span class="math notranslate nohighlight">\(\quad (\Delta x, \Delta y) = (0.25, 0.25)~{\rm to}~(0.003906, 0.003906)~[a_x]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">k-grid half-size</p>
+<p><span class="math notranslate nohighlight">\(\quad (k_x^{\rm max}, k_y^{\rm max}) = \pi / (\Delta x, \Delta y)\)</span></p>
+<p><span class="math notranslate nohighlight">\(\quad (k_x^{\rm max}, k_y^{\rm max}) = (12.566, 12.566)~{\rm to}~(804.25, 804.25)~[a_x^{-1}]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">k-grid spacing</p>
+<p><span class="math notranslate nohighlight">\(\quad (\Delta k_x, \Delta k_y) = \pi / (x^{\rm max}, y^{\rm max})\)</span></p>
+<p><span class="math notranslate nohighlight">\(\quad (\Delta k_x, \Delta k_y) = (0.3927, 0.3927)~[a_x^{-1}]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Time scale</p>
+<p><span class="math notranslate nohighlight">\(\quad \tau_0 = 1 / \omega_x = 0.00318~[{\rm s/rad}]\)</span></p>
+<p><span class="math notranslate nohighlight">\(\quad \tau_0 = 1~[\omega_x^{-1}]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Time step duration, imaginary</p>
+<p><span class="math notranslate nohighlight">\(\quad \Delta \tau_{\rm im} = 1 / 50~[-i \tau_0]\)</span></p>
+</div>
+<div class="topic">
+<p class="topic-title">Number of time steps, imaginary</p>
+<p><span class="math notranslate nohighlight">\(\quad N_{\rm im} = 1\)</span></p>
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="On a given system and hardware configuration, times the FFT and iFFT function calls for increas..."><figure class="align-default" id="id1">
+<img alt="FFT and iFFT Time" src="../../_images/sphx_glr_benchmark_fft_thumb.png" />
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="benchmark_fft.html#sphx-glr-source-benchmarks-benchmark-fft-py"><span class="std std-ref">FFT and iFFT Time</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="On a given system and hardware configuration, times Hadamard product for increasing mesh grid s..."><figure class="align-default" id="id2">
+<img alt="Hadamard Time" src="../../_images/sphx_glr_benchmark_had_thumb.png" />
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="benchmark_had.html#sphx-glr-source-benchmarks-benchmark-had-py"><span class="std std-ref">Hadamard Time</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="For a given system and hardware configuration (CPU or GPU), this script generates PSpinor objec..."><figure class="align-default" id="id3">
+<img alt="Propagation Time" src="../../_images/sphx_glr_benchmark_prop_thumb.png" />
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="benchmark_prop.html#sphx-glr-source-benchmarks-benchmark-prop-py"><span class="std std-ref">Propagation Time</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-clear"></div><p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="benchmark_fft.html" class="btn btn-neutral float-right" title="FFT and iFFT Time" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../auto_examples/4_detuning_grad.html" class="btn btn-neutral float-left" title="Example 4: Raman Detuning Gradient Ground State" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, Benjamin D. Smith
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
